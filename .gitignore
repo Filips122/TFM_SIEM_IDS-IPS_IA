@@ -1,3 +1,9 @@
+.venv/
+out/
+src/datasets/
+src/models/CIC-IDS2017/datasets/
+src/models/CIC-IDS2017/artifacts/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

@@ -1,0 +1,2131 @@
+C:\Users\xfeli\Desktop\TFM\modelos
+├── out
+│   └── CIC
+│       ├── MachineLearningCVE
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__deep_counts.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__head.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__label_counts.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__schema.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__deep_counts.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__head.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__label_counts.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__schema.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Morning.pcap_ISCX__deep_counts.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Morning.pcap_ISCX__head.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Morning.pcap_ISCX__label_counts.csv
+│       │   ├── MachineLearningCVE__Friday-WorkingHours-Morning.pcap_ISCX__schema.csv
+│       │   ├── MachineLearningCVE__Monday-WorkingHours.pcap_ISCX__deep_counts.csv
+│       │   ├── MachineLearningCVE__Monday-WorkingHours.pcap_ISCX__head.csv
+│       │   ├── MachineLearningCVE__Monday-WorkingHours.pcap_ISCX__label_counts.csv
+│       │   ├── MachineLearningCVE__Monday-WorkingHours.pcap_ISCX__schema.csv
+│       │   ├── MachineLearningCVE__Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__deep_counts.csv
+│       │   ├── MachineLearningCVE__Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__head.csv
+│       │   ├── MachineLearningCVE__Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__label_counts.csv
+│       │   ├── MachineLearningCVE__Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__schema.csv
+│       │   ├── MachineLearningCVE__Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__deep_counts.csv
+│       │   ├── MachineLearningCVE__Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__head.csv
+│       │   ├── MachineLearningCVE__Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__label_counts.csv
+│       │   ├── MachineLearningCVE__Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__schema.csv
+│       │   ├── MachineLearningCVE__Tuesday-WorkingHours.pcap_ISCX__deep_counts.csv
+│       │   ├── MachineLearningCVE__Tuesday-WorkingHours.pcap_ISCX__head.csv
+│       │   ├── MachineLearningCVE__Tuesday-WorkingHours.pcap_ISCX__label_counts.csv
+│       │   ├── MachineLearningCVE__Tuesday-WorkingHours.pcap_ISCX__schema.csv
+│       │   ├── MachineLearningCVE__Wednesday-workingHours.pcap_ISCX__deep_counts.csv
+│       │   ├── MachineLearningCVE__Wednesday-workingHours.pcap_ISCX__head.csv
+│       │   ├── MachineLearningCVE__Wednesday-workingHours.pcap_ISCX__label_counts.csv
+│       │   └── MachineLearningCVE__Wednesday-workingHours.pcap_ISCX__schema.csv
+│       ├── TrafficLabelling
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__deep_counts.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__head.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__label_counts.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__schema.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__deep_counts.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__head.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__label_counts.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__schema.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Morning.pcap_ISCX__deep_counts.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Morning.pcap_ISCX__head.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Morning.pcap_ISCX__label_counts.csv
+│       │   ├── TrafficLabelling__Friday-WorkingHours-Morning.pcap_ISCX__schema.csv
+│       │   ├── TrafficLabelling__Monday-WorkingHours.pcap_ISCX__deep_counts.csv
+│       │   ├── TrafficLabelling__Monday-WorkingHours.pcap_ISCX__head.csv
+│       │   ├── TrafficLabelling__Monday-WorkingHours.pcap_ISCX__label_counts.csv
+│       │   ├── TrafficLabelling__Monday-WorkingHours.pcap_ISCX__schema.csv
+│       │   ├── TrafficLabelling__Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__deep_counts.csv
+│       │   ├── TrafficLabelling__Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__head.csv
+│       │   ├── TrafficLabelling__Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__label_counts.csv
+│       │   ├── TrafficLabelling__Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__schema.csv
+│       │   ├── TrafficLabelling__Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__deep_counts.csv
+│       │   ├── TrafficLabelling__Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__head.csv
+│       │   ├── TrafficLabelling__Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__label_counts.csv
+│       │   ├── TrafficLabelling__Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__schema.csv
+│       │   ├── TrafficLabelling__Tuesday-WorkingHours.pcap_ISCX__deep_counts.csv
+│       │   ├── TrafficLabelling__Tuesday-WorkingHours.pcap_ISCX__head.csv
+│       │   ├── TrafficLabelling__Tuesday-WorkingHours.pcap_ISCX__label_counts.csv
+│       │   ├── TrafficLabelling__Tuesday-WorkingHours.pcap_ISCX__schema.csv
+│       │   ├── TrafficLabelling__Wednesday-workingHours.pcap_ISCX__deep_counts.csv
+│       │   ├── TrafficLabelling__Wednesday-workingHours.pcap_ISCX__head.csv
+│       │   ├── TrafficLabelling__Wednesday-workingHours.pcap_ISCX__label_counts.csv
+│       │   └── TrafficLabelling__Wednesday-workingHours.pcap_ISCX__schema.csv
+│       ├── column_comparison_clean.csv
+│       ├── deep_summary.json
+│       ├── quick_summary.json
+│       └── SUMMARY.txt
+├── src
+│   ├── datasets
+│   │   └── CIC-IDS2017
+│   │       ├── MachineLearningCVE
+│   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+│   │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv
+│   │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.csv
+│   │       │   ├── Monday-WorkingHours.pcap_ISCX.csv
+│   │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv
+│   │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv
+│   │       │   ├── Tuesday-WorkingHours.pcap_ISCX.csv
+│   │       │   └── Wednesday-workingHours.pcap_ISCX.csv
+│   │       └── TrafficLabelling
+│   │           ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+│   │           ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv
+│   │           ├── Friday-WorkingHours-Morning.pcap_ISCX.csv
+│   │           ├── Monday-WorkingHours.pcap_ISCX.csv
+│   │           ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv
+│   │           ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv
+│   │           ├── Tuesday-WorkingHours.pcap_ISCX.csv
+│   │           └── Wednesday-workingHours.pcap_ISCX.csv
+│   ├── helpers
+│   │   ├── analyze_cic_folder.py
+│   │   ├── list_columns.py
+│   │   └── schema_check.py
+│   ├── models
+│   │   └── CIC-IDS2017
+│   │       ├── __pycache__
+│   │       │   ├── data_loader.cpython-311.pyc
+│   │       │   ├── metrics.cpython-311.pyc
+│   │       │   ├── models_torch.cpython-311.pyc
+│   │       │   ├── reporting.cpython-311.pyc
+│   │       │   └── train_utils.cpython-311.pyc
+│   │       ├── artifacts
+│   │       │   ├── offline_ML_binary_fttransformer
+│   │       │   │   └── random
+│   │       │   │       └── 20260305_155004
+│   │       │   ├── offline_ML_binary_hgb
+│   │       │   │   ├── day
+│   │       │   │   │   └── 20260305_154127
+│   │       │   │   │       ├── plots
+│   │       │   │   │       │   ├── calibration.png
+│   │       │   │   │       │   ├── confusion_test.png
+│   │       │   │   │       │   ├── confusion_train.png
+│   │       │   │   │       │   ├── confusion_val.png
+│   │       │   │   │       │   ├── corr_matrix.png
+│   │       │   │   │       │   └── roc_curve.png
+│   │       │   │   │       ├── label_map.json
+│   │       │   │   │       ├── metrics_test.json
+│   │       │   │   │       ├── metrics_train.json
+│   │       │   │   │       ├── metrics_val.json
+│   │       │   │   │       ├── model.joblib
+│   │       │   │   │       └── results.json
+│   │       │   │   └── groupkfold
+│   │       │   │       └── 20260305_154145
+│   │       │   │           ├── fold_4
+│   │       │   │           │   ├── plots
+│   │       │   │           │   │   ├── calibration.png
+│   │       │   │           │   │   ├── confusion_test.png
+│   │       │   │           │   │   ├── confusion_train.png
+│   │       │   │           │   │   ├── confusion_val.png
+│   │       │   │           │   │   ├── corr_matrix.png
+│   │       │   │           │   │   └── roc_curve.png
+│   │       │   │           │   ├── label_map.json
+│   │       │   │           │   ├── metrics_test.json
+│   │       │   │           │   ├── metrics_train.json
+│   │       │   │           │   ├── metrics_val.json
+│   │       │   │           │   ├── model.joblib
+│   │       │   │           │   └── results.json
+│   │       │   │           └── summary.json
+│   │       │   ├── offline_ML_binary_mlp
+│   │       │   │   └── random
+│   │       │   │       └── 20260305_154207
+│   │       │   │           ├── plots
+│   │       │   │           │   ├── calibration.png
+│   │       │   │           │   ├── confusion_test.png
+│   │       │   │           │   ├── confusion_train.png
+│   │       │   │           │   ├── confusion_val.png
+│   │       │   │           │   ├── corr_matrix.png
+│   │       │   │           │   ├── curve_accuracy.png
+│   │       │   │           │   ├── curve_loss.png
+│   │       │   │           │   └── roc_curve.png
+│   │       │   │           ├── report_day
+│   │       │   │           │   ├── plots
+│   │       │   │           │   │   ├── calibration.png
+│   │       │   │           │   │   ├── confusion_test.png
+│   │       │   │           │   │   └── roc_curve.png
+│   │       │   │           │   └── metrics_test.json
+│   │       │   │           ├── report_groupkfold
+│   │       │   │           │   └── fold_4
+│   │       │   │           │       ├── plots
+│   │       │   │           │       │   ├── calibration.png
+│   │       │   │           │       │   ├── confusion_test.png
+│   │       │   │           │       │   └── roc_curve.png
+│   │       │   │           │       └── metrics_test.json
+│   │       │   │           ├── best_model.pt
+│   │       │   │           ├── history.csv
+│   │       │   │           ├── label_map.json
+│   │       │   │           ├── metrics_test.json
+│   │       │   │           ├── metrics_train.json
+│   │       │   │           ├── metrics_val.json
+│   │       │   │           ├── results.json
+│   │       │   │           ├── x_mean.npy
+│   │       │   │           └── x_std.npy
+│   │       │   ├── online_TL_binary_hgb
+│   │       │   │   ├── day
+│   │       │   │   │   └── 20260305_154046
+│   │       │   │   │       ├── plots
+│   │       │   │   │       │   ├── calibration.png
+│   │       │   │   │       │   ├── confusion_test.png
+│   │       │   │   │       │   ├── confusion_train.png
+│   │       │   │   │       │   ├── confusion_val.png
+│   │       │   │   │       │   ├── corr_matrix.png
+│   │       │   │   │       │   └── roc_curve.png
+│   │       │   │   │       ├── label_map.json
+│   │       │   │   │       ├── metrics_test.json
+│   │       │   │   │       ├── metrics_train.json
+│   │       │   │   │       ├── metrics_val.json
+│   │       │   │   │       ├── model.joblib
+│   │       │   │   │       └── results.json
+│   │       │   │   └── groupkfold
+│   │       │   │       └── 20260305_154105
+│   │       │   │           ├── fold_4
+│   │       │   │           │   ├── plots
+│   │       │   │           │   │   ├── calibration.png
+│   │       │   │           │   │   ├── confusion_test.png
+│   │       │   │           │   │   ├── confusion_train.png
+│   │       │   │           │   │   ├── confusion_val.png
+│   │       │   │           │   │   ├── corr_matrix.png
+│   │       │   │           │   │   └── roc_curve.png
+│   │       │   │           │   ├── label_map.json
+│   │       │   │           │   ├── metrics_test.json
+│   │       │   │           │   ├── metrics_train.json
+│   │       │   │           │   ├── metrics_val.json
+│   │       │   │           │   ├── model.joblib
+│   │       │   │           │   └── results.json
+│   │       │   │           └── summary.json
+│   │       │   └── online_TL_binary_logreg_torch
+│   │       │       ├── day
+│   │       │       │   ├── 20260305_151954
+│   │       │       │   │   └── best_model.pt
+│   │       │       │   ├── 20260305_152250
+│   │       │       │   └── 20260305_152411
+│   │       │       │       ├── plots
+│   │       │       │       │   ├── calibration.png
+│   │       │       │       │   ├── confusion_test.png
+│   │       │       │       │   ├── confusion_train.png
+│   │       │       │       │   ├── confusion_val.png
+│   │       │       │       │   ├── corr_matrix.png
+│   │       │       │       │   ├── curve_accuracy.png
+│   │       │       │       │   ├── curve_loss.png
+│   │       │       │       │   └── roc_curve.png
+│   │       │       │       ├── best_model.pt
+│   │       │       │       ├── history.csv
+│   │       │       │       ├── label_map.json
+│   │       │       │       ├── metrics_test.json
+│   │       │       │       ├── metrics_train.json
+│   │       │       │       ├── metrics_val.json
+│   │       │       │       ├── results.json
+│   │       │       │       ├── x_mean.npy
+│   │       │       │       └── x_std.npy
+│   │       │       └── groupkfold
+│   │       │           └── 20260305_152957
+│   │       │               ├── fold_4
+│   │       │               │   ├── plots
+│   │       │               │   │   ├── calibration.png
+│   │       │               │   │   ├── confusion_test.png
+│   │       │               │   │   ├── confusion_train.png
+│   │       │               │   │   ├── confusion_val.png
+│   │       │               │   │   ├── corr_matrix.png
+│   │       │               │   │   ├── curve_accuracy.png
+│   │       │               │   │   ├── curve_loss.png
+│   │       │               │   │   └── roc_curve.png
+│   │       │               │   ├── best_model.pt
+│   │       │               │   ├── history.csv
+│   │       │               │   ├── label_map.json
+│   │       │               │   ├── metrics_test.json
+│   │       │               │   ├── metrics_train.json
+│   │       │               │   ├── metrics_val.json
+│   │       │               │   ├── results.json
+│   │       │               │   ├── x_mean.npy
+│   │       │               │   └── x_std.npy
+│   │       │               └── summary.json
+│   │       ├── datasets
+│   │       │   ├── day
+│   │       │   │   ├── MachineLearningCVE
+│   │       │   │   │   ├── anomaly
+│   │       │   │   │   │   ├── test_mixed
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── train_benign
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── val_mixed
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   └── stats.json
+│   │       │   │   │   ├── binary
+│   │       │   │   │   │   ├── test
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── train
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── val
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── ML_day_stats_binary.json
+│   │       │   │   │   │   └── stats.json
+│   │       │   │   │   ├── multiclass
+│   │       │   │   │   │   ├── test
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── train
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── val
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   └── stats.json
+│   │       │   │   │   └── multiclass_grouped
+│   │       │   │   │       ├── test
+│   │       │   │   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │       │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │       ├── train
+│   │       │   │   │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │       ├── val
+│   │       │   │   │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │       │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │       └── stats.json
+│   │       │   │   └── TrafficLabelling
+│   │       │   │       ├── anomaly
+│   │       │   │       │   ├── test_mixed
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   ├── train_benign
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   ├── val_mixed
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   └── stats.json
+│   │       │   │       ├── binary
+│   │       │   │       │   ├── test
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   ├── train
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   ├── val
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   ├── stats.json
+│   │       │   │       │   └── TL_day_stats_binary.json
+│   │       │   │       ├── multiclass
+│   │       │   │       │   ├── test
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   ├── train
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   ├── val
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   └── stats.json
+│   │       │   │       └── multiclass_grouped
+│   │       │   │           ├── test
+│   │       │   │           │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │           │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │           ├── train
+│   │       │   │           │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │           ├── val
+│   │       │   │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │           │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │           └── stats.json
+│   │       │   ├── groupkfold
+│   │       │   │   ├── MachineLearningCVE
+│   │       │   │   │   ├── fold_0
+│   │       │   │   │   │   ├── anomaly
+│   │       │   │   │   │   │   ├── test_mixed
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train_benign
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val_mixed
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── binary
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── ML_kfold_stats_binary.json
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── multiclass
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   └── multiclass_grouped
+│   │       │   │   │   │       ├── test
+│   │       │   │   │   │       │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── train
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── val
+│   │       │   │   │   │       │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │       └── stats.json
+│   │       │   │   │   ├── fold_1
+│   │       │   │   │   │   ├── anomaly
+│   │       │   │   │   │   │   ├── test_mixed
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train_benign
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val_mixed
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── binary
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── multiclass
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   └── multiclass_grouped
+│   │       │   │   │   │       ├── test
+│   │       │   │   │   │       │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── train
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── val
+│   │       │   │   │   │       │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │       └── stats.json
+│   │       │   │   │   ├── fold_2
+│   │       │   │   │   │   ├── anomaly
+│   │       │   │   │   │   │   ├── test_mixed
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train_benign
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val_mixed
+│   │       │   │   │   │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── binary
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── multiclass
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   └── multiclass_grouped
+│   │       │   │   │   │       ├── test
+│   │       │   │   │   │       │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── train
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── val
+│   │       │   │   │   │       │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       └── stats.json
+│   │       │   │   │   ├── fold_3
+│   │       │   │   │   │   ├── anomaly
+│   │       │   │   │   │   │   ├── test_mixed
+│   │       │   │   │   │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train_benign
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val_mixed
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── binary
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── multiclass
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   └── multiclass_grouped
+│   │       │   │   │   │       ├── test
+│   │       │   │   │   │       │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── train
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── val
+│   │       │   │   │   │       │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │       └── stats.json
+│   │       │   │   │   ├── fold_4
+│   │       │   │   │   │   ├── anomaly
+│   │       │   │   │   │   │   ├── test_mixed
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train_benign
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val_mixed
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── binary
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── multiclass
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   └── multiclass_grouped
+│   │       │   │   │   │       ├── test
+│   │       │   │   │   │       │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── train
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── val
+│   │       │   │   │   │       │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │       └── stats.json
+│   │       │   │   │   ├── fold_5
+│   │       │   │   │   │   ├── anomaly
+│   │       │   │   │   │   │   ├── test_mixed
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train_benign
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val_mixed
+│   │       │   │   │   │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── binary
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── multiclass
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   └── multiclass_grouped
+│   │       │   │   │   │       ├── test
+│   │       │   │   │   │       │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── train
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── val
+│   │       │   │   │   │       │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       └── stats.json
+│   │       │   │   │   ├── fold_6
+│   │       │   │   │   │   ├── anomaly
+│   │       │   │   │   │   │   ├── test_mixed
+│   │       │   │   │   │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train_benign
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val_mixed
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── binary
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   ├── multiclass
+│   │       │   │   │   │   │   ├── test
+│   │       │   │   │   │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── train
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── val
+│   │       │   │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── stats.json
+│   │       │   │   │   │   └── multiclass_grouped
+│   │       │   │   │   │       ├── test
+│   │       │   │   │   │       │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── train
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │       │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │       ├── val
+│   │       │   │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │       └── stats.json
+│   │       │   │   │   └── fold_7
+│   │       │   │   │       ├── anomaly
+│   │       │   │   │       │   ├── test_mixed
+│   │       │   │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── train_benign
+│   │       │   │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │       │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── val_mixed
+│   │       │   │   │       │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │       │   └── stats.json
+│   │       │   │   │       ├── binary
+│   │       │   │   │       │   ├── test
+│   │       │   │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── train
+│   │       │   │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │       │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── val
+│   │       │   │   │       │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │       │   └── stats.json
+│   │       │   │   │       ├── multiclass
+│   │       │   │   │       │   ├── test
+│   │       │   │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── train
+│   │       │   │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │       │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── val
+│   │       │   │   │       │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │       │   └── stats.json
+│   │       │   │   │       └── multiclass_grouped
+│   │       │   │   │           ├── test
+│   │       │   │   │           │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │           ├── train
+│   │       │   │   │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │           │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │           │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │           │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │           │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │           ├── val
+│   │       │   │   │           │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │           └── stats.json
+│   │       │   │   └── TrafficLabelling
+│   │       │   │       ├── fold_0
+│   │       │   │       │   ├── anomaly
+│   │       │   │       │   │   ├── test_mixed
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train_benign
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val_mixed
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── binary
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── stats.json
+│   │       │   │       │   │   └── TL_kfold_stats_binary.json
+│   │       │   │       │   ├── multiclass
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   └── multiclass_grouped
+│   │       │   │       │       ├── test
+│   │       │   │       │       │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │       ├── train
+│   │       │   │       │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │       ├── val
+│   │       │   │       │       │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │       └── stats.json
+│   │       │   │       ├── fold_1
+│   │       │   │       │   ├── anomaly
+│   │       │   │       │   │   ├── test_mixed
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train_benign
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val_mixed
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── binary
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── multiclass
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   └── multiclass_grouped
+│   │       │   │       │       ├── test
+│   │       │   │       │       │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │       ├── train
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │       ├── val
+│   │       │   │       │       │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │       └── stats.json
+│   │       │   │       ├── fold_2
+│   │       │   │       │   ├── anomaly
+│   │       │   │       │   │   ├── test_mixed
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train_benign
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val_mixed
+│   │       │   │       │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── binary
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── multiclass
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   └── multiclass_grouped
+│   │       │   │       │       ├── test
+│   │       │   │       │       │   └── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │       ├── train
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │       ├── val
+│   │       │   │       │       │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       └── stats.json
+│   │       │   │       ├── fold_3
+│   │       │   │       │   ├── anomaly
+│   │       │   │       │   │   ├── test_mixed
+│   │       │   │       │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train_benign
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val_mixed
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── binary
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── multiclass
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   └── multiclass_grouped
+│   │       │   │       │       ├── test
+│   │       │   │       │       │   └── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       ├── train
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │       ├── val
+│   │       │   │       │       │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │       └── stats.json
+│   │       │   │       ├── fold_4
+│   │       │   │       │   ├── anomaly
+│   │       │   │       │   │   ├── test_mixed
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train_benign
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val_mixed
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── binary
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── multiclass
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   └── multiclass_grouped
+│   │       │   │       │       ├── test
+│   │       │   │       │       │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │       ├── train
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │       ├── val
+│   │       │   │       │       │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │       └── stats.json
+│   │       │   │       ├── fold_5
+│   │       │   │       │   ├── anomaly
+│   │       │   │       │   │   ├── test_mixed
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train_benign
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val_mixed
+│   │       │   │       │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── binary
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── multiclass
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   └── multiclass_grouped
+│   │       │   │       │       ├── test
+│   │       │   │       │       │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │       ├── train
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │       ├── val
+│   │       │   │       │       │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       └── stats.json
+│   │       │   │       ├── fold_6
+│   │       │   │       │   ├── anomaly
+│   │       │   │       │   │   ├── test_mixed
+│   │       │   │       │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train_benign
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val_mixed
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── binary
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   ├── multiclass
+│   │       │   │       │   │   ├── test
+│   │       │   │       │   │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── train
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── val
+│   │       │   │       │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── stats.json
+│   │       │   │       │   └── multiclass_grouped
+│   │       │   │       │       ├── test
+│   │       │   │       │       │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       ├── train
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │       │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │       ├── val
+│   │       │   │       │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │       └── stats.json
+│   │       │   │       └── fold_7
+│   │       │   │           ├── anomaly
+│   │       │   │           │   ├── test_mixed
+│   │       │   │           │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │           │   ├── train_benign
+│   │       │   │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │           │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   ├── val_mixed
+│   │       │   │           │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │           │   └── stats.json
+│   │       │   │           ├── binary
+│   │       │   │           │   ├── test
+│   │       │   │           │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │           │   ├── train
+│   │       │   │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │           │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   ├── val
+│   │       │   │           │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │           │   └── stats.json
+│   │       │   │           ├── multiclass
+│   │       │   │           │   ├── test
+│   │       │   │           │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │           │   ├── train
+│   │       │   │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │           │   │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   ├── val
+│   │       │   │           │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │           │   └── stats.json
+│   │       │   │           └── multiclass_grouped
+│   │       │   │               ├── test
+│   │       │   │               │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │               ├── train
+│   │       │   │               │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │               │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │               │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │               │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │               │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │               │   └── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │               ├── val
+│   │       │   │               │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │               └── stats.json
+│   │       │   ├── random
+│   │       │   │   ├── MachineLearningCVE
+│   │       │   │   │   ├── anomaly
+│   │       │   │   │   │   ├── test_mixed
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── train_benign
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── val_mixed
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   └── stats.json
+│   │       │   │   │   ├── binary
+│   │       │   │   │   │   ├── test
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── train
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── val
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── ML_random_stats_binary.json
+│   │       │   │   │   │   └── stats.json
+│   │       │   │   │   ├── multiclass
+│   │       │   │   │   │   ├── test
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── train
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   ├── val
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │   │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │   │   └── stats.json
+│   │       │   │   │   └── multiclass_grouped
+│   │       │   │   │       ├── test
+│   │       │   │   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │       ├── train
+│   │       │   │   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │       ├── val
+│   │       │   │   │       │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │   │       │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │   │       │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │   │       └── stats.json
+│   │       │   │   └── TrafficLabelling
+│   │       │   │       ├── anomaly
+│   │       │   │       │   ├── test_mixed
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   ├── train_benign
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   ├── val_mixed
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   └── stats.json
+│   │       │   │       ├── binary
+│   │       │   │       │   ├── test
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   ├── train
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   ├── val
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   ├── stats.json
+│   │       │   │       │   └── TL_random_stats_binary.json
+│   │       │   │       ├── multiclass
+│   │       │   │       │   ├── test
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   ├── train
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   ├── val
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │       │   │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │       │   │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │       │   └── stats.json
+│   │       │   │       └── multiclass_grouped
+│   │       │   │           ├── test
+│   │       │   │           │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │           │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │           │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │           │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │           │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │           ├── train
+│   │       │   │           │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │           │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │           │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │           │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │           │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │           ├── val
+│   │       │   │           │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.parquet
+│   │       │   │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.parquet
+│   │       │   │           │   ├── Friday-WorkingHours-Morning.pcap_ISCX.parquet
+│   │       │   │           │   ├── Monday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.parquet
+│   │       │   │           │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.parquet
+│   │       │   │           │   ├── Tuesday-WorkingHours.pcap_ISCX.parquet
+│   │       │   │           │   └── Wednesday-workingHours.pcap_ISCX.parquet
+│   │       │   │           └── stats.json
+│   │       │   └── sequence
+│   │       │       ├── day
+│   │       │       │   └── TrafficLabelling
+│   │       │       │       └── binary
+│   │       │       │           ├── test
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0001.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0002.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0004.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0001.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0002.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0004.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0005.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0001.parquet
+│   │       │       │           │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0002.parquet
+│   │       │       │           │   └── Friday-WorkingHours-Morning.pcap_ISCX__part0003.parquet
+│   │       │       │           ├── train
+│   │       │       │           │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   ├── Monday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   ├── Monday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── Monday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   ├── Monday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   ├── Monday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   ├── Monday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   ├── Monday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   ├── Monday-WorkingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   ├── Tuesday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   ├── Tuesday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── Tuesday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   ├── Tuesday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   ├── Tuesday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   ├── Tuesday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   ├── Tuesday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0010.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0011.parquet
+│   │       │       │           │   ├── Wednesday-workingHours.pcap_ISCX__part0012.parquet
+│   │       │       │           │   └── Wednesday-workingHours.pcap_ISCX__part0013.parquet
+│   │       │       │           ├── val
+│   │       │       │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │       │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0001.parquet
+│   │       │       │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0002.parquet
+│   │       │       │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0004.parquet
+│   │       │       │           │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0005.parquet
+│   │       │       │           │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │       │           │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0001.parquet
+│   │       │       │           │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0002.parquet
+│   │       │       │           │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0003.parquet
+│   │       │       │           ├── sequence_meta.json
+│   │       │       │           └── sequence_stats.json
+│   │       │       ├── groupkfold
+│   │       │       │   └── TrafficLabelling
+│   │       │       │       └── binary
+│   │       │       │           ├── fold_0
+│   │       │       │           │   ├── test
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0004.parquet
+│   │       │       │           │   ├── train
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0010.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0011.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0012.parquet
+│   │       │       │           │   │   └── Wednesday-workingHours.pcap_ISCX__part0013.parquet
+│   │       │       │           │   ├── val
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0005.parquet
+│   │       │       │           │   ├── sequence_meta.json
+│   │       │       │           │   └── sequence_stats.json
+│   │       │       │           ├── fold_1
+│   │       │       │           │   ├── test
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0005.parquet
+│   │       │       │           │   ├── train
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0010.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0011.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0012.parquet
+│   │       │       │           │   │   └── Wednesday-workingHours.pcap_ISCX__part0013.parquet
+│   │       │       │           │   ├── val
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   └── Friday-WorkingHours-Morning.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── sequence_meta.json
+│   │       │       │           │   └── sequence_stats.json
+│   │       │       │           ├── fold_2
+│   │       │       │           │   ├── test
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   └── Friday-WorkingHours-Morning.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── train
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0010.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0011.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0012.parquet
+│   │       │       │           │   │   └── Wednesday-workingHours.pcap_ISCX__part0013.parquet
+│   │       │       │           │   ├── val
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   └── Monday-WorkingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   ├── sequence_meta.json
+│   │       │       │           │   └── sequence_stats.json
+│   │       │       │           ├── fold_3
+│   │       │       │           │   ├── test
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   └── Monday-WorkingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   ├── train
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0010.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0011.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0012.parquet
+│   │       │       │           │   │   └── Wednesday-workingHours.pcap_ISCX__part0013.parquet
+│   │       │       │           │   ├── val
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0005.parquet
+│   │       │       │           │   ├── sequence_meta.json
+│   │       │       │           │   └── sequence_stats.json
+│   │       │       │           ├── fold_4
+│   │       │       │           │   ├── test
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   └── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0005.parquet
+│   │       │       │           │   ├── train
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0010.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0011.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0012.parquet
+│   │       │       │           │   │   └── Wednesday-workingHours.pcap_ISCX__part0013.parquet
+│   │       │       │           │   ├── val
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── sequence_meta.json
+│   │       │       │           │   └── sequence_stats.json
+│   │       │       │           ├── fold_5
+│   │       │       │           │   ├── test
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── train
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0010.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0011.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0012.parquet
+│   │       │       │           │   │   └── Wednesday-workingHours.pcap_ISCX__part0013.parquet
+│   │       │       │           │   ├── val
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   └── Tuesday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   ├── sequence_meta.json
+│   │       │       │           │   └── sequence_stats.json
+│   │       │       │           ├── fold_6
+│   │       │       │           │   ├── test
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   └── Tuesday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   ├── train
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Monday-WorkingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   └── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0003.parquet
+│   │       │       │           │   ├── val
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0002.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0003.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0004.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0005.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0006.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0007.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0008.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0009.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0010.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0011.parquet
+│   │       │       │           │   │   ├── Wednesday-workingHours.pcap_ISCX__part0012.parquet
+│   │       │       │           │   │   └── Wednesday-workingHours.pcap_ISCX__part0013.parquet
+│   │       │       │           │   ├── sequence_meta.json
+│   │       │       │           │   └── sequence_stats.json
+│   │       │       │           └── fold_7
+│   │       │       │               ├── test
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0002.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0003.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0004.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0005.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0006.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0007.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0008.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0009.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0010.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0011.parquet
+│   │       │       │               │   ├── Wednesday-workingHours.pcap_ISCX__part0012.parquet
+│   │       │       │               │   └── Wednesday-workingHours.pcap_ISCX__part0013.parquet
+│   │       │       │               ├── train
+│   │       │       │               │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0001.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0002.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0003.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0004.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0005.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0001.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0002.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0003.parquet
+│   │       │       │               │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │               │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │               │   ├── Monday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │               │   ├── Monday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │               │   ├── Monday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │               │   ├── Monday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │               │   ├── Monday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │               │   ├── Monday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │               │   ├── Monday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │               │   ├── Monday-WorkingHours.pcap_ISCX__part0009.parquet
+│   │       │       │               │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │       │               │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0001.parquet
+│   │       │       │               │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0002.parquet
+│   │       │       │               │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0003.parquet
+│   │       │       │               │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0004.parquet
+│   │       │       │               │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0005.parquet
+│   │       │       │               │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │       │               │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0001.parquet
+│   │       │       │               │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0002.parquet
+│   │       │       │               │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0003.parquet
+│   │       │       │               │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │       │               │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │       │               │   ├── Tuesday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │       │               │   ├── Tuesday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │       │               │   ├── Tuesday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │       │               │   ├── Tuesday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │       │               │   ├── Tuesday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │       │               │   ├── Tuesday-WorkingHours.pcap_ISCX__part0007.parquet
+│   │       │       │               │   └── Tuesday-WorkingHours.pcap_ISCX__part0008.parquet
+│   │       │       │               ├── val
+│   │       │       │               │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0001.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0002.parquet
+│   │       │       │               │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0003.parquet
+│   │       │       │               │   └── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0004.parquet
+│   │       │       │               ├── sequence_meta.json
+│   │       │       │               └── sequence_stats.json
+│   │       │       └── random
+│   │       │           └── TrafficLabelling
+│   │       │               └── binary
+│   │       │                   ├── test
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │                   │   └── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │                   ├── train
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0002.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0003.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0002.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0003.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0002.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0006.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0002.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0003.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0002.parquet
+│   │       │                   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0002.parquet
+│   │       │                   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0003.parquet
+│   │       │                   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0004.parquet
+│   │       │                   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0005.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0002.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0003.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0004.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0005.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0006.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0007.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0008.parquet
+│   │       │                   │   └── Wednesday-workingHours.pcap_ISCX__part0009.parquet
+│   │       │                   ├── val
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Friday-WorkingHours-Morning.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Monday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0000.parquet
+│   │       │                   │   ├── Tuesday-WorkingHours.pcap_ISCX__part0001.parquet
+│   │       │                   │   ├── Wednesday-workingHours.pcap_ISCX__part0000.parquet
+│   │       │                   │   └── Wednesday-workingHours.pcap_ISCX__part0001.parquet
+│   │       │                   ├── sequence_meta.json
+│   │       │                   └── sequence_stats.json
+│   │       ├── compare_models.py
+│   │       ├── data_loader.py
+│   │       ├── metrics.py
+│   │       ├── models_torch.py
+│   │       ├── prepare_dataset.py
+│   │       ├── prepare_sequence_dataset.py
+│   │       ├── reporting.py
+│   │       ├── sequence_loader.py
+│   │       ├── train_anomaly_isoforest.py
+│   │       ├── train_ml_binary_fttransformer.py
+│   │       ├── train_ml_binary_hgb.py
+│   │       ├── train_ml_binary_mlp.py
+│   │       ├── train_ml_multiclass_hgb.py
+│   │       ├── train_seq_tl_gru.py
+│   │       ├── train_tl_binary_hgb.py
+│   │       ├── train_tl_binary_logreg_torch.py
+│   │       └── train_utils.py
+│   └── scripts
+│       ├── cic_run_all_models.ps1
+│       ├── print_tree.py
+│       └── run_analysis_cic.ps1
+└── README.md
