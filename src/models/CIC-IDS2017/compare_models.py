@@ -105,10 +105,31 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
 
     df.to_csv(out_dir / "comparison.csv", index=False)
-    (out_dir / "comparison.md").write_text(df.to_markdown(index=False), encoding="utf-8")
+
+    # Internal markdown export (no tabulate dependency)
+    def _df_to_md(dataframe: pd.DataFrame) -> str:
+        cols = list(dataframe.columns)
+        header = "| " + " | ".join(str(c) for c in cols) + " |"
+        sep = "| " + " | ".join("---" for _ in cols) + " |"
+        rows_md = []
+        for _, row in dataframe.iterrows():
+            vals = []
+            for c in cols:
+                v = row[c]
+                if pd.isna(v):
+                    vals.append("")
+                elif isinstance(v, float):
+                    vals.append(f"{v:.4f}")
+                else:
+                    vals.append(str(v))
+            rows_md.append("| " + " | ".join(vals) + " |")
+        return "\n".join([header, sep] + rows_md)
+
+    md_text = _df_to_md(df)
+    (out_dir / "comparison.md").write_text(md_text, encoding="utf-8")
 
     print("\n=== MODEL COMPARISON ===")
-    print(df.to_markdown(index=False))
+    print(md_text)
     print("\nSaved:", out_dir)
 
 

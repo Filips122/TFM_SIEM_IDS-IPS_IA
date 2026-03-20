@@ -5,9 +5,8 @@ import argparse
 import joblib
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
-from sklearn.preprocessing import LabelEncoder
 
-from train_utils import artifacts_root, load_splits, now_run_id, save_json
+from train_utils import artifacts_root, fit_label_encoder, load_splits, now_run_id, save_json
 from reporting import save_metrics_and_plots, plot_corr_matrix
 
 
@@ -21,7 +20,7 @@ def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs
         seed=42,
     )
 
-    le = LabelEncoder().fit(tr.y.astype(str))
+    le = fit_label_encoder(tr.y)
     ytr = le.transform(tr.y.astype(str))
     yva = le.transform(va.y.astype(str))
     yte = le.transform(te.y.astype(str))
@@ -98,7 +97,7 @@ def main():
             raise SystemExit("groupkfold requiere --all_folds o --fold.")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
-        out = run_one("groupkfold", f, args.sample_frac, fold_dir)
+        out = run_one("groupkfold", f, args.sample_frac, args.epochs, fold_dir)
         save_json(fold_dir / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
         summary[f"fold_{f}"] = {"best_iter": out["best_iter"], "test": out["test"]}
 

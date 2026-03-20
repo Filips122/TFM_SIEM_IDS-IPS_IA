@@ -297,6 +297,12 @@ def save_metrics_and_plots(
     """
     from sklearn.metrics import log_loss, recall_score
 
+    def _safe_log_loss(y, p, n_classes):
+        try:
+            return float(log_loss(y, p, labels=list(range(n_classes))))
+        except ValueError:
+            return None
+
     plots_dir = root / "plots"
     ensure_dir(plots_dir)
 
@@ -321,7 +327,7 @@ def save_metrics_and_plots(
         "recall_pos": recall_pos,
         "confusion": rep.confusion.tolist(),
         "classes": list(map(str, class_names)),
-        "logloss": float(log_loss(y_true_int, proba, labels=list(range(len(class_names))))),
+        "logloss": _safe_log_loss(y_true_int, proba, len(class_names)),
     }
 
     # confusion plot

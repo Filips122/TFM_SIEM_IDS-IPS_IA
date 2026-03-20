@@ -106,7 +106,7 @@ def load_sequence_split(
     if sample_frac is not None:
         df = df.sample(frac=sample_frac, random_state=seed)
 
-    y = df["target"].to_numpy(copy=False)
+    y = df["target"].to_numpy(copy=True)
 
     cols, T, feat_names = parse_seq_columns(df)
     Xflat = df[cols].to_numpy(dtype=dtype, copy=False)

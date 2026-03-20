@@ -72,7 +72,7 @@ def main():
             raise SystemExit("groupkfold requiere --all_folds o --fold.")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
-        out = run_one(args.dataset, "groupkfold", f)
+        out = run_one(args.dataset, "groupkfold", f, args.epochs)
         joblib.dump(out["model"], fold_dir / "model.joblib")
         save_json(fold_dir / "results.json", {"val": out["val"], "test": out["test"], "best_epoch": None})
         summary[f"fold_{f}"] = {"val": out["val"], "test": out["test"]}
