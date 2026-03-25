@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from __future__ import annotations
+
 import argparse
+
 import joblib
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
 
-from train_utils import artifacts_root, fit_label_encoder, load_splits, now_run_id, save_json, save_label_encoder
-from reporting import save_metrics_and_plots, plot_corr_matrix
+from data_loader import load_splits
+from reporting import plot_corr_matrix, save_metrics_and_plots
+from train_utils import artifacts_root, fit_label_encoder, now_run_id, save_json, save_label_encoder
 
 
 def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs: int, out_dir) -> dict:
     tr, va, te = load_splits(
         split_mode=split_mode,
-        dataset="MachineLearningCVE",
+        dataset="NUSW-NB15",
         pipeline="binary",
         fold=fold,
         sample_frac=sample_frac,
@@ -62,34 +66,34 @@ def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs
     }
 
 
-def main():
+def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--split_mode", required=True, choices=["day", "groupkfold"])
+    ap.add_argument("--split_mode", default="random", choices=["random", "groupkfold", "official"])
     ap.add_argument("--all_folds", action="store_true")
     ap.add_argument("--fold", type=int, default=None)
+    ap.add_argument("--n_folds", type=int, default=8)
     ap.add_argument("--sample_frac", type=float, default=None)
     ap.add_argument("--epochs", type=int, default=200)
-    ap.add_argument("--verbose", type=int, default=1)
     args = ap.parse_args()
 
-    model_name = "offline_ML_binary_hgb"
+    model_name = "offline_NUSW_binary_hgb"
     run_id = now_run_id()
     root = artifacts_root(model_name, args.split_mode, run_id)
 
-    if args.split_mode == "day":
-        out = run_one("day", None, args.sample_frac, args.epochs, root)
+    if args.split_mode != "groupkfold":
+        out = run_one(args.split_mode, None, args.sample_frac, args.epochs, root)
         save_json(root / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
         print("Saved:", root)
         return
 
     if (not args.all_folds) and (args.fold is None):
-        args.fold = 4
+        args.fold = 0
 
-    folds = range(8) if args.all_folds else [args.fold]
+    folds = range(args.n_folds) if args.all_folds else [args.fold]
     summary = {}
     for f in folds:
         if f is None:
-            raise SystemExit("groupkfold requiere --all_folds o --fold.")
+            raise SystemExit("groupkfold requires --all_folds or --fold")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
         out = run_one("groupkfold", f, args.sample_frac, args.epochs, fold_dir)
