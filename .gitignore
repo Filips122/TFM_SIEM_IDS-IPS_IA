@@ -5,6 +5,8 @@ src/models/CIC-IDS2017/datasets/
 src/models/CIC-IDS2017/artifacts/
 src/models/UNSW-NB15/datasets/
 src/models/UNSW-NB15/artifacts/
+src/models/UGR16/artifacts/
+src/models/UGR16/datasets/
 src/models/TON_IoT/datasets/
 src/models/TON_IoT/artifacts/
 src/scripts/tree.txt
