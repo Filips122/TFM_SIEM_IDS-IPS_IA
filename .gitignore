@@ -3,10 +3,11 @@ out/
 src/datasets/
 src/models/CIC-IDS2017/datasets/
 src/models/CIC-IDS2017/artifacts/
-src/models/NUSW-NB15/datasets/
-src/models/NUSW-NB15/artifacts/
+src/models/UNSW-NB15/datasets/
+src/models/UNSW-NB15/artifacts/
 src/models/TON_IoT/datasets/
 src/models/TON_IoT/artifacts/
+src/scripts/tree.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

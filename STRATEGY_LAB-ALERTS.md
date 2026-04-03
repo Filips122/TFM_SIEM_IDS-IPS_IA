@@ -1,0 +1,431 @@
+# STRATEGY_LAB-ALERTS
+
+## Objective
+
+This document defines the implementation strategy for adding a **LAB-ALERTS** experimentation pipeline to the project, following the same general structure already used for CIC-IDS2017 and NUSW-NB15:
+
+- reproducible preprocessing from the raw alerts dataset,
+- explicit split strategies,
+- reusable tabular datasets in Parquet format,
+- comparable model training and evaluation,
+- artifact persistence for later comparison.
+
+The LAB-ALERTS pipeline is intended to work on the local Wazuh alert export stored in:
+
+```text
+out/LAB-ALERTS/alerts.json
+```
+
+Unlike CIC-IDS2017 or NUSW-NB15, this source is a newline-delimited JSON alert stream and does **not** contain an explicit ground-truth `label` column. For that reason, the LAB-ALERTS strategy must include:
+
+- a formal target derivation policy for supervised experiments,
+- an anomaly-first baseline that does not depend on labels,
+- temporal aggregation and grouping logic that fits alert data rather than raw packet-flow CSVs.
+
+---
+
+## End-to-End Flow
+
+1. Raw Wazuh alerts are read from `alerts.json` line by line.
+2. Nested JSON fields are normalized into a consistent tabular representation.
+3. Timestamps are parsed and alerts are grouped into fixed time windows.
+4. Entity-level and rule-level features are aggregated per window.
+5. Targets are generated depending on the task: binary, multiclass, or anomaly.
+6. Intermediate datasets are written to Parquet with a folder structure organized by split mode.
+7. Training scripts load those Parquet files, build `X` and `y`, and train the corresponding model.
+8. Metrics, plots, and confusion matrices are computed.
+9. Artifacts versioned by date are stored in `artifacts/`.
+10. `compare_models.py` consolidates test metrics from all runs and produces the final comparison.
+
+---
+
+## 1. Data Source
+
+### Input root
+
+The raw dataset root for this pipeline is:
+
+```text
+out/LAB-ALERTS/
+```
+
+### Primary input file
+
+The current source file is:
+
+- `out/LAB-ALERTS/alerts.json`
+
+This file is expected to be newline-delimited JSON, where each line is a full Wazuh alert event.
+
+### Alert structure summary
+
+Based on the current dataset, the relevant fields include:
+
+- `timestamp`
+- `rule.id`
+- `rule.level`
+- `rule.description`
+- `rule.groups`
+- `rule.firedtimes`
+- `rule.mitre.*`
+- `agent.id`
+- `agent.name`
+- `agent.ip`
+- `data.srcip`
+- `data.srcport`
+- `data.srcuser`
+- `data.dstuser`
+- `decoder.name`
+- `predecoder.program_name`
+- `location`
+- `full_log`
+
+These fields provide enough information to support aggregation-based alert analytics, even though they do not provide explicit benign/attack labels.
+
+---
+
+## 2. Implementation Scope for Version 1
+
+The first LAB-ALERTS version should mirror the **tabular** and **artifact-driven** branch of the existing project, not the full end-state SIEM integration.
+
+### Included in version 1
+
+- JSON alert parsing and normalization,
+- time-window aggregation,
+- Parquet dataset generation,
+- binary target construction,
+- multiclass target construction,
+- anomaly dataset construction,
+- random split strategy,
+- grouped k-fold split strategy,
+- date-based temporal split strategy,
+- baseline training scripts,
+- artifact persistence,
+- final comparison report.
+
+### Excluded from version 1
+
+- real-time streaming ingestion from Wazuh,
+- alert reinjection into the SIEM,
+- automated response logic,
+- sequence models,
+- GRU/LSTM pipelines,
+- multi-source correlation with Zeek or Suricata,
+- online feedback or analyst-in-the-loop suppression.
+
+These capabilities may be added later, but they are out of scope for the initial LAB-ALERTS implementation.
+
+---
+
+## 3. Input Normalization and Aggregation
+
+The preprocessing script should be implemented as a dataset-specific parallel to `src/models/NUSW-NB15/prepare_dataset.py`, but adapted for NDJSON alert data.
+
+### 3.1 JSON reading
+
+The script should read `alerts.json` line by line instead of loading the full file into memory at once.
+
+Why:
+
+- the file may grow significantly in later exports,
+- alert payloads contain nested dictionaries and optional fields,
+- streaming-style parsing is a better fit for log data.
+
+### 3.2 Field normalization
+
+The preprocessing stage should flatten nested JSON fields into stable column names such as:
+
+- `timestamp`
+- `rule_id`
+- `rule_level`
+- `rule_description`
+- `rule_group_count`
+- `agent_id`
+- `agent_name`
+- `agent_ip`
+- `src_ip`
+- `src_port`
+- `src_user`
+- `dst_user`
+- `decoder_name`
+- `program_name`
+- `location`
+
+It should also normalize missing values consistently and preserve categorical values needed for aggregation.
+
+### 3.3 Timestamp parsing
+
+The `timestamp` field should be parsed with timezone awareness.
+
+The preprocessing stage should generate temporal helper columns such as:
+
+- `event_ts`
+- `event_date`
+- `event_hour`
+- `window_start`
+
+### 3.4 Windowed aggregation
+
+The raw alert event is not the best unit for classical tabular models. The main training table should therefore be generated by aggregating alerts into fixed windows.
+
+Recommended default:
+
+- window size: `1 minute`
+- aggregation key: `agent.id`
+- optional secondary grouping: `src_ip` or `(agent.id, src_ip)`
+
+This produces a more realistic input for anomaly detection and alert-level prioritization.
+
+### 3.5 Candidate aggregated features
+
+The first version should derive features such as:
+
+- total alert count in the window,
+- unique rule count,
+- unique source IP count,
+- unique source user count,
+- unique destination user count,
+- mean, max, and sum of `rule_level`,
+- mean, max, and sum of `rule_firedtimes`,
+- counts by important rule groups,
+- counts by important decoders,
+- counts by important MITRE tactics,
+- first-seen or novelty indicators for `src_ip`,
+- first-seen or novelty indicators for `rule_id`,
+- ratio of authentication-related alerts,
+- ratio of system/service alerts,
+- ratio of MITRE-tagged alerts.
+
+The exact set can evolve, but the stored Parquet dataset must keep a stable and reproducible feature order.
+
+---
+
+## 4. Target Construction
+
+The LAB-ALERTS dataset has no native ground-truth label, so target generation must be defined explicitly and kept reproducible.
+
+### 4.1 Binary pipeline
+
+The binary pipeline should not depend only on `rule.level`, because operational system alerts can have the same severity as clearly security-relevant authentication failures.
+
+The recommended default policy is semantic labeling:
+
+- `ATTACK` for windows dominated by groups such as `authentication_failed`, `invalid_login`, `sshd`, `pam`, or MITRE-tagged brute-force style activity,
+- `BENIGN` for windows dominated by operational or service-health alerts such as pure `systemd` failures without attack semantics,
+- mixed windows should be assigned by configurable majority or weighted rule logic.
+
+This policy must be implemented in code as a transparent, documented heuristic rather than hidden ad hoc logic.
+
+### 4.2 Multiclass pipeline
+
+The multiclass pipeline should avoid using raw `rule.id` as the default target because this can create unnecessary fragmentation.
+
+Recommended default grouped classes:
+
+- `CredentialAccess`
+- `LateralMovement`
+- `AuthenticationFailure`
+- `ServiceFailure`
+- `SystemAlert`
+- `OtherAlert`
+
+Priority should be given to `rule.mitre.tactic` when present, with controlled fallbacks based on `rule.groups` and selected rule-family mappings.
+
+### 4.3 Anomaly pipeline
+
+The anomaly pipeline should not depend on supervised labels.
+
+Recommended policy:
+
+- `train` contains baseline windows selected as low-risk or routine,
+- `val` and `test` contain mixed windows,
+- anomaly scoring is done with models such as `IsolationForest`.
+
+If the binary target policy later changes, the anomaly pipeline should still remain usable.
+
+---
+
+## 5. Split Strategies
+
+`prepare_dataset.py` should support three split families for LAB-ALERTS.
+
+### 5.1 `random`
+
+This mode should generate reproducible row-level splits over aggregated windows.
+
+Default ratios:
+
+- `train=0.70`
+- `val=0.15`
+- `test=0.15`
+
+This provides a first quick baseline.
+
+### 5.2 `groupkfold`
+
+This mode should prevent leakage across strongly related alerts.
+
+Recommended default grouping key:
+
+- `(src_ip, agent_id)`
+
+Why:
+
+- grouping only by `agent_id` likely produces too few groups,
+- grouping only by `src_ip` can still leak the same source-target context across splits,
+- `(src_ip, agent_id)` is a more conservative generalization test.
+
+If `src_ip` is missing for too many records, the implementation should fall back to `agent_id` or another documented grouping key and persist that decision in metadata.
+
+### 5.3 `date`
+
+This mode should preserve temporal ordering.
+
+Preferred logic:
+
+- use calendar-day grouping when enough distinct days exist,
+- otherwise fall back to ordered hour buckets,
+- if needed, fall back again to percentile-based time splits.
+
+This is necessary because the current LAB-ALERTS export spans limited time, and a strict day-only split may be too weak or too sparse.
+
+The actual split policy used must be written to metadata so later evaluation remains defensible.
+
+---
+
+## 6. Writing the Tabular Dataset to Parquet
+
+The output of `prepare_dataset.py` should be written to:
+
+```text
+src/models/LAB-ALERTS/datasets/
+```
+
+### 6.1 Output structure
+
+For supervised pipelines:
+
+```text
+datasets/<split_mode>/LAB-ALERTS/<pipeline>/<split>/*.parquet
+```
+
+For `groupkfold`:
+
+```text
+datasets/groupkfold/LAB-ALERTS/fold_k/<pipeline>/<split>/*.parquet
+```
+
+For anomalies:
+
+```text
+datasets/<split_mode>/LAB-ALERTS/anomaly/train_benign/*.parquet
+datasets/<split_mode>/LAB-ALERTS/anomaly/val_mixed/*.parquet
+datasets/<split_mode>/LAB-ALERTS/anomaly/test_mixed/*.parquet
+```
+
+### 6.2 Persisted metadata
+
+The preprocessing script should write:
+
+- `stats.json`
+- `label_map.json`
+- split-policy metadata for `groupkfold` and `date`
+- optional anomaly-policy metadata when fallback logic is used.
+
+The metadata should include split sizes, label distributions, and any fallback decisions taken by the pipeline.
+
+---
+
+## 7. Training Stack
+
+The initial LAB-ALERTS training stack should follow the simpler NUSW tabular branch first.
+
+### 7.1 Required baseline models
+
+The first implementation should include:
+
+- `train_anomaly_isoforest.py`
+- `train_ml_binary_hgb.py`
+- `train_ml_multiclass_hgb.py`
+- `compare_models.py`
+
+### 7.2 Optional next models
+
+After the datasets are validated, the following may be added:
+
+- `train_ml_binary_mlp.py`
+- `train_ml_binary_fttransformer.py`
+
+These should only be added after the baseline HGB and anomaly paths are stable.
+
+---
+
+## 8. Artifacts and Reporting
+
+The LAB-ALERTS pipeline should follow the same artifact conventions already used in the repository.
+
+Expected outputs per run:
+
+- metrics JSON files for train, validation, and test,
+- confusion matrices for supervised tasks,
+- anomaly score plots for unsupervised tasks,
+- model file,
+- scaler statistics,
+- label encoder where relevant,
+- timestamped artifact directories.
+
+Comparison outputs should include:
+
+- `comparison.csv`
+- `comparison.md`
+- aggregated fold summaries when `groupkfold` is used,
+- skipped or missing metrics diagnostics.
+
+---
+
+## 9. Validation and Quality Controls
+
+The LAB-ALERTS implementation should include explicit validation checks.
+
+Minimum checks:
+
+- schema consistency across saved splits,
+- stable feature ordering across train, val, and test,
+- reproducible label mappings,
+- no leakage of grouped keys inside the same fold,
+- correct temporal ordering for date-based splits,
+- explicit handling of empty splits or single-class splits,
+- anomaly-train baseline consistency.
+
+This matters because the source data is derived from alerts rather than curated benchmark CSVs.
+
+---
+
+## 10. Recommended Implementation Order
+
+The LAB-ALERTS work should be implemented in this order:
+
+1. Create strategy and TODO documents.
+2. Implement `prepare_dataset.py` for alert parsing and aggregation.
+3. Add `random`, `groupkfold`, and `date` split support.
+4. Add `data_loader.py`, `train_utils.py`, `metrics.py`, and `reporting.py`.
+5. Implement anomaly `IsolationForest` baseline.
+6. Implement binary HGB baseline.
+7. Implement multiclass HGB baseline.
+8. Add `compare_models.py`.
+9. Add orchestration script under `src/scripts`.
+10. Run end-to-end validation for all split modes.
+
+---
+
+## Final Position
+
+LAB-ALERTS should be treated as a **windowed alert analytics dataset**, not as a raw packet-flow benchmark.
+
+The correct first version is therefore:
+
+- aggregation-first,
+- anomaly-ready,
+- explicit about target heuristics,
+- reproducible in its split and artifact logic,
+- aligned with the existing CIC and NUSW project conventions.
