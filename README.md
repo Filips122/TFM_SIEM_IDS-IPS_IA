@@ -64,3 +64,33 @@ python .\src\models\NUSW-NB15\evaluate_train_test_network.py
 .\src\scripts\nusw_run_all_models.ps1 -Modes random,groupkfold,official -AllGroupFolds -SkipBinaryMlp
 
 -------------
+
+UGR16
+
+python .\src\models\UGR16\prepare_dataset.py --split_mode date --binary_balance stratified_downsample
+
+python .\src\models\UGR16\prepare_dataset.py --split_mode random --binary_balance stratified_downsample --seed 42
+
+python .\src\models\UGR16\prepare_dataset.py --split_mode groupkfold --binary_balance stratified_downsample --all_folds --n_folds 8
+
+python .\src\models\UGR16\validate_datasets.py --modes date random groupkfold
+
+python .\src\models\UGR16\train_ml_binary_hgb.py --split_mode date --epochs 200
+
+python .\src\models\UGR16\train_ml_multiclass_hgb.py --split_mode date --epochs 250
+
+python .\src\models\UGR16\train_anomaly_isoforest.py --split_mode date --epochs 300
+
+python .\src\models\UGR16\train_ml_binary_mlp.py --split_mode date --epochs 25
+
+python .\src\models\UGR16\compare_models.py --artifacts_dir src\models\UGR16\artifacts
+
+.\src\scripts\ugr_run_all_models.ps1 -Modes date
+
+# Optional: full sweep across split families and all grouped folds
+.\src\scripts\ugr_run_all_models.ps1 -Modes date,random,groupkfold -AllGroupFolds
+
+# Optional: skip weak-label multiclass and MLP when you only want the core baselines
+.\src\scripts\ugr_run_all_models.ps1 -Modes date,random,groupkfold -AllGroupFolds -SkipMulticlass -SkipBinaryMlp
+
+-------------

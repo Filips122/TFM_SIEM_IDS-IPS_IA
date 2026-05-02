@@ -1,6 +1,8 @@
 .venv/
 out/
 src/datasets/
+src/models/LAB-ALERTS/datasets/
+src/models/LAB-ALERTS/artifacts/
 src/models/CIC-IDS2017/datasets/
 src/models/CIC-IDS2017/artifacts/
 src/models/UNSW-NB15/datasets/

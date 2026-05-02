@@ -38,9 +38,12 @@ def save_json(path: Path, obj: Dict) -> None:
     path.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None) -> Path:
+def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None, dataset: Optional[str] = None) -> Path:
     run_id = run_id or now_run_id()
-    root = resolve_from_root(f"src/models/UGR16/artifacts/{model_name}/{split_mode}/{run_id}")
+    if dataset:
+        root = resolve_from_root(f"src/models/UGR16/artifacts/{model_name}/{dataset}/{split_mode}/{run_id}")
+    else:
+        root = resolve_from_root(f"src/models/UGR16/artifacts/{model_name}/{split_mode}/{run_id}")
     ensure_dir(root)
     return root
 
@@ -56,8 +59,24 @@ def fit_label_encoder(y_train: np.ndarray) -> LabelEncoder:
     return le
 
 
+def label_encoder_mapping(le: LabelEncoder) -> Dict[str, int]:
+    return {str(c): int(i) for i, c in enumerate(le.classes_)}
+
+
+def validate_persisted_label_map(persisted: Optional[Dict[str, int]], le: LabelEncoder, context: str = "") -> Dict[str, int]:
+    observed = label_encoder_mapping(le)
+    if persisted is None:
+        return observed
+
+    normalized = {str(key): int(value) for key, value in persisted.items()}
+    if normalized != observed:
+        prefix = f"{context}: " if context else ""
+        raise ValueError(f"{prefix}persisted label_map mismatch; expected {normalized}, observed {observed}")
+    return observed
+
+
 def save_label_encoder(path: Path, le: LabelEncoder) -> Dict[str, int]:
-    mapping = {str(c): int(i) for i, c in enumerate(le.classes_)}
+    mapping = label_encoder_mapping(le)
     save_json(path / "label_map.json", mapping)
     return mapping
 

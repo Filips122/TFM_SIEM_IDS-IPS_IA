@@ -9,15 +9,15 @@ import joblib
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
 
-from data_loader import load_splits
+from data_loader import EmptySplitError, load_persisted_label_map, load_splits
 from reporting import plot_corr_matrix, save_metrics_and_plots
-from train_utils import artifacts_root, fit_label_encoder, now_run_id, save_json, save_label_encoder
+from train_utils import artifacts_root, fit_label_encoder, now_run_id, save_json, save_label_encoder, validate_persisted_label_map
 
 
-def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs: int, out_dir) -> dict:
+def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs: int, out_dir, dataset: str) -> dict:
     tr, va, te = load_splits(
         split_mode=split_mode,
-        dataset="UGR16",
+        dataset=dataset,
         pipeline="binary",
         fold=fold,
         sample_frac=sample_frac,
@@ -25,6 +25,11 @@ def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs
     )
 
     le = fit_label_encoder(tr.y)
+    validate_persisted_label_map(
+        load_persisted_label_map(split_mode=split_mode, dataset=dataset, pipeline="binary", fold=fold),
+        le,
+        context=f"{dataset} binary split_mode={split_mode} fold={fold}",
+    )
     ytr = le.transform(tr.y.astype(str))
     yva = le.transform(va.y.astype(str))
     yte = le.transform(te.y.astype(str))
@@ -74,15 +79,23 @@ def main() -> None:
     ap.add_argument("--n_folds", type=int, default=8)
     ap.add_argument("--sample_frac", type=float, default=None)
     ap.add_argument("--epochs", type=int, default=200)
+    ap.add_argument("--dataset", type=str, default="UGR16")
     args = ap.parse_args()
 
     model_name = "offline_UGR16_binary_hgb"
     run_id = now_run_id()
-    root = artifacts_root(model_name, args.split_mode, run_id)
+    root = artifacts_root(model_name, args.split_mode, run_id, dataset=args.dataset)
 
     if args.split_mode != "groupkfold":
-        out = run_one(args.split_mode, None, args.sample_frac, args.epochs, root)
-        save_json(root / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
+        try:
+            out = run_one(args.split_mode, None, args.sample_frac, args.epochs, root, args.dataset)
+        except (FileNotFoundError, EmptySplitError) as e:
+            raise SystemExit(
+                f"{args.dataset} binary split is missing or empty. "
+                "Ensure preprocessing completed and produced train, val, and test rows. "
+                f"Details: {e}"
+            )
+        save_json(root / "results.json", {"dataset": args.dataset, "best_iter": out["best_iter"], "test": out["test"]})
         print("Saved:", root)
         return
 
@@ -96,9 +109,14 @@ def main() -> None:
             raise SystemExit("groupkfold requires --all_folds or --fold")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
-        out = run_one("groupkfold", f, args.sample_frac, args.epochs, fold_dir)
-        save_json(fold_dir / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
-        summary[f"fold_{f}"] = {"best_iter": out["best_iter"], "test": out["test"]}
+        try:
+            out = run_one("groupkfold", f, args.sample_frac, args.epochs, fold_dir, args.dataset)
+        except (FileNotFoundError, EmptySplitError) as e:
+            print(f"[skip] fold_{f}: {e}")
+            summary[f"fold_{f}"] = {"skipped": True, "reason": str(e)}
+            continue
+        save_json(fold_dir / "results.json", {"dataset": args.dataset, "best_iter": out["best_iter"], "test": out["test"]})
+        summary[f"fold_{f}"] = {"dataset": args.dataset, "best_iter": out["best_iter"], "test": out["test"]}
 
     save_json(root / "summary.json", summary)
     print("Saved:", root)
