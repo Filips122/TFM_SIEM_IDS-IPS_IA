@@ -41,15 +41,9 @@ def run_one(split_mode: str, fold: int | None, out_dir, args) -> dict:
 
     le = fit_label_encoder(tr.y)
     validate_persisted_label_map(
-<<<<<<< HEAD
-        load_persisted_label_map(split_mode=split_mode, dataset="UGR16", pipeline="binary", fold=fold),
-        le,
-        context=f"UGR16 binary split_mode={split_mode} fold={fold}",
-=======
         load_persisted_label_map(split_mode=split_mode, dataset=args.dataset, pipeline="binary", fold=fold),
         le,
         context=f"{args.dataset} binary split_mode={split_mode} fold={fold}",
->>>>>>> cc9f15f8d4b66ce443abe6fec2dedc28528ef8f1
     )
     ytr = le.transform(tr.y.astype(str)).astype(np.int64)
     yva = le.transform(va.y.astype(str)).astype(np.int64)
@@ -197,19 +191,11 @@ def main() -> None:
             out = run_one(args.split_mode, None, root, args)
         except (FileNotFoundError, EmptySplitError) as e:
             raise SystemExit(
-<<<<<<< HEAD
-                "UGR16 binary split is missing or empty. "
-                "Ensure preprocessing completed and produced train, val, and test rows. "
-                f"Details: {e}"
-            )
-        save_json(root / "results.json", {"best_epoch": out["best_epoch"], "test": out["test"]})
-=======
                 f"{args.dataset} binary split is missing or empty. "
                 "Ensure preprocessing completed and produced train, val, and test rows. "
                 f"Details: {e}"
             )
         save_json(root / "results.json", {"dataset": args.dataset, "best_epoch": out["best_epoch"], "test": out["test"]})
->>>>>>> cc9f15f8d4b66ce443abe6fec2dedc28528ef8f1
         print("Saved:", root)
         return
 
@@ -229,13 +215,8 @@ def main() -> None:
             print(f"[skip] fold_{f}: {e}")
             summary[f"fold_{f}"] = {"skipped": True, "reason": str(e)}
             continue
-<<<<<<< HEAD
-        save_json(fold_dir / "results.json", {"best_epoch": out["best_epoch"], "test": out["test"]})
-        summary[f"fold_{f}"] = {"best_epoch": out["best_epoch"], "test": out["test"]}
-=======
         save_json(fold_dir / "results.json", {"dataset": args.dataset, "best_epoch": out["best_epoch"], "test": out["test"]})
         summary[f"fold_{f}"] = {"dataset": args.dataset, "best_epoch": out["best_epoch"], "test": out["test"]}
->>>>>>> cc9f15f8d4b66ce443abe6fec2dedc28528ef8f1
 
     save_json(root / "summary.json", summary)
     print("Saved:", root)

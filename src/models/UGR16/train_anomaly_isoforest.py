@@ -68,17 +68,10 @@ def main() -> None:
 
     if args.split_mode != "groupkfold":
         try:
-<<<<<<< HEAD
-            out = run_one(args.split_mode, None, args.epochs, root)
-        except (FileNotFoundError, EmptySplitError) as e:
-            raise SystemExit(
-                "UGR16 anomaly split is missing or empty. "
-=======
             out = run_one(args.split_mode, None, args.epochs, root, args.dataset)
         except (FileNotFoundError, EmptySplitError) as e:
             raise SystemExit(
                 f"{args.dataset} anomaly split is missing or empty. "
->>>>>>> cc9f15f8d4b66ce443abe6fec2dedc28528ef8f1
                 "This usually means preprocessing did not generate BENIGN train rows or the split is incomplete. "
                 f"Details: {e}"
             )
@@ -98,11 +91,7 @@ def main() -> None:
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
         try:
-<<<<<<< HEAD
-            out = run_one("groupkfold", f, args.epochs, fold_dir)
-=======
             out = run_one("groupkfold", f, args.epochs, fold_dir, args.dataset)
->>>>>>> cc9f15f8d4b66ce443abe6fec2dedc28528ef8f1
         except (FileNotFoundError, EmptySplitError) as e:
             print(f"[skip] fold_{f}: {e}")
             summary[f"fold_{f}"] = {"skipped": True, "reason": str(e)}
