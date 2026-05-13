@@ -3,12 +3,17 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
+
+
+class EmptySplitError(ValueError):
+    pass
 
 
 def repo_root() -> Path:
@@ -21,6 +26,61 @@ def resolve_from_root(p: Union[str, Path]) -> Path:
     if p.is_absolute():
         return p.resolve()
     return (repo_root() / p).resolve()
+
+
+def get_mode_root(
+    datasets_base: Union[str, Path],
+    split_mode: str,
+    dataset: str,
+) -> Path:
+    return resolve_from_root(datasets_base) / split_mode / dataset
+
+
+def get_pipeline_root(
+    datasets_base: Union[str, Path],
+    split_mode: str,
+    dataset: str,
+    pipeline: str,
+    fold: Optional[int] = None,
+) -> Path:
+    mode_root = get_mode_root(datasets_base, split_mode, dataset)
+    if split_mode == "groupkfold":
+        if fold is None:
+            raise ValueError("split_mode=groupkfold requires fold=<int>")
+        return mode_root / f"fold_{fold}" / pipeline
+    return mode_root / pipeline
+
+
+def load_persisted_feature_columns(
+    datasets_base: Union[str, Path] = "src/models/UGR16/datasets",
+    split_mode: str = "date",
+    dataset: str = "UGR16",
+) -> Optional[List[str]]:
+    path = get_mode_root(datasets_base, split_mode, dataset) / "feature_columns.json"
+    if not path.exists():
+        return None
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list) or not all(isinstance(value, str) for value in payload):
+        raise ValueError(f"Invalid feature_columns.json: {path}")
+    return list(payload)
+
+
+def load_persisted_label_map(
+    datasets_base: Union[str, Path] = "src/models/UGR16/datasets",
+    split_mode: str = "date",
+    dataset: str = "UGR16",
+    pipeline: str = "binary",
+    fold: Optional[int] = None,
+) -> Optional[Dict[str, int]]:
+    path = get_pipeline_root(datasets_base, split_mode, dataset, pipeline, fold) / "label_map.json"
+    if not path.exists():
+        return None
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"Invalid label_map.json: {path}")
+    return {str(key): int(value) for key, value in payload.items()}
 
 
 @dataclass
@@ -87,7 +147,7 @@ def get_split_folder(
     split: str,
     fold: Optional[int] = None,
 ) -> Path:
-    base = resolve_from_root(datasets_base) / split_mode / dataset
+    base = get_mode_root(datasets_base, split_mode, dataset)
 
     if split_mode == "groupkfold":
         if fold is None:
@@ -120,11 +180,22 @@ def load_split(
     if not paths:
         raise FileNotFoundError(f"No parquet files in: {folder}")
 
+    if feature_cols is None:
+        feature_cols = load_persisted_feature_columns(datasets_base, split_mode, dataset)
+
     df = _read_parquets(paths)
     if sample_frac is not None:
         if not (0.0 < sample_frac <= 1.0):
             raise ValueError("sample_frac must be in (0,1]")
         df = df.sample(frac=sample_frac, random_state=seed)
+
+    if df.empty:
+        sample_note = " after sampling" if sample_frac is not None else ""
+        raise EmptySplitError(
+            "Loaded zero rows"
+            f" for split={split!r}, pipeline={pipeline!r}, split_mode={split_mode!r}, fold={fold}"
+            f" from {folder}{sample_note}."
+        )
 
     return _to_xy(df, target_col="target", dtype=dtype, feature_cols=feature_cols)
 

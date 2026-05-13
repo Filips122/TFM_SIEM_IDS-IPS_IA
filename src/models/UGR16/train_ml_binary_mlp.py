@@ -9,7 +9,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from data_loader import load_splits
+from data_loader import EmptySplitError, load_persisted_label_map, load_splits
 from models_torch import MLP
 from reporting import plot_corr_matrix, plot_history, predict_proba_torch, save_metrics_and_plots
 from train_utils import (
@@ -23,6 +23,7 @@ from train_utils import (
     set_seed,
     standardize_apply,
     standardize_fit,
+    validate_persisted_label_map,
 )
 
 
@@ -42,6 +43,11 @@ def run_one(split_mode: str, fold: int | None, out_dir, args) -> dict:
     )
 
     le = fit_label_encoder(tr.y)
+    validate_persisted_label_map(
+        load_persisted_label_map(split_mode=split_mode, dataset="UGR16", pipeline="binary", fold=fold),
+        le,
+        context=f"UGR16 binary split_mode={split_mode} fold={fold}",
+    )
     ytr = le.transform(tr.y.astype(str)).astype(np.int64)
     yva = le.transform(va.y.astype(str)).astype(np.int64)
     yte = le.transform(te.y.astype(str)).astype(np.int64)
@@ -183,7 +189,14 @@ def main() -> None:
     root = artifacts_root(model_name, args.split_mode, run_id)
 
     if args.split_mode != "groupkfold":
-        out = run_one(args.split_mode, None, root, args)
+        try:
+            out = run_one(args.split_mode, None, root, args)
+        except (FileNotFoundError, EmptySplitError) as e:
+            raise SystemExit(
+                "UGR16 binary split is missing or empty. "
+                "Ensure preprocessing completed and produced train, val, and test rows. "
+                f"Details: {e}"
+            )
         save_json(root / "results.json", {"best_epoch": out["best_epoch"], "test": out["test"]})
         print("Saved:", root)
         return
@@ -198,7 +211,12 @@ def main() -> None:
             raise SystemExit("groupkfold requires --all_folds or --fold")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
-        out = run_one("groupkfold", f, fold_dir, args)
+        try:
+            out = run_one("groupkfold", f, fold_dir, args)
+        except (FileNotFoundError, EmptySplitError) as e:
+            print(f"[skip] fold_{f}: {e}")
+            summary[f"fold_{f}"] = {"skipped": True, "reason": str(e)}
+            continue
         save_json(fold_dir / "results.json", {"best_epoch": out["best_epoch"], "test": out["test"]})
         summary[f"fold_{f}"] = {"best_epoch": out["best_epoch"], "test": out["test"]}
 

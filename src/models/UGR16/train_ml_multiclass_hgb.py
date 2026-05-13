@@ -10,9 +10,9 @@ import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.preprocessing import LabelEncoder
 
-from data_loader import load_splits
+from data_loader import EmptySplitError, load_persisted_label_map, load_splits
 from reporting import plot_corr_matrix, save_metrics_and_plots
-from train_utils import artifacts_root, now_run_id, save_json, save_label_encoder
+from train_utils import artifacts_root, now_run_id, save_json, save_label_encoder, validate_persisted_label_map
 
 
 def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs: int, out_dir) -> dict:
@@ -26,6 +26,11 @@ def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs
     )
 
     le = LabelEncoder().fit(tr.y.astype(str))
+    validate_persisted_label_map(
+        load_persisted_label_map(split_mode=split_mode, dataset="UGR16", pipeline="multiclass", fold=fold),
+        le,
+        context=f"UGR16 multiclass split_mode={split_mode} fold={fold}",
+    )
     ytr = le.transform(tr.y.astype(str))
     yva = le.transform(va.y.astype(str))
     yte = le.transform(te.y.astype(str))
@@ -82,7 +87,14 @@ def main() -> None:
     root = artifacts_root(model_name, args.split_mode, run_id)
 
     if args.split_mode != "groupkfold":
-        out = run_one(args.split_mode, None, args.sample_frac, args.epochs, root)
+        try:
+            out = run_one(args.split_mode, None, args.sample_frac, args.epochs, root)
+        except (FileNotFoundError, EmptySplitError) as e:
+            raise SystemExit(
+                "UGR16 multiclass split is missing or empty. "
+                "Ensure preprocessing completed and produced train, val, and test rows. "
+                f"Details: {e}"
+            )
         save_json(root / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
         print("Saved:", root)
         return
@@ -97,7 +109,12 @@ def main() -> None:
             raise SystemExit("groupkfold requires --all_folds or --fold")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
-        out = run_one("groupkfold", f, args.sample_frac, args.epochs, fold_dir)
+        try:
+            out = run_one("groupkfold", f, args.sample_frac, args.epochs, fold_dir)
+        except (FileNotFoundError, EmptySplitError) as e:
+            print(f"[skip] fold_{f}: {e}")
+            summary[f"fold_{f}"] = {"skipped": True, "reason": str(e)}
+            continue
         save_json(fold_dir / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
         summary[f"fold_{f}"] = {"best_iter": out["best_iter"], "test": out["test"]}
 

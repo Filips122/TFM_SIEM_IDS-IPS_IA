@@ -56,8 +56,24 @@ def fit_label_encoder(y_train: np.ndarray) -> LabelEncoder:
     return le
 
 
+def label_encoder_mapping(le: LabelEncoder) -> Dict[str, int]:
+    return {str(c): int(i) for i, c in enumerate(le.classes_)}
+
+
+def validate_persisted_label_map(persisted: Optional[Dict[str, int]], le: LabelEncoder, context: str = "") -> Dict[str, int]:
+    observed = label_encoder_mapping(le)
+    if persisted is None:
+        return observed
+
+    normalized = {str(key): int(value) for key, value in persisted.items()}
+    if normalized != observed:
+        prefix = f"{context}: " if context else ""
+        raise ValueError(f"{prefix}persisted label_map mismatch; expected {normalized}, observed {observed}")
+    return observed
+
+
 def save_label_encoder(path: Path, le: LabelEncoder) -> Dict[str, int]:
-    mapping = {str(c): int(i) for i, c in enumerate(le.classes_)}
+    mapping = label_encoder_mapping(le)
     save_json(path / "label_map.json", mapping)
     return mapping
 

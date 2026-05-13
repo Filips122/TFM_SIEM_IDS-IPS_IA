@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import tarfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -84,6 +85,16 @@ FAMILY_PRIORITY = [
 ]
 
 
+@dataclass
+class TimelineContext:
+    minute_active_map: Dict[pd.Timestamp, bool]
+    minute_family_map: Dict[pd.Timestamp, str]
+    hour_active_map: Dict[pd.Timestamp, bool]
+    hour_attack_minutes_map: Dict[pd.Timestamp, int]
+    hour_attack_ratio_map: Dict[pd.Timestamp, float]
+    hour_family_map: Dict[pd.Timestamp, str]
+
+
 def _ensure_pyarrow() -> None:
     if pa is None or pq is None:
         raise SystemExit("Missing pyarrow. Install with: pip install pyarrow")
@@ -121,6 +132,10 @@ def discover_main_archives(root: Path) -> List[Path]:
             archives.append(p)
     archives.sort(key=lambda p: week_sort_key(*archive_context(p, root)[:2]))
     return archives
+
+
+def archive_members(tf: tarfile.TarFile) -> List[tarfile.TarInfo]:
+    return sorted([member for member in tf.getmembers() if member.isfile() and member.size > 0], key=lambda member: member.name)
 
 
 def select_archives(archives: List[Path], root: Path, subset: str) -> List[Path]:
@@ -164,32 +179,67 @@ def pick_primary_family(row: pd.Series, family_cols: List[str]) -> str:
     return sorted(active.keys())[0]
 
 
-def load_attack_timeline(path: Optional[Path]) -> Tuple[Dict[pd.Timestamp, bool], Dict[pd.Timestamp, str]]:
+def load_attack_timeline(path: Optional[Path]) -> TimelineContext:
     if path is None or not path.exists():
-        return {}, {}
+        return TimelineContext({}, {}, {}, {}, {}, {})
 
     df = pd.read_csv(path)
     if df.empty:
-        return {}, {}
+        return TimelineContext({}, {}, {}, {}, {}, {})
 
     ts_col = df.columns[0]
     family_cols = [c for c in df.columns if c not in {ts_col, "counter(mins)"}]
     if not family_cols:
-        return {}, {}
+        return TimelineContext({}, {}, {}, {}, {}, {})
 
-    df[ts_col] = pd.to_datetime(df[ts_col], errors="coerce")
-    df = df[df[ts_col].notna()].copy()
+    df = df.copy()
+    df["_event_ts"] = pd.to_datetime(df[ts_col].astype(str), errors="coerce")
+    df = df[df["_event_ts"].notna()].copy()
     if df.empty:
-        return {}, {}
+        return TimelineContext({}, {}, {}, {}, {}, {})
 
     numeric = df[family_cols].apply(pd.to_numeric, errors="coerce").fillna(0.0)
     active_any = numeric.gt(0.0).any(axis=1)
     primary_family = numeric.apply(lambda row: pick_primary_family(row, family_cols), axis=1)
 
-    minute_series = df[ts_col].dt.floor("min")
-    active_map = {minute: bool(is_active) for minute, is_active in zip(minute_series, active_any)}
-    family_map = {minute: family for minute, family in zip(minute_series, primary_family)}
-    return active_map, family_map
+    minute_series = df["_event_ts"].dt.floor("min")
+    minute_active_map = {minute: bool(is_active) for minute, is_active in zip(minute_series, active_any)}
+    minute_family_map = {minute: str(family) for minute, family in zip(minute_series, primary_family.astype(str))}
+
+    hourly = pd.DataFrame(
+        {
+            "hour": minute_series.dt.floor("h"),
+            "active": active_any.astype(bool).to_numpy(),
+            "family": primary_family.astype(str).to_numpy(),
+        }
+    )
+    if hourly.empty:
+        return TimelineContext(minute_active_map, minute_family_map, {}, {}, {}, {})
+
+    hour_attack_minutes = hourly.groupby("hour")["active"].sum().astype(int)
+    hour_total_minutes = hourly.groupby("hour").size().astype(int)
+    hour_active_map = {hour: bool(value > 0) for hour, value in hour_attack_minutes.items()}
+    hour_attack_minutes_map = {hour: int(value) for hour, value in hour_attack_minutes.items()}
+    hour_attack_ratio_map = {hour: float(hour_attack_minutes.loc[hour] / hour_total_minutes.loc[hour]) for hour in hour_total_minutes.index}
+
+    hour_family_map: Dict[pd.Timestamp, str] = {hour: "none" for hour in hour_total_minutes.index}
+    active_family = hourly[hourly["active"]].copy()
+    if not active_family.empty:
+        family_counts = (
+            active_family.groupby(["hour", "family"]).size().reset_index(name="count").sort_values(["hour", "count", "family"], ascending=[True, False, True])
+        )
+        dominant = family_counts.drop_duplicates(subset=["hour"], keep="first")
+        for hour, family in zip(dominant["hour"], dominant["family"]):
+            hour_family_map[hour] = str(family)
+
+    return TimelineContext(
+        minute_active_map=minute_active_map,
+        minute_family_map=minute_family_map,
+        hour_active_map=hour_active_map,
+        hour_attack_minutes_map=hour_attack_minutes_map,
+        hour_attack_ratio_map=hour_attack_ratio_map,
+        hour_family_map=hour_family_map,
+    )
 
 
 def build_protocol_indicators(protocol: pd.Series) -> Dict[str, pd.Series]:
@@ -209,8 +259,7 @@ def preprocess_chunk(
     archive_name: str,
     split_name: str,
     week_key: str,
-    timeline_active_map: Dict[pd.Timestamp, bool],
-    timeline_family_map: Dict[pd.Timestamp, str],
+    timeline_context: TimelineContext,
 ) -> Tuple[pd.DataFrame, np.ndarray, np.ndarray]:
     if chunk.empty:
         return pd.DataFrame(), np.empty((0,), dtype=object), np.empty((0,), dtype=object)
@@ -236,8 +285,13 @@ def preprocess_chunk(
     raw_label = work["col_13"].map(normalize_label)
 
     minute_key = event_ts.dt.floor("min")
-    timeline_active = minute_key.map(timeline_active_map).fillna(False)
-    timeline_family = minute_key.map(timeline_family_map).fillna("none")
+    hour_key = event_ts.dt.floor("h")
+    timeline_minute_active = minute_key.map(timeline_context.minute_active_map).fillna(False)
+    timeline_minute_family = minute_key.map(timeline_context.minute_family_map).fillna("none")
+    timeline_hour_active = hour_key.map(timeline_context.hour_active_map).fillna(False)
+    timeline_hour_attack_minutes = hour_key.map(timeline_context.hour_attack_minutes_map).fillna(0).astype(np.float64)
+    timeline_hour_attack_ratio = hour_key.map(timeline_context.hour_attack_ratio_map).fillna(0.0).astype(np.float64)
+    timeline_hour_family = hour_key.map(timeline_context.hour_family_map).fillna("none")
 
     safe_duration = duration.where(duration > 0.0, 1.0)
     bytes_per_packet = np.divide(bytes_, packets.where(packets > 0.0, 1.0))
@@ -255,6 +309,10 @@ def preprocess_chunk(
         "bytes_per_packet": pd.Series(bytes_per_packet, index=work.index, dtype=np.float64),
         "packets_per_second": pd.Series(packets_per_second, index=work.index, dtype=np.float64),
         "bytes_per_second": pd.Series(bytes_per_second, index=work.index, dtype=np.float64),
+        "timeline_minute_is_attack": timeline_minute_active.astype(np.float64),
+        "timeline_hour_is_attack": timeline_hour_active.astype(np.float64),
+        "timeline_hour_attack_minutes": timeline_hour_attack_minutes,
+        "timeline_hour_attack_ratio": timeline_hour_attack_ratio,
         "hour": event_ts.dt.hour.astype(np.float64),
         "minute": event_ts.dt.minute.astype(np.float64),
         "day_of_week": event_ts.dt.dayofweek.astype(np.float64),
@@ -276,13 +334,17 @@ def preprocess_chunk(
 
     base = pd.DataFrame(data)
     base["event_ts"] = event_ts.to_numpy(copy=False)
+    base["minute_window_meta"] = minute_key.to_numpy(copy=False)
+    base["hour_window_meta"] = hour_key.to_numpy(copy=False)
     base["src_ip_meta"] = work["col_3"].astype(str)
     base["dst_ip_meta"] = work["col_4"].astype(str)
     base["protocol_raw_meta"] = protocol.astype(str)
     base["flags_raw_meta"] = flags.astype(str)
     base["label_raw"] = raw_label.astype(str)
-    base["timeline_attack_active_meta"] = np.where(timeline_active.to_numpy(), "YES", "NO")
-    base["timeline_primary_family_meta"] = timeline_family.astype(str)
+    base["timeline_attack_active_meta"] = np.where(timeline_minute_active.to_numpy(), "YES", "NO")
+    base["timeline_primary_family_meta"] = timeline_minute_family.astype(str)
+    base["timeline_hour_attack_active_meta"] = np.where(timeline_hour_active.to_numpy(), "YES", "NO")
+    base["timeline_hour_primary_family_meta"] = timeline_hour_family.astype(str)
     base["archive_name_meta"] = archive_name
     base["split_name_meta"] = split_name
     base["week_key_meta"] = week_key
@@ -360,15 +422,15 @@ def process_base_chunk(
     part_idx: int,
 ) -> Dict[str, Dict[str, int]]:
     counts: Dict[str, Dict[str, int]] = {
-        "binary": {},
+        "binary_raw": {},
         "multiclass": {},
         "anomaly": {},
     }
 
     binary_df = base.copy()
     binary_df["target"] = binary_target
-    counts["binary"] = count_labels(binary_target)
-    write_parquet(binary_df, out_base / "binary" / split_name / f"{archive_stem}__part{part_idx:05d}.parquet")
+    counts["binary_raw"] = count_labels(binary_target)
+    write_parquet(binary_df, out_base / "binary_raw" / split_name / f"{archive_stem}__part{part_idx:05d}.parquet")
 
     multiclass_df = base.copy()
     multiclass_df["target"] = multiclass_target
@@ -399,13 +461,13 @@ def process_archive_fixed_split(
     archive_stem = archive_path.name.replace(".tar.gz", "")
     month, week, week_key = archive_context(archive_path, root)
     attack_ts_path = matching_attack_ts(archive_path)
-    timeline_active_map, timeline_family_map = load_attack_timeline(attack_ts_path)
+    timeline_context = load_attack_timeline(attack_ts_path)
 
-    combined_counts = {"binary": {}, "multiclass": {}, "anomaly": {}}
+    combined_counts = {"binary_raw": {}, "multiclass": {}, "anomaly": {}}
     part_idx = 0
 
     with tarfile.open(archive_path, "r:gz") as tf:
-        members = [m for m in tf.getmembers() if m.isfile() and m.name.lower().endswith(".csv")]
+        members = archive_members(tf)
         for member in members:
             file_obj = tf.extractfile(member)
             if file_obj is None:
@@ -426,8 +488,7 @@ def process_archive_fixed_split(
                     archive_name=archive_stem,
                     split_name=split_name,
                     week_key=week_key,
-                    timeline_active_map=timeline_active_map,
-                    timeline_family_map=timeline_family_map,
+                    timeline_context=timeline_context,
                 )
                 if base.empty:
                     continue
@@ -461,17 +522,17 @@ def process_archive_random(
     archive_stem = archive_path.name.replace(".tar.gz", "")
     _, _, week_key = archive_context(archive_path, root)
     attack_ts_path = matching_attack_ts(archive_path)
-    timeline_active_map, timeline_family_map = load_attack_timeline(attack_ts_path)
+    timeline_context = load_attack_timeline(attack_ts_path)
 
     counts: Dict[str, Dict[str, Dict[str, int]]] = {
-        "binary": {"train": {}, "val": {}, "test": {}},
+        "binary_raw": {"train": {}, "val": {}, "test": {}},
         "multiclass": {"train": {}, "val": {}, "test": {}},
         "anomaly": {"train": {}, "val": {}, "test": {}},
     }
     part_idx = 0
 
     with tarfile.open(archive_path, "r:gz") as tf:
-        members = [m for m in tf.getmembers() if m.isfile() and m.name.lower().endswith(".csv")]
+        members = archive_members(tf)
         for member in members:
             file_obj = tf.extractfile(member)
             if file_obj is None:
@@ -492,8 +553,7 @@ def process_archive_random(
                     archive_name=archive_stem,
                     split_name="random",
                     week_key=week_key,
-                    timeline_active_map=timeline_active_map,
-                    timeline_family_map=timeline_family_map,
+                    timeline_context=timeline_context,
                 )
                 if base.empty:
                     continue
@@ -548,6 +608,236 @@ def write_feature_columns(out_dir: Path, columns: List[str]) -> None:
     (out_dir / "feature_columns.json").write_text(json.dumps(columns, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def expected_label_order(labels: List[str], pipeline: str) -> List[str]:
+    ordered = sorted({str(label) for label in labels if str(label).strip()})
+    if pipeline == "binary" and "BENIGN" in ordered and "ATTACK" in ordered:
+        return ["BENIGN", "ATTACK"]
+    return ordered
+
+
+def write_supervised_label_maps(base_dir: Path, stats: Dict[str, Dict[str, Stats]]) -> None:
+    for pipeline_name in ["binary", "multiclass"]:
+        train_stats = stats.get(pipeline_name, {}).get("train")
+        label_counts = train_stats.label_counts if train_stats is not None else {}
+        ordered = expected_label_order(list(label_counts.keys()), pipeline_name)
+        if not ordered:
+            continue
+        write_json(base_dir / pipeline_name / "label_map.json", {label: idx for idx, label in enumerate(ordered)})
+
+
+def clear_generated_dir(path: Path) -> None:
+    if path.exists():
+        shutil.rmtree(path)
+    path.mkdir(parents=True, exist_ok=True)
+
+
+def list_parquets(folder: Path) -> List[Path]:
+    if not folder.exists():
+        return []
+    return sorted([path for path in folder.rglob("*.parquet") if path.is_file()])
+
+
+def build_stratum_labels(df: pd.DataFrame, columns: List[str]) -> pd.Series:
+    if df.empty:
+        return pd.Series(dtype=object)
+    if not columns:
+        return pd.Series("all", index=df.index, dtype=object)
+
+    first = columns[0]
+    values = df[first].astype(str) if first in df.columns else pd.Series("NA", index=df.index, dtype=object)
+    values = values.fillna("NA")
+    for column in columns[1:]:
+        part = df[column].astype(str) if column in df.columns else pd.Series("NA", index=df.index, dtype=object)
+        values = values + "||" + part.fillna("NA")
+    return values
+
+
+def allocate_exact_quotas(counts: Dict[str, int], total_target: int) -> Dict[str, int]:
+    if total_target <= 0 or not counts:
+        return {key: 0 for key in counts}
+
+    total_source = int(sum(counts.values()))
+    if total_source <= 0:
+        return {key: 0 for key in counts}
+
+    raw = {key: (total_target * value / total_source) for key, value in counts.items()}
+    quotas = {key: int(np.floor(value)) for key, value in raw.items()}
+    remainder = int(total_target - sum(quotas.values()))
+    if remainder > 0:
+        order = sorted(raw.keys(), key=lambda key: (raw[key] - quotas[key], counts[key], key), reverse=True)
+        for key in order[:remainder]:
+            quotas[key] += 1
+    return quotas
+
+
+def write_json(path: Path, payload: Dict[str, Any]) -> None:
+    safe_mkdir(path.parent)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def copy_binary_split(raw_dir: Path, out_dir: Path) -> Dict[str, Any]:
+    clear_generated_dir(out_dir)
+    paths = list_parquets(raw_dir)
+    counts: Dict[str, int] = {}
+    for path in paths:
+        df_target = pd.read_parquet(path, columns=["target"])
+        for label, value in count_labels(df_target["target"].to_numpy()).items():
+            counts[label] = counts.get(label, 0) + int(value)
+        shutil.copy2(path, out_dir / path.name)
+
+    summary = {
+        "balanced": False,
+        "reason": "copy_raw",
+        "source_dir": str(raw_dir),
+        "label_counts": dict(sorted(counts.items())),
+    }
+    write_json(out_dir / "balance_summary.json", summary)
+    return summary
+
+
+def balance_binary_split(
+    raw_dir: Path,
+    out_dir: Path,
+    seed: int,
+    stratify_cols: List[str],
+) -> Dict[str, Any]:
+    clear_generated_dir(out_dir)
+    paths = list_parquets(raw_dir)
+    if not paths:
+        summary = {
+            "balanced": False,
+            "reason": "no_input",
+            "source_dir": str(raw_dir),
+            "label_counts": {},
+            "stratify_cols": stratify_cols,
+        }
+        write_json(out_dir / "balance_summary.json", summary)
+        return summary
+
+    class_counts: Dict[str, int] = {}
+    label_stratum_counts: Dict[str, Dict[str, int]] = {}
+
+    for path in paths:
+        meta_df = pd.read_parquet(path, columns=["target", *stratify_cols])
+        if meta_df.empty:
+            continue
+
+        target = meta_df["target"].astype(str)
+        for label, value in target.value_counts(dropna=False).items():
+            class_counts[str(label)] = class_counts.get(str(label), 0) + int(value)
+
+        strata = build_stratum_labels(meta_df, stratify_cols)
+        pair_counts = pd.DataFrame({"target": target.to_numpy(), "stratum": strata.to_numpy()}).value_counts(sort=False)
+        for (label, stratum), value in pair_counts.items():
+            label_key = str(label)
+            label_stratum_counts.setdefault(label_key, {})
+            label_stratum_counts[label_key][str(stratum)] = label_stratum_counts[label_key].get(str(stratum), 0) + int(value)
+
+    usable = [(label, count) for label, count in class_counts.items() if count > 0]
+    if len(usable) < 2:
+        summary = copy_binary_split(raw_dir, out_dir)
+        summary["reason"] = "single_class_split"
+        summary["stratify_cols"] = stratify_cols
+        write_json(out_dir / "balance_summary.json", summary)
+        return summary
+
+    minority_label, minority_count = sorted(usable, key=lambda item: (item[1], item[0]))[0]
+    majority_label, majority_count = sorted(usable, key=lambda item: (item[1], item[0]))[-1]
+    target_majority = int(minority_count)
+    quotas = allocate_exact_quotas(label_stratum_counts.get(majority_label, {}), target_majority)
+
+    remaining_counts = dict(label_stratum_counts.get(majority_label, {}))
+    remaining_quotas = dict(quotas)
+    rng = np.random.default_rng(seed)
+    shuffled_paths = list(paths)
+    rng.shuffle(shuffled_paths)
+
+    out_counts: Dict[str, int] = {minority_label: int(minority_count), majority_label: 0}
+    part_idx = 0
+
+    for path in shuffled_paths:
+        df = pd.read_parquet(path)
+        if df.empty:
+            continue
+
+        target = df["target"].astype(str)
+        keep_frames: List[pd.DataFrame] = []
+
+        minority_df = df.loc[target == minority_label].copy()
+        if not minority_df.empty:
+            keep_frames.append(minority_df)
+
+        majority_df = df.loc[target == majority_label].copy()
+        if not majority_df.empty:
+            majority_df = majority_df.copy()
+            majority_df["_balance_stratum"] = build_stratum_labels(majority_df, stratify_cols)
+            sampled_majority: List[pd.DataFrame] = []
+
+            for stratum, group in majority_df.groupby("_balance_stratum", sort=False):
+                group_count = int(len(group))
+                remaining_count = int(remaining_counts.get(stratum, 0))
+                quota_left = int(remaining_quotas.get(stratum, 0))
+                take = 0
+
+                if group_count > 0 and remaining_count > 0 and quota_left > 0:
+                    if group_count >= remaining_count:
+                        take = quota_left
+                    else:
+                        take = int(np.floor(quota_left * (group_count / remaining_count)))
+                        take = max(0, min(take, group_count, quota_left))
+
+                if take > 0:
+                    random_state = int(rng.integers(0, 2**31 - 1))
+                    sampled_majority.append(group.sample(n=take, random_state=random_state))
+                    out_counts[majority_label] += int(take)
+
+                remaining_counts[stratum] = max(0, remaining_count - group_count)
+                remaining_quotas[stratum] = max(0, quota_left - take)
+
+            if sampled_majority:
+                majority_keep = pd.concat(sampled_majority, ignore_index=True).drop(columns=["_balance_stratum"])
+                keep_frames.append(majority_keep)
+
+        if keep_frames:
+            out_df = pd.concat(keep_frames, ignore_index=True)
+            write_parquet(out_df, out_dir / f"balanced__part{part_idx:05d}.parquet")
+            part_idx += 1
+
+    leftover = int(sum(remaining_quotas.values()))
+    summary = {
+        "balanced": leftover == 0,
+        "reason": "stratified_downsample",
+        "source_dir": str(raw_dir),
+        "output_parts": part_idx,
+        "majority_label": majority_label,
+        "minority_label": minority_label,
+        "before": dict(sorted(class_counts.items())),
+        "after": dict(sorted(out_counts.items())),
+        "leftover_quota": leftover,
+        "stratify_cols": stratify_cols,
+    }
+    write_json(out_dir / "balance_summary.json", summary)
+    return {"label_counts": out_counts, **summary}
+
+
+def materialize_binary_pipeline(out_dir: Path, balance_mode: str, seed: int) -> Dict[str, Dict[str, int]]:
+    split_counts: Dict[str, Dict[str, int]] = {}
+    for index, split_name in enumerate(["train", "val", "test"]):
+        raw_dir = out_dir / "binary_raw" / split_name
+        binary_dir = out_dir / "binary" / split_name
+        if balance_mode == "stratified_downsample":
+            summary = balance_binary_split(
+                raw_dir=raw_dir,
+                out_dir=binary_dir,
+                seed=seed + index,
+                stratify_cols=["week_key_meta", "timeline_hour_attack_active_meta"],
+            )
+        else:
+            summary = copy_binary_split(raw_dir, binary_dir)
+        split_counts[split_name] = dict(summary.get("label_counts", {}))
+    return split_counts
+
+
 def expected_feature_columns() -> List[str]:
     return [
         "duration",
@@ -559,6 +849,10 @@ def expected_feature_columns() -> List[str]:
         "bytes_per_packet",
         "packets_per_second",
         "bytes_per_second",
+        "timeline_minute_is_attack",
+        "timeline_hour_is_attack",
+        "timeline_hour_attack_minutes",
+        "timeline_hour_attack_ratio",
         "hour",
         "minute",
         "day_of_week",
@@ -605,6 +899,7 @@ def main() -> None:
     ap.add_argument("--out_dir", type=str, default=str(DEFAULT_OUT_DIR))
     ap.add_argument("--split_mode", type=str, default="date", choices=["date", "random", "groupkfold"])
     ap.add_argument("--subset", type=str, default="thesis_v1", choices=["thesis_v1", "all_main"])
+    ap.add_argument("--binary_balance", type=str, default="stratified_downsample", choices=["stratified_downsample", "none"])
     ap.add_argument("--chunksize", type=int, default=250_000)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--train_ratio", type=float, default=0.70)
@@ -619,7 +914,7 @@ def main() -> None:
     in_dir = resolve_from_root(args.in_dir)
     out_base = resolve_from_root(args.out_dir)
     out_mode = out_base / args.split_mode / "UGR16"
-    safe_mkdir(out_mode)
+    clear_generated_dir(out_mode)
 
     if not in_dir.exists() or not in_dir.is_dir():
         raise SystemExit(f"Input folder does not exist: {in_dir}")
@@ -637,11 +932,13 @@ def main() -> None:
     print(f"Input dir : {in_dir}")
     print(f"Split mode: {args.split_mode}")
     print(f"Subset    : {args.subset}")
+    print(f"Binary bal: {args.binary_balance}")
     print(f"Out dir   : {out_mode}")
     print(f"Chunksize : {args.chunksize}")
     print(f"Archives  : {[p.name for p in archives]}")
 
     stats: Dict[str, Dict[str, Stats]] = {
+        "binary_raw": {"train": Stats(), "val": Stats(), "test": Stats()},
         "binary": {"train": Stats(), "val": Stats(), "test": Stats()},
         "multiclass": {"train": Stats(), "val": Stats(), "test": Stats()},
         "anomaly": {"train": Stats(), "val": Stats(), "test": Stats()},
@@ -658,9 +955,13 @@ def main() -> None:
             if split_name is None:
                 continue
             c = process_archive_fixed_split(archive, split_name, out_mode, args.chunksize, in_dir)
-            update_stats(stats["binary"][split_name], c["binary"], binary_view=True)
+            update_stats(stats["binary_raw"][split_name], c["binary_raw"], binary_view=True)
             update_stats(stats["multiclass"][split_name], c["multiclass"], binary_view=False)
             update_stats(stats["anomaly"][split_name], c["anomaly"], binary_view=True)
+        binary_counts = materialize_binary_pipeline(out_mode, args.binary_balance, args.seed)
+        for split_name, counts in binary_counts.items():
+            update_stats(stats["binary"][split_name], counts, binary_view=True)
+        write_supervised_label_maps(out_mode, stats)
         write_stats(out_mode, stats)
         return
 
@@ -672,9 +973,13 @@ def main() -> None:
         for archive in archives:
             c = process_archive_random(archive, out_mode, args.chunksize, rng, args.train_ratio, args.val_ratio, in_dir)
             for split_name in ["train", "val", "test"]:
-                update_stats(stats["binary"][split_name], c["binary"][split_name], binary_view=True)
+                update_stats(stats["binary_raw"][split_name], c["binary_raw"][split_name], binary_view=True)
                 update_stats(stats["multiclass"][split_name], c["multiclass"][split_name], binary_view=False)
                 update_stats(stats["anomaly"][split_name], c["anomaly"][split_name], binary_view=True)
+        binary_counts = materialize_binary_pipeline(out_mode, args.binary_balance, args.seed)
+        for split_name, counts in binary_counts.items():
+            update_stats(stats["binary"][split_name], counts, binary_view=True)
+        write_supervised_label_maps(out_mode, stats)
         write_stats(out_mode, stats)
         return
 
@@ -691,7 +996,7 @@ def main() -> None:
             raise SystemExit(f"Invalid fold: {fold}")
 
         fold_dir = out_mode / f"fold_{fold}"
-        safe_mkdir(fold_dir)
+        clear_generated_dir(fold_dir)
 
         mapped = fold % n_groups
         test_file = archives[mapped]
@@ -717,6 +1022,7 @@ def main() -> None:
         )
 
         fold_stats: Dict[str, Dict[str, Stats]] = {
+            "binary_raw": {"train": Stats(), "val": Stats(), "test": Stats()},
             "binary": {"train": Stats(), "val": Stats(), "test": Stats()},
             "multiclass": {"train": Stats(), "val": Stats(), "test": Stats()},
             "anomaly": {"train": Stats(), "val": Stats(), "test": Stats()},
@@ -724,20 +1030,25 @@ def main() -> None:
 
         for archive in train_files:
             c = process_archive_fixed_split(archive, "train", fold_dir, args.chunksize, in_dir)
-            update_stats(fold_stats["binary"]["train"], c["binary"], binary_view=True)
+            update_stats(fold_stats["binary_raw"]["train"], c["binary_raw"], binary_view=True)
             update_stats(fold_stats["multiclass"]["train"], c["multiclass"], binary_view=False)
             update_stats(fold_stats["anomaly"]["train"], c["anomaly"], binary_view=True)
 
         c = process_archive_fixed_split(val_file, "val", fold_dir, args.chunksize, in_dir)
-        update_stats(fold_stats["binary"]["val"], c["binary"], binary_view=True)
+        update_stats(fold_stats["binary_raw"]["val"], c["binary_raw"], binary_view=True)
         update_stats(fold_stats["multiclass"]["val"], c["multiclass"], binary_view=False)
         update_stats(fold_stats["anomaly"]["val"], c["anomaly"], binary_view=True)
 
         c = process_archive_fixed_split(test_file, "test", fold_dir, args.chunksize, in_dir)
-        update_stats(fold_stats["binary"]["test"], c["binary"], binary_view=True)
+        update_stats(fold_stats["binary_raw"]["test"], c["binary_raw"], binary_view=True)
         update_stats(fold_stats["multiclass"]["test"], c["multiclass"], binary_view=False)
         update_stats(fold_stats["anomaly"]["test"], c["anomaly"], binary_view=True)
 
+        binary_counts = materialize_binary_pipeline(fold_dir, args.binary_balance, args.seed + (fold * 100))
+        for split_name, counts in binary_counts.items():
+            update_stats(fold_stats["binary"][split_name], counts, binary_view=True)
+
+        write_supervised_label_maps(fold_dir, fold_stats)
         write_stats(fold_dir, fold_stats)
 
 

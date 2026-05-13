@@ -9,7 +9,7 @@ import joblib
 import numpy as np
 from sklearn.ensemble import IsolationForest
 
-from data_loader import load_splits
+from data_loader import EmptySplitError, load_splits
 from metrics import evaluate_anomaly_scores
 from reporting import save_anomaly_plots
 from train_utils import artifacts_root, now_run_id, save_json
@@ -69,7 +69,14 @@ def main() -> None:
     root = artifacts_root(model_name, args.split_mode, run_id)
 
     if args.split_mode != "groupkfold":
-        out = run_one(args.split_mode, None, args.epochs, root)
+        try:
+            out = run_one(args.split_mode, None, args.epochs, root)
+        except (FileNotFoundError, EmptySplitError) as e:
+            raise SystemExit(
+                "UGR16 anomaly split is missing or empty. "
+                "This usually means preprocessing did not generate BENIGN train rows or the split is incomplete. "
+                f"Details: {e}"
+            )
         joblib.dump(out["model"], root / "model.joblib")
         save_json(root / "results.json", {"val": out["val"], "test": out["test"], "best_epoch": None})
         print("Saved:", root)
@@ -85,7 +92,12 @@ def main() -> None:
             raise SystemExit("groupkfold requires --all_folds or --fold")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
-        out = run_one("groupkfold", f, args.epochs, fold_dir)
+        try:
+            out = run_one("groupkfold", f, args.epochs, fold_dir)
+        except (FileNotFoundError, EmptySplitError) as e:
+            print(f"[skip] fold_{f}: {e}")
+            summary[f"fold_{f}"] = {"skipped": True, "reason": str(e)}
+            continue
         joblib.dump(out["model"], fold_dir / "model.joblib")
         save_json(fold_dir / "results.json", {"val": out["val"], "test": out["test"], "best_epoch": None})
         summary[f"fold_{f}"] = {"val": out["val"], "test": out["test"]}

@@ -13,6 +13,8 @@ This checklist tracks the UGR16 implementation status and should be updated as t
 - [x] Support random split mode in UGR preprocessing
 - [x] Support groupkfold split mode in UGR preprocessing
 - [x] Persist subset manifest and feature column metadata
+- [x] Add hourly attack-context features from `attack_ts`
+- [x] Add balanced binary split materialization from raw binary outputs
 
 Notes:
 - Version 1 uses the selected weekly main archives plus matching `attack_ts` files.
@@ -25,8 +27,9 @@ Notes:
 - [x] Implement UGR metrics helpers
 - [x] Implement UGR reporting and plotting helpers
 - [x] Implement UGR model comparison script
+- [x] Preserve raw binary split separately from balanced binary split
 - [ ] Validate consistency of feature order across train, val, and test
-- [ ] Persist and validate label-map outputs for supervised pipelines
+- [x] Persist and validate label-map outputs for supervised pipelines
 
 Notes:
 - The first UGR loader follows the same folder and Parquet conventions already used in CIC and UNSW-NB15.
@@ -37,18 +40,19 @@ Notes:
 - [x] Implement binary HGB baseline trainer
 - [x] Implement binary MLP baseline trainer
 - [x] Implement multiclass HGB baseline trainer
-- [ ] Validate whether multiclass weak-label quality is acceptable for thesis reporting
+- [x] Validate whether multiclass weak-label quality is acceptable for thesis reporting
 
 Notes:
 - Binary HGB and anomaly Isolation Forest are the highest-priority UGR baselines.
 - Multiclass is implemented for parity, but it should be treated as secondary until label quality is validated.
+- Sampled raw-label review over the thesis subset found only 55 sampled attack rows across 22 weekly archives, so multiclass is not yet strong enough for primary thesis reporting.
 
 ## Phase 4 - Orchestration and Validation
 
-- [ ] Add UGR run-all orchestration script in `src/scripts`
-- [ ] Run end-to-end preprocessing for date split
-- [ ] Run end-to-end preprocessing for random split
-- [ ] Run end-to-end preprocessing for groupkfold split
+- [x] Add UGR run-all orchestration script in `src/scripts`
+- [ ] Run end-to-end preprocessing for date split with balanced binary output
+- [ ] Run end-to-end preprocessing for random split with balanced binary output
+- [ ] Run end-to-end preprocessing for groupkfold split with balanced binary output
 - [ ] Run end-to-end anomaly Isolation Forest on date split
 - [ ] Run end-to-end binary HGB on date split
 - [ ] Run end-to-end binary MLP on date split
@@ -64,13 +68,19 @@ Notes:
 - [ ] Validate temporal ordering of date-based split outputs
 - [ ] Validate benign-only training coverage for anomaly mode
 - [ ] Validate grouped split leakage assumptions
-- [ ] Review weak-label usage from the raw flow label column and matching `attack_ts` files
-- [ ] Review empty-split behavior and fallback messaging
-- [ ] Add usage commands to README for the UGR16 workflow
+- [x] Review weak-label usage from the raw flow label column and matching `attack_ts` files
+- [ ] Validate the balanced binary split counts and stratification by week and hourly context
+- [x] Review empty-split behavior and fallback messaging
+- [x] Add usage commands to README for the UGR16 workflow
+
+Notes:
+- Raw semantic sampling shows columns 1-12 consistently behave like timestamp, duration, IP, port, protocol, flag, and counter fields.
+- The full 13-column semantic validation remains open because the raw label column is sparse in many sampled weeks even when `attack_ts` reports attack-active periods.
+- Date and grouped trainers now fail early with explicit missing/empty-split messages instead of surfacing downstream sklearn or torch errors.
 
 ## Optional Next Extensions
 
-- [ ] Add UGR dataset validation script
+- [x] Add UGR dataset validation script
 - [ ] Add attack-family-specific evaluation mode using the deferred attack archives
 - [ ] Add `nfcapd` reprocessing path for future raw-flow experiments
 - [ ] Add explicit drift-summary reporting across weeks or months

@@ -229,6 +229,20 @@ The binary target should be derived primarily from the raw weak flow label in `c
 
 This gives a stable, flow-level target that avoids marking every flow in an attack-active minute as malicious.
 
+For the current implementation, the binary branch is now persisted in two views:
+
+- `binary_raw`: the original split with the raw `ATTACK` versus `BENIGN` target,
+- `binary`: a balanced training view produced from `binary_raw` by downsampling the majority class.
+
+The balancing policy is intentionally conservative:
+
+- it does not relabel flows from timeline context alone,
+- it preserves the original raw target semantics,
+- it down-samples only the majority class,
+- it stratifies the sample by `week_key` and hourly attack-context state to preserve temporal composition.
+
+This is necessary because the repository timeline analysis shows that `attack_ts` is active for almost every hour in most selected weeks, so using timeline activity as the binary label would collapse the `NO ATTACK` class.
+
 ### 5.2 Multiclass pipeline
 
 The multiclass target should use the normalized raw weak label:
@@ -264,6 +278,16 @@ In version 1 they should be used to:
 - support later weak-supervision extensions.
 
 They should not be treated as a direct replacement for the flow-level target column in version 1.
+
+In the current preprocessing implementation they also generate hourly context features per flow, including:
+
+- whether the minute is attack-active,
+- whether the enclosing hour is attack-active,
+- number of attack-active minutes inside the hour,
+- ratio of attack-active minutes inside the hour,
+- dominant hourly timeline family as metadata.
+
+This keeps the binary label tied to the raw weak flow label while still exposing the one-hour attack context the thesis needs.
 
 ---
 
@@ -377,6 +401,20 @@ Default ratios:
 
 This is useful as a secondary baseline, but it should not replace the date split in the thesis narrative.
 
+### 7.4 Balanced binary policy
+
+The effective supervised binary training dataset should be the balanced `binary` view, not the raw `binary_raw` output.
+
+Recommended policy:
+
+- generate the raw binary split first,
+- keep hourly timeline context features on every row,
+- build the balanced binary split from the raw output,
+- stratify balancing by week and hourly attack-context state,
+- keep `binary_raw` for auditability and later sensitivity analysis.
+
+This yields a dataset closer to the user requirement of `ATTACK` versus `NO ATTACK` while still preserving the fact that an attack may be happening during the surrounding one-hour time lapse.
+
 ---
 
 ## 8. Output Structure
@@ -410,7 +448,8 @@ The preprocessing step should also persist:
 - `stats.json` per pipeline,
 - `feature_columns.json`,
 - a subset manifest describing the selected weekly archives,
-- split-policy metadata for `date` and `groupkfold`.
+- split-policy metadata for `date` and `groupkfold`,
+- balance-summary metadata for `binary_raw` and `binary` when balancing is enabled.
 
 ---
 
