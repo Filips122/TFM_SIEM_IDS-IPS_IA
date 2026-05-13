@@ -38,9 +38,12 @@ def save_json(path: Path, obj: Dict) -> None:
     path.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None) -> Path:
+def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None, dataset: Optional[str] = None) -> Path:
     run_id = run_id or now_run_id()
-    root = resolve_from_root(f"src/models/UGR16/artifacts/{model_name}/{split_mode}/{run_id}")
+    if dataset:
+        root = resolve_from_root(f"src/models/UGR16/artifacts/{model_name}/{dataset}/{split_mode}/{run_id}")
+    else:
+        root = resolve_from_root(f"src/models/UGR16/artifacts/{model_name}/{split_mode}/{run_id}")
     ensure_dir(root)
     return root
 

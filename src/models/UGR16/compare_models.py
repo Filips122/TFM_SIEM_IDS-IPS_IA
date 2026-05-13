@@ -44,9 +44,13 @@ def normalize_test_metrics(payload: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def build_row_base(model: str, split_mode: str, run_id: str, fold: str | None) -> Dict[str, Any]:
+SPLIT_MODE_NAMES = {"date", "random", "groupkfold"}
+
+
+def build_row_base(model: str, dataset: str, split_mode: str, run_id: str, fold: str | None) -> Dict[str, Any]:
     return {
         "model": model,
+        "dataset": dataset,
         "split_mode": split_mode,
         "run_id": run_id,
         "fold": fold,
@@ -55,7 +59,7 @@ def build_row_base(model: str, split_mode: str, run_id: str, fold: str | None) -
     }
 
 
-def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dict[str, Any]]:
+def collect_run_rows(model_dir: Path, dataset: str, mode_dir: Path, run_dir: Path) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
     model = model_dir.name
     split_mode = mode_dir.name
@@ -72,7 +76,7 @@ def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dic
         for fold_dir in fold_dirs:
             fold_name = fold_dir.name
             seen_folds.add(fold_name)
-            row = build_row_base(model, split_mode, run_id, fold_name)
+            row = build_row_base(model, dataset, split_mode, run_id, fold_name)
 
             mtest = fold_dir / "metrics_test.json"
             if mtest.exists():
@@ -99,7 +103,7 @@ def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dic
             for fold_name, fold_data in summary.items():
                 if fold_name in seen_folds:
                     continue
-                row = build_row_base(model, split_mode, run_id, fold_name)
+                row = build_row_base(model, dataset, split_mode, run_id, fold_name)
                 if isinstance(fold_data, dict) and fold_data.get("skipped", False):
                     row["status"] = "skipped"
                     row["reason"] = fold_data.get("reason", "skipped")
@@ -112,7 +116,7 @@ def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dic
 
         return rows
 
-    row = build_row_base(model, split_mode, run_id, None)
+    row = build_row_base(model, dataset, split_mode, run_id, None)
     mtest = run_dir / "metrics_test.json"
     if mtest.exists():
         row.update(normalize_test_metrics(read_json(mtest)))
@@ -173,13 +177,14 @@ def aggregate_rows(detailed: pd.DataFrame) -> pd.DataFrame:
         if col in ok_df.columns:
             ok_df[col] = pd.to_numeric(ok_df[col], errors="coerce")
 
-    group_cols = ["model", "split_mode"]
+    group_cols = ["model", "dataset", "split_mode"]
     grouped = ok_df.groupby(group_cols, dropna=False)
 
     rows: List[Dict[str, Any]] = []
-    for (model, split_mode), g in grouped:
+    for (model, dataset, split_mode), g in grouped:
         row: Dict[str, Any] = {
             "model": model,
+            "dataset": dataset,
             "split_mode": split_mode,
             "n_rows": int(len(g)),
             "n_runs": int(g["run_id"].nunique()),
@@ -230,11 +235,24 @@ def collect_rows(artifacts_dir: Path) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
     model_dirs = sorted([p for p in artifacts_dir.iterdir() if p.is_dir() and p.name != "compare_models"])
     for model_dir in model_dirs:
-        mode_dirs = sorted([p for p in model_dir.iterdir() if p.is_dir()])
-        for mode_dir in mode_dirs:
-            run_dirs = sorted([p for p in mode_dir.iterdir() if p.is_dir()])
-            for run_dir in run_dirs:
-                rows.extend(collect_run_rows(model_dir, mode_dir, run_dir))
+        first_level_dirs = sorted([p for p in model_dir.iterdir() if p.is_dir()])
+        for first_level_dir in first_level_dirs:
+            if first_level_dir.name in SPLIT_MODE_NAMES:
+                dataset = "legacy"
+                mode_dir = first_level_dir
+                run_dirs = sorted([p for p in mode_dir.iterdir() if p.is_dir()])
+                for run_dir in run_dirs:
+                    rows.extend(collect_run_rows(model_dir, dataset, mode_dir, run_dir))
+                continue
+
+            dataset = first_level_dir.name
+            mode_dirs = sorted([p for p in first_level_dir.iterdir() if p.is_dir()])
+            for mode_dir in mode_dirs:
+                if mode_dir.name not in SPLIT_MODE_NAMES:
+                    continue
+                run_dirs = sorted([p for p in mode_dir.iterdir() if p.is_dir()])
+                for run_dir in run_dirs:
+                    rows.extend(collect_run_rows(model_dir, dataset, mode_dir, run_dir))
     return rows
 
 
@@ -242,6 +260,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--artifacts_dir", default="src/models/UGR16/artifacts")
     ap.add_argument("--out_dir", default=None)
+    ap.add_argument("--datasets", nargs="*", default=None, help="Optional dataset names to include in the comparison")
     args = ap.parse_args()
 
     art = Path(args.artifacts_dir)
@@ -253,6 +272,12 @@ def main() -> None:
         raise SystemExit("No metrics found in artifacts")
 
     detailed = pd.DataFrame(rows)
+    if args.datasets:
+        requested_datasets = {str(dataset) for dataset in args.datasets}
+        detailed = detailed[detailed["dataset"].isin(requested_datasets)].copy()
+        if detailed.empty:
+            raise SystemExit(f"No metrics found for requested datasets: {sorted(requested_datasets)}")
+
     for col in NUMERIC_METRICS:
         if col in detailed.columns:
             detailed[col] = pd.to_numeric(detailed[col], errors="coerce")
@@ -260,7 +285,7 @@ def main() -> None:
     rank_data = detailed.apply(primary_score, axis=1, result_type="expand")
     detailed["rank_score"] = rank_data[0]
     detailed["rank_metric"] = rank_data[1]
-    detailed = detailed.sort_values(["rank_score", "model", "split_mode"], ascending=[False, True, True])
+    detailed = detailed.sort_values(["rank_score", "model", "dataset", "split_mode"], ascending=[False, True, True, True])
 
     skipped = detailed[detailed["status"] == "skipped"]
     missing = detailed[detailed["status"] == "missing_metrics"]

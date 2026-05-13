@@ -15,8 +15,8 @@ from reporting import save_anomaly_plots
 from train_utils import artifacts_root, now_run_id, save_json
 
 
-def run_one(split_mode: str, fold: int | None, epochs: int, out_dir) -> dict:
-    tr, va, te = load_splits(split_mode=split_mode, dataset="UGR16", pipeline="anomaly", fold=fold)
+def run_one(split_mode: str, fold: int | None, epochs: int, out_dir, dataset: str) -> dict:
+    tr, va, te = load_splits(split_mode=split_mode, dataset=dataset, pipeline="anomaly", fold=fold)
 
     Xtr = tr.X.astype(np.float32)
     model = IsolationForest(
@@ -62,23 +62,31 @@ def main() -> None:
     ap.add_argument("--fold", type=int, default=None)
     ap.add_argument("--n_folds", type=int, default=8)
     ap.add_argument("--epochs", type=int, default=300)
+    ap.add_argument("--dataset", type=str, default="UGR16")
     args = ap.parse_args()
 
     model_name = "anomaly_isoforest_UGR16"
     run_id = now_run_id()
-    root = artifacts_root(model_name, args.split_mode, run_id)
+    root = artifacts_root(model_name, args.split_mode, run_id, dataset=args.dataset)
 
     if args.split_mode != "groupkfold":
         try:
+<<<<<<< HEAD
             out = run_one(args.split_mode, None, args.epochs, root)
         except (FileNotFoundError, EmptySplitError) as e:
             raise SystemExit(
                 "UGR16 anomaly split is missing or empty. "
+=======
+            out = run_one(args.split_mode, None, args.epochs, root, args.dataset)
+        except (FileNotFoundError, EmptySplitError) as e:
+            raise SystemExit(
+                f"{args.dataset} anomaly split is missing or empty. "
+>>>>>>> cc9f15f8d4b66ce443abe6fec2dedc28528ef8f1
                 "This usually means preprocessing did not generate BENIGN train rows or the split is incomplete. "
                 f"Details: {e}"
             )
         joblib.dump(out["model"], root / "model.joblib")
-        save_json(root / "results.json", {"val": out["val"], "test": out["test"], "best_epoch": None})
+        save_json(root / "results.json", {"dataset": args.dataset, "val": out["val"], "test": out["test"], "best_epoch": None})
         print("Saved:", root)
         return
 
@@ -93,14 +101,18 @@ def main() -> None:
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
         try:
+<<<<<<< HEAD
             out = run_one("groupkfold", f, args.epochs, fold_dir)
+=======
+            out = run_one("groupkfold", f, args.epochs, fold_dir, args.dataset)
+>>>>>>> cc9f15f8d4b66ce443abe6fec2dedc28528ef8f1
         except (FileNotFoundError, EmptySplitError) as e:
             print(f"[skip] fold_{f}: {e}")
             summary[f"fold_{f}"] = {"skipped": True, "reason": str(e)}
             continue
         joblib.dump(out["model"], fold_dir / "model.joblib")
-        save_json(fold_dir / "results.json", {"val": out["val"], "test": out["test"], "best_epoch": None})
-        summary[f"fold_{f}"] = {"val": out["val"], "test": out["test"]}
+        save_json(fold_dir / "results.json", {"dataset": args.dataset, "val": out["val"], "test": out["test"], "best_epoch": None})
+        summary[f"fold_{f}"] = {"dataset": args.dataset, "val": out["val"], "test": out["test"]}
 
     save_json(root / "summary.json", summary)
     print("Saved:", root)
