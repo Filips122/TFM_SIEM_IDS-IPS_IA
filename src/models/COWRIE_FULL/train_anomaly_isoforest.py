@@ -15,9 +15,9 @@ from reporting import save_anomaly_plots
 from train_utils import artifacts_root, now_run_id, save_json
 
 
-def run_one(split_mode: str, fold: int | None, epochs: int, out_dir, dataset: str) -> dict:
+def run_one(split_mode: str, fold: int | None, epochs: int, out_dir, dataset: str, n_jobs: int) -> dict:
     train, val, test = load_splits(split_mode=split_mode, dataset=dataset, pipeline="anomaly", fold=fold)
-    model = IsolationForest(n_estimators=epochs, contamination="auto", random_state=42, n_jobs=-1)
+    model = IsolationForest(n_estimators=epochs, contamination="auto", random_state=42, n_jobs=n_jobs)
     model.fit(train.X.astype(np.float32))
     val_scores = -model.score_samples(val.X.astype(np.float32))
     test_scores = -model.score_samples(test.X.astype(np.float32))
@@ -29,26 +29,28 @@ def run_one(split_mode: str, fold: int | None, epochs: int, out_dir, dataset: st
         "model": model,
         "val": {"roc_auc": val_report.roc_auc, "pr_auc": val_report.pr_auc, "best_f1": val_report.best_f1, "best_threshold": val_report.best_threshold},
         "test": {"roc_auc": test_report.roc_auc, "pr_auc": test_report.pr_auc, "best_f1": test_report.best_f1, "best_threshold": test_report.best_threshold},
+        "data": {"train_rows": int(len(train.X)), "val_rows": int(len(val.X)), "test_rows": int(len(test.X)), "n_features": int(train.X.shape[1])},
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--split_mode", default="date", choices=["date", "random", "groupkfold"])
-    parser.add_argument("--dataset", default="LAB-ALERTS")
+    parser.add_argument("--dataset", default="COWRIE_FULL")
     parser.add_argument("--all_folds", action="store_true")
     parser.add_argument("--fold", type=int, default=None)
     parser.add_argument("--n_folds", type=int, default=5)
     parser.add_argument("--epochs", type=int, default=315)
+    parser.add_argument("--n_jobs", type=int, default=1)
     args = parser.parse_args()
-    root = artifacts_root("anomaly_isoforest_LAB_ALERTS", args.split_mode, now_run_id())
+    root = artifacts_root("anomaly_isoforest_COWRIE_FULL", args.split_mode, now_run_id())
     if args.split_mode != "groupkfold":
         try:
-            out = run_one(args.split_mode, None, args.epochs, root, args.dataset)
+            out = run_one(args.split_mode, None, args.epochs, root, args.dataset, args.n_jobs)
         except (FileNotFoundError, EmptySplitError) as exc:
             raise SystemExit(f"{args.dataset} anomaly split is missing or empty: {exc}")
         joblib.dump(out["model"], root / "model.joblib")
-        save_json(root / "results.json", {"val": out["val"], "test": out["test"], "best_epoch": None})
+        save_json(root / "results.json", {"val": out["val"], "test": out["test"], "data": out["data"], "best_epoch": None})
         print("Saved:", root)
         return
     folds = range(args.n_folds) if args.all_folds else [0 if args.fold is None else args.fold]
@@ -57,13 +59,13 @@ def main() -> None:
         fold_dir = root / f"fold_{fold}"
         fold_dir.mkdir(parents=True, exist_ok=True)
         try:
-            out = run_one("groupkfold", int(fold), args.epochs, fold_dir, args.dataset)
+            out = run_one("groupkfold", int(fold), args.epochs, fold_dir, args.dataset, args.n_jobs)
         except (FileNotFoundError, EmptySplitError) as exc:
             summary[f"fold_{fold}"] = {"skipped": True, "reason": str(exc)}
             continue
         joblib.dump(out["model"], fold_dir / "model.joblib")
-        save_json(fold_dir / "results.json", {"val": out["val"], "test": out["test"], "best_epoch": None})
-        summary[f"fold_{fold}"] = {"val": out["val"], "test": out["test"]}
+        save_json(fold_dir / "results.json", {"val": out["val"], "test": out["test"], "data": out["data"], "best_epoch": None})
+        summary[f"fold_{fold}"] = {"val": out["val"], "test": out["test"], "data": out["data"]}
     save_json(root / "summary.json", summary)
     print("Saved:", root)
 

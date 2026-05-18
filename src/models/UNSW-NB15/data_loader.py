@@ -12,7 +12,7 @@ import pandas as pd
 
 
 def repo_root() -> Path:
-    # <root>/src/models/NUSW-NB15/data_loader.py
+    # <root>/src/models/UNSW-NB15/data_loader.py
     return Path(__file__).resolve().parents[3]
 
 
@@ -104,7 +104,7 @@ def get_split_folder(
 
 
 def load_split(
-    datasets_base: Union[str, Path] = "src/models/NUSW-NB15/datasets",
+    datasets_base: Union[str, Path] = "src/models/UNSW-NB15/datasets",
     split_mode: str = "random",
     dataset: str = "NUSW-NB15",
     pipeline: str = "binary",
@@ -130,7 +130,7 @@ def load_split(
 
 
 def load_splits(
-    datasets_base: Union[str, Path] = "src/models/NUSW-NB15/datasets",
+    datasets_base: Union[str, Path] = "src/models/UNSW-NB15/datasets",
     split_mode: str = "random",
     dataset: str = "NUSW-NB15",
     pipeline: str = "binary",

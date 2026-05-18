@@ -47,7 +47,7 @@ def main():
     ap.add_argument("--split_mode", required=True, choices=["day", "groupkfold"])
     ap.add_argument("--all_folds", action="store_true")
     ap.add_argument("--fold", type=int, default=None)
-    ap.add_argument("--epochs", type=int, default=300)
+    ap.add_argument("--epochs", type=int, default=315)
     args = ap.parse_args()
 
     model_name = f"anomaly_isoforest_{args.dataset}"

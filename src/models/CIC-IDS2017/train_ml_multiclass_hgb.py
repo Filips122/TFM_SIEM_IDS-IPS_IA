@@ -8,7 +8,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.preprocessing import LabelEncoder
 
 from train_utils import artifacts_root, load_splits, now_run_id, save_json
-from reporting import save_metrics_and_plots, plot_corr_matrix
+from reporting import save_metrics_and_plots, plot_corr_matrix, save_staged_classification_history
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
     ap.add_argument("--all_folds", action="store_true")
     ap.add_argument("--fold", type=int, default=None)
     ap.add_argument("--sample_frac", type=float, default=None)
-    ap.add_argument("--epochs", type=int, default=250)
+    ap.add_argument("--epochs", type=int, default=265)
     args = ap.parse_args()
 
     model_name = "offline_ML_multiclass_hgb"
@@ -46,6 +46,7 @@ def main():
             random_state=42,
         )
         model.fit(Xtr, ytr)
+        save_staged_classification_history(out_dir, model, Xtr, ytr, Xva, yva, le.classes_)
 
         ptr = model.predict_proba(Xtr)
         pva = model.predict_proba(Xva)

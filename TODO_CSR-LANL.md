@@ -85,21 +85,23 @@ Notes:
 
 ## Phase 5 - Orchestration and Validation
 
-- [ ] Add CSR-LANL run-all orchestration script in `src/scripts`
+- [x] Add CSR-LANL run-all orchestration script in `src/scripts`
 - [ ] Run end-to-end preprocessing for `date` split
 - [x] Run end-to-end preprocessing for `random` split
 - [ ] Run end-to-end preprocessing for at least one `groupkfold` fold
 - [ ] Run end-to-end anomaly Isolation Forest on `date` split
 - [ ] Run end-to-end binary HGB on `date` split
 - [ ] Run multiclass HGB on `date` split if retained
-- [ ] Run at least one random split for comparison
+- [x] Run at least one random split for comparison
 - [ ] Run at least one grouped fold for anomaly baseline
 - [ ] Run at least one grouped fold for binary baseline
-- [ ] Generate first `comparison.csv` and `comparison.md` from CSR-LANL artifacts
+- [x] Generate first `comparison.csv` and `comparison.md` from CSR-LANL artifacts
 - [ ] Add CSR-LANL usage commands to `README.md`
 
 Notes:
 - The completed random preprocessing run was a capped smoke test only, written to a temporary `datasets_smoke` directory and removed after validation.
+- Added `src/scripts/csr_lanl_run_all_models.ps1` for CSR-LANL binary HGB, multiclass HGB, Isolation Forest, and comparison orchestration.
+- Smoke training was validated on `src/models/CSR-LANL/datasets_subsample` with reduced epochs/estimators, and the first CSR-LANL comparison report was generated from the resulting random-split artifacts.
 
 ## Phase 6 - Quality and Hardening
 

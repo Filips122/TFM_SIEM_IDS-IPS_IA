@@ -18,7 +18,7 @@ from reporting import plot_history, predict_proba_torch, save_metrics_and_plots,
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--epochs", type=int, default=5)
+    ap.add_argument("--epochs", type=int, default=20)
     ap.add_argument("--batch_size", type=int, default=8192)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--weight_decay", type=float, default=1e-4)

@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
 
 from train_utils import artifacts_root, fit_label_encoder, load_splits, now_run_id, save_json
-from reporting import save_metrics_and_plots, plot_corr_matrix
+from reporting import save_metrics_and_plots, plot_corr_matrix, save_staged_classification_history
 
 
 def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs: int, out_dir) -> dict:
@@ -40,6 +40,7 @@ def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs
         random_state=42,
     )
     model.fit(Xtr, ytr)
+    save_staged_classification_history(out_dir, model, Xtr, ytr, Xva, yva, le.classes_)
 
     ptr = model.predict_proba(Xtr)
     pva = model.predict_proba(Xva)
@@ -73,7 +74,7 @@ def main():
     ap.add_argument("--all_folds", action="store_true")
     ap.add_argument("--fold", type=int, default=None)
     ap.add_argument("--sample_frac", type=float, default=None, help="Ej: 0.1 para 10% (dev)")
-    ap.add_argument("--epochs", type=int, default=200)
+    ap.add_argument("--epochs", type=int, default=215)
     ap.add_argument("--verbose", type=int, default=1)
     args = ap.parse_args()
 

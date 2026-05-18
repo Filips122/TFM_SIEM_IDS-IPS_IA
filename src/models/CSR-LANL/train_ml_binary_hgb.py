@@ -10,7 +10,7 @@ import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
 
 from data_loader import EmptySplitError, load_splits
-from reporting import plot_corr_matrix, save_metrics_and_plots
+from reporting import plot_corr_matrix, save_metrics_and_plots, save_staged_classification_history
 from train_utils import artifacts_root, fit_label_encoder, now_run_id, save_json, save_label_encoder
 
 
@@ -22,15 +22,19 @@ def run_one(datasets_base: str, split_mode: str, fold: int | None, sample_frac: 
     y_train = encoder.transform(train.y.astype(str))
     y_val = encoder.transform(val.y.astype(str))
     y_test = encoder.transform(test.y.astype(str))
+    X_train = train.X.astype(np.float32)
+    X_val = val.X.astype(np.float32)
+    X_test = test.X.astype(np.float32)
     model = HistGradientBoostingClassifier(max_iter=epochs, learning_rate=0.08, max_depth=3, early_stopping=True, validation_fraction=0.15, random_state=42)
-    model.fit(train.X.astype(np.float32), y_train)
-    p_train = model.predict_proba(train.X.astype(np.float32))
-    p_val = model.predict_proba(val.X.astype(np.float32))
-    p_test = model.predict_proba(test.X.astype(np.float32))
+    model.fit(X_train, y_train)
+    save_staged_classification_history(out_dir, model, X_train, y_train, X_val, y_val, encoder.classes_)
+    p_train = model.predict_proba(X_train)
+    p_val = model.predict_proba(X_val)
+    p_test = model.predict_proba(X_test)
     metrics_train = save_metrics_and_plots(out_dir, "train", y_train, p_train, encoder.classes_)
     metrics_val = save_metrics_and_plots(out_dir, "val", y_val, p_val, encoder.classes_)
     metrics_test = save_metrics_and_plots(out_dir, "test", y_test, p_test, encoder.classes_)
-    plot_corr_matrix(train.X, out_dir / "plots" / "corr_matrix.png")
+    plot_corr_matrix(X_train, out_dir / "plots" / "corr_matrix.png")
     joblib.dump(model, out_dir / "model.joblib")
     save_label_encoder(out_dir, encoder)
     return {"best_iter": int(getattr(model, "n_iter_", model.max_iter)), "train": metrics_train, "val": metrics_val, "test": metrics_test}
@@ -45,7 +49,7 @@ def main() -> None:
     parser.add_argument("--fold", type=int, default=None)
     parser.add_argument("--n_folds", type=int, default=5)
     parser.add_argument("--sample_frac", type=float, default=None)
-    parser.add_argument("--epochs", type=int, default=200)
+    parser.add_argument("--epochs", type=int, default=215)
     args = parser.parse_args()
     root = artifacts_root("offline_CSR_LANL_binary_hgb", args.split_mode, now_run_id())
     if args.split_mode != "groupkfold":

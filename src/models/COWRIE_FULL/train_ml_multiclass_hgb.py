@@ -42,14 +42,14 @@ def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--split_mode", default="date", choices=["date", "random", "groupkfold"])
-    parser.add_argument("--dataset", default="LAB-ALERTS")
+    parser.add_argument("--dataset", default="COWRIE_FULL")
     parser.add_argument("--all_folds", action="store_true")
     parser.add_argument("--fold", type=int, default=None)
     parser.add_argument("--n_folds", type=int, default=5)
     parser.add_argument("--sample_frac", type=float, default=None)
     parser.add_argument("--epochs", type=int, default=215)
     args = parser.parse_args()
-    root = artifacts_root("offline_LAB_ALERTS_multiclass_hgb", args.split_mode, now_run_id())
+    root = artifacts_root("offline_COWRIE_FULL_multiclass_hgb", args.split_mode, now_run_id())
     if args.split_mode != "groupkfold":
         try:
             out = run_one(args.split_mode, None, args.sample_frac, args.epochs, root, args.dataset)

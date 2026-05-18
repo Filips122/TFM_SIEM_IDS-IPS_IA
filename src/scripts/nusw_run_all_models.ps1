@@ -10,20 +10,24 @@ param(
     [string]$PythonExe = "python",
     [int]$Chunksize = 250000,
     [int]$Seed = 42,
-    [int]$BinaryEpochs = 200,
-    [int]$MulticlassEpochs = 250,
-    [int]$AnomalyEstimators = 300,
-    [int]$MlpEpochs = 25,
+    [int]$BinaryEpochs = 215,
+    [int]$MulticlassEpochs = 265,
+    [int]$AnomalyEstimators = 315,
+    [int]$MlpEpochs = 40,
     [int]$NFolds = 8,
     [int[]]$GroupFolds = @(0),
     [double]$SampleFrac,
     [switch]$AllGroupFolds,
     [switch]$RunAnalysis,
+    [switch]$SkipBinaryHgb,
+    [switch]$SkipMulticlass,
+    [switch]$SkipAnomaly,
     [switch]$SkipBinaryMlp,
     [switch]$DeepAnalysis,
     [switch]$SkipPreprocess,
     [switch]$SkipValidation,
-    [switch]$SkipCompare
+    [switch]$SkipCompare,
+    [switch]$DryRun
 )
 
 $ErrorActionPreference = "Stop"
@@ -61,14 +65,17 @@ if ($PythonExe -eq "python" -and (Test-Path $venvPython)) {
 }
 $hasSampleFrac = $PSBoundParameters.ContainsKey("SampleFrac")
 
-function RunPy([string]$relPath, [string[]]$pyArgs) {
+function RunPy([string]$relPath, [string[]]$pythonParams) {
     $fullPath = Join-Path $repoRoot $relPath
     if (!(Test-Path $fullPath)) {
         throw "No existe el script: $fullPath"
     }
 
-    Write-Host "`n>>> python -u $relPath $($pyArgs -join ' ')" -ForegroundColor Cyan
-    & $PythonExe -u $fullPath @pyArgs
+    Write-Host "`n>>> python -u $relPath $($pythonParams -join ' ')" -ForegroundColor Cyan
+    if ($DryRun) {
+        return
+    }
+    & $PythonExe -u $fullPath @pythonParams
     if ($LASTEXITCODE -ne 0) {
         throw "Fallo: $relPath (exit code $LASTEXITCODE)"
     }
@@ -76,7 +83,7 @@ function RunPy([string]$relPath, [string[]]$pyArgs) {
 
 function Invoke-Prepare([string]$mode) {
     $prepareSourceSet = if ($mode -eq "official") { "official_pair" } else { $SourceSet }
-    $args = @(
+    $prepareParams = @(
         "--split_mode", $mode,
         "--source_set", $prepareSourceSet,
         "--anomaly_group_train_policy", $AnomalyGroupTrainPolicy,
@@ -86,41 +93,41 @@ function Invoke-Prepare([string]$mode) {
 
     if ($mode -eq "groupkfold") {
         if ($AllGroupFolds) {
-            $args += @("--all_folds", "--n_folds", "$NFolds")
+            $prepareParams += @("--all_folds", "--n_folds", "$NFolds")
         }
         else {
             foreach ($fold in $GroupFolds) {
-                RunPy "src\models\NUSW-NB15\prepare_dataset.py" ($args + @("--fold", "$fold", "--n_folds", "$NFolds"))
+                RunPy "src\models\UNSW-NB15\prepare_dataset.py" ($prepareParams + @("--fold", "$fold", "--n_folds", "$NFolds"))
             }
             return
         }
     }
 
-    RunPy "src\models\NUSW-NB15\prepare_dataset.py" $args
+    RunPy "src\models\UNSW-NB15\prepare_dataset.py" $prepareParams
 }
 
-function Invoke-GroupedTrainer([string]$relPath, [string]$epochsArg, [int]$epochsValue) {
+function Invoke-GroupedTrainer([string]$relPath, [string]$epochsFlag, [int]$epochsValue) {
     if ($AllGroupFolds) {
-        $args = @("--split_mode", "groupkfold", "--all_folds", "--n_folds", "$NFolds", $epochsArg, "$epochsValue")
+        $trainerParams = @("--split_mode", "groupkfold", "--all_folds", "--n_folds", "$NFolds", $epochsFlag, "$epochsValue")
         if ($hasSampleFrac) {
-            $args += @("--sample_frac", "$SampleFrac")
+            $trainerParams += @("--sample_frac", "$SampleFrac")
         }
-        RunPy $relPath $args
+        RunPy $relPath $trainerParams
         return
     }
 
     foreach ($fold in $GroupFolds) {
-        $args = @("--split_mode", "groupkfold", "--fold", "$fold", "--n_folds", "$NFolds", $epochsArg, "$epochsValue")
+        $trainerParams = @("--split_mode", "groupkfold", "--fold", "$fold", "--n_folds", "$NFolds", $epochsFlag, "$epochsValue")
         if ($hasSampleFrac) {
-            $args += @("--sample_frac", "$SampleFrac")
+            $trainerParams += @("--sample_frac", "$SampleFrac")
         }
-        RunPy $relPath $args
+        RunPy $relPath $trainerParams
     }
 }
 
 function Invoke-GroupedAnomalyTrainer() {
     if ($AllGroupFolds) {
-        RunPy "src\models\NUSW-NB15\train_anomaly_isoforest.py" @(
+        RunPy "src\models\UNSW-NB15\train_anomaly_isoforest.py" @(
             "--split_mode", "groupkfold",
             "--all_folds",
             "--n_folds", "$NFolds",
@@ -130,7 +137,7 @@ function Invoke-GroupedAnomalyTrainer() {
     }
 
     foreach ($fold in $GroupFolds) {
-        RunPy "src\models\NUSW-NB15\train_anomaly_isoforest.py" @(
+        RunPy "src\models\UNSW-NB15\train_anomaly_isoforest.py" @(
             "--split_mode", "groupkfold",
             "--fold", "$fold",
             "--n_folds", "$NFolds",
@@ -139,20 +146,23 @@ function Invoke-GroupedAnomalyTrainer() {
     }
 }
 
-Write-Host "=== NUSW-NB15 orchestration ===" -ForegroundColor Green
+Write-Host "=== UNSW-NB15 orchestration ===" -ForegroundColor Green
 Write-Host "Repo root : $repoRoot"
 Write-Host "Python    : $PythonExe"
 Write-Host "Modes     : $($Modes -join ', ')"
 Write-Host "Source set: $SourceSet"
 Write-Host "Anomaly policy: $AnomalyGroupTrainPolicy"
+Write-Host "Run binary HGB: $(-not $SkipBinaryHgb)"
+Write-Host "Run multiclass HGB: $(-not $SkipMulticlass)"
+Write-Host "Run anomaly model: $(-not $SkipAnomaly)"
 Write-Host "Run binary MLP: $(-not $SkipBinaryMlp)"
 
 if ($RunAnalysis) {
-    $analysisArgs = @()
+    $analysisParams = @()
     if ($DeepAnalysis) {
-        $analysisArgs += "--deep"
+        $analysisParams += "--deep"
     }
-    RunPy "src\helpers\analyze_nusw_folder.py" $analysisArgs
+    RunPy "src\helpers\analyze_nusw_folder.py" $analysisParams
 }
 
 if (-not $SkipPreprocess) {
@@ -162,43 +172,55 @@ if (-not $SkipPreprocess) {
 }
 
 if (-not $SkipValidation) {
-    RunPy "src\models\NUSW-NB15\validate_datasets.py" (@("--modes") + $Modes)
+    RunPy "src\models\UNSW-NB15\validate_datasets.py" (@("--modes") + $Modes)
 }
 
 foreach ($mode in $Modes) {
     if ($mode -eq "groupkfold") {
-        Invoke-GroupedTrainer "src\models\NUSW-NB15\train_ml_binary_hgb.py" "--epochs" $BinaryEpochs
-        Invoke-GroupedTrainer "src\models\NUSW-NB15\train_ml_multiclass_hgb.py" "--epochs" $MulticlassEpochs
-        if (-not $SkipBinaryMlp) {
-            Invoke-GroupedTrainer "src\models\NUSW-NB15\train_ml_binary_mlp.py" "--epochs" $MlpEpochs
+        if (-not $SkipBinaryHgb) {
+            Invoke-GroupedTrainer "src\models\UNSW-NB15\train_ml_binary_hgb.py" "--epochs" $BinaryEpochs
         }
-        Invoke-GroupedAnomalyTrainer
+        if (-not $SkipMulticlass) {
+            Invoke-GroupedTrainer "src\models\UNSW-NB15\train_ml_multiclass_hgb.py" "--epochs" $MulticlassEpochs
+        }
+        if (-not $SkipBinaryMlp) {
+            Invoke-GroupedTrainer "src\models\UNSW-NB15\train_ml_binary_mlp.py" "--epochs" $MlpEpochs
+        }
+        if (-not $SkipAnomaly) {
+            Invoke-GroupedAnomalyTrainer
+        }
         continue
     }
 
-    $binaryArgs = @("--split_mode", $mode, "--epochs", "$BinaryEpochs")
-    $multiclassArgs = @("--split_mode", $mode, "--epochs", "$MulticlassEpochs")
+    $binaryParams = @("--split_mode", $mode, "--epochs", "$BinaryEpochs")
+    $multiclassParams = @("--split_mode", $mode, "--epochs", "$MulticlassEpochs")
     if ($hasSampleFrac) {
-        $binaryArgs += @("--sample_frac", "$SampleFrac")
-        $multiclassArgs += @("--sample_frac", "$SampleFrac")
+        $binaryParams += @("--sample_frac", "$SampleFrac")
+        $multiclassParams += @("--sample_frac", "$SampleFrac")
     }
 
-    RunPy "src\models\NUSW-NB15\train_ml_binary_hgb.py" $binaryArgs
-    RunPy "src\models\NUSW-NB15\train_ml_multiclass_hgb.py" $multiclassArgs
-    if (-not $SkipBinaryMlp) {
-        $mlpArgs = @("--split_mode", $mode, "--epochs", "$MlpEpochs")
-        if ($hasSampleFrac) {
-            $mlpArgs += @("--sample_frac", "$SampleFrac")
-        }
-        RunPy "src\models\NUSW-NB15\train_ml_binary_mlp.py" $mlpArgs
+    if (-not $SkipBinaryHgb) {
+        RunPy "src\models\UNSW-NB15\train_ml_binary_hgb.py" $binaryParams
     }
-    RunPy "src\models\NUSW-NB15\train_anomaly_isoforest.py" @("--split_mode", $mode, "--epochs", "$AnomalyEstimators")
+    if (-not $SkipMulticlass) {
+        RunPy "src\models\UNSW-NB15\train_ml_multiclass_hgb.py" $multiclassParams
+    }
+    if (-not $SkipBinaryMlp) {
+        $mlpParams = @("--split_mode", $mode, "--epochs", "$MlpEpochs")
+        if ($hasSampleFrac) {
+            $mlpParams += @("--sample_frac", "$SampleFrac")
+        }
+        RunPy "src\models\UNSW-NB15\train_ml_binary_mlp.py" $mlpParams
+    }
+    if (-not $SkipAnomaly) {
+        RunPy "src\models\UNSW-NB15\train_anomaly_isoforest.py" @("--split_mode", $mode, "--epochs", "$AnomalyEstimators")
+    }
 }
 
 if (-not $SkipCompare) {
-    RunPy "src\models\NUSW-NB15\compare_models.py" @(
-        "--artifacts_dir", (Join-Path $repoRoot "src\models\NUSW-NB15\artifacts")
+    RunPy "src\models\UNSW-NB15\compare_models.py" @(
+        "--artifacts_dir", (Join-Path $repoRoot "src\models\UNSW-NB15\artifacts")
     )
 }
 
-Write-Host "`nNUSW-NB15 orchestration finished." -ForegroundColor Green
+Write-Host "`nUNSW-NB15 orchestration finished." -ForegroundColor Green

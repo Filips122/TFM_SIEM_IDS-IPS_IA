@@ -25,7 +25,7 @@ def ensure_parquet_engine() -> None:
 
 
 def repo_root() -> Path:
-    # <root>/src/models/NUSW-NB15/validate_datasets.py
+    # <root>/src/models/UNSW-NB15/validate_datasets.py
     return Path(__file__).resolve().parents[3]
 
 
@@ -345,11 +345,11 @@ def validate_label_maps(base: Path, artifacts_base: Path, scope: str = "latest")
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--datasets_base", default="src/models/NUSW-NB15/datasets")
-    ap.add_argument("--artifacts_base", default="src/models/NUSW-NB15/artifacts")
+    ap.add_argument("--datasets_base", default="src/models/UNSW-NB15/datasets")
+    ap.add_argument("--artifacts_base", default="src/models/UNSW-NB15/artifacts")
     ap.add_argument("--label_map_scope", default="latest", choices=["latest", "all"])
     ap.add_argument("--modes", nargs="+", default=["random", "groupkfold"])
-    ap.add_argument("--out", default="src/models/NUSW-NB15/datasets/validation_report.json")
+    ap.add_argument("--out", default="src/models/UNSW-NB15/datasets/validation_report.json")
     args = ap.parse_args()
 
     ensure_parquet_engine()

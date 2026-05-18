@@ -61,7 +61,7 @@ def main() -> None:
     ap.add_argument("--all_folds", action="store_true")
     ap.add_argument("--fold", type=int, default=None)
     ap.add_argument("--n_folds", type=int, default=8)
-    ap.add_argument("--epochs", type=int, default=300)
+    ap.add_argument("--epochs", type=int, default=315)
     args = ap.parse_args()
 
     model_name = "anomaly_isoforest_NUSW-NB15"

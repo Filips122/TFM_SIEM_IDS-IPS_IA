@@ -22,7 +22,7 @@ except Exception:
 
 
 def repo_root() -> Path:
-    # <root>/src/models/NUSW-NB15/prepare_dataset.py
+    # <root>/src/models/UNSW-NB15/prepare_dataset.py
     return Path(__file__).resolve().parents[3]
 
 
@@ -33,8 +33,8 @@ def resolve_from_root(p: str | Path) -> Path:
     return (repo_root() / p).resolve()
 
 
-DEFAULT_IN_DIR = Path("out/NUSW-NB15")
-DEFAULT_OUT_DIR = Path("src/models/NUSW-NB15/datasets")
+DEFAULT_IN_DIR = Path("out/UNSW-NB15")
+DEFAULT_OUT_DIR = Path("src/models/UNSW-NB15/datasets")
 
 EXCLUDED_INPUT_PATTERNS = (
     "features",

@@ -10,10 +10,13 @@ param(
     [string]$PythonExe = "python",
     [int]$Chunksize = 250000,
     [int]$Seed = 42,
-    [int]$BinaryEpochs = 200,
-    [int]$MulticlassEpochs = 250,
-    [int]$AnomalyEstimators = 300,
-    [int]$MlpEpochs = 25,
+    [int]$BinaryEpochs = 215,
+    [int]$MulticlassEpochs = 265,
+    [int]$AnomalyEstimators = 315,
+    [int]$AnomalyMaxTrainRows = 500000,
+    [int]$AnomalyMaxEvalRows = 200000,
+    [int]$AnomalyNJobs = 1,
+    [int]$MlpEpochs = 40,
     [int]$NFolds = 8,
     [int[]]$GroupFolds = @(0),
     [double]$SampleFrac,
@@ -115,22 +118,38 @@ function Invoke-GroupedTrainer([string]$relPath, [string]$epochsArg, [int]$epoch
 
 function Invoke-GroupedAnomalyTrainer() {
     if ($AllGroupFolds) {
-        RunPy "src\models\UGR16\train_anomaly_isoforest.py" @(
+        $args = @(
             "--split_mode", "groupkfold",
             "--all_folds",
             "--n_folds", "$NFolds",
-            "--epochs", "$AnomalyEstimators"
+            "--epochs", "$AnomalyEstimators",
+            "--max_train_rows", "$AnomalyMaxTrainRows",
+            "--max_eval_rows", "$AnomalyMaxEvalRows",
+            "--n_jobs", "$AnomalyNJobs",
+            "--seed", "$Seed"
         )
+        if ($hasSampleFrac) {
+            $args += @("--sample_frac", "$SampleFrac")
+        }
+        RunPy "src\models\UGR16\train_anomaly_isoforest.py" $args
         return
     }
 
     foreach ($fold in $GroupFolds) {
-        RunPy "src\models\UGR16\train_anomaly_isoforest.py" @(
+        $args = @(
             "--split_mode", "groupkfold",
             "--fold", "$fold",
             "--n_folds", "$NFolds",
-            "--epochs", "$AnomalyEstimators"
+            "--epochs", "$AnomalyEstimators",
+            "--max_train_rows", "$AnomalyMaxTrainRows",
+            "--max_eval_rows", "$AnomalyMaxEvalRows",
+            "--n_jobs", "$AnomalyNJobs",
+            "--seed", "$Seed"
         )
+        if ($hasSampleFrac) {
+            $args += @("--sample_frac", "$SampleFrac")
+        }
+        RunPy "src\models\UGR16\train_anomaly_isoforest.py" $args
     }
 }
 
@@ -142,6 +161,7 @@ Write-Host "Subset         : $Subset"
 Write-Host "Binary balance : $BinaryBalance"
 Write-Host "Run multiclass : $(-not $SkipMulticlass)"
 Write-Host "Run binary MLP : $(-not $SkipBinaryMlp)"
+Write-Host "Anomaly rows   : train<=${AnomalyMaxTrainRows}, eval<=${AnomalyMaxEvalRows}, n_jobs=${AnomalyNJobs}"
 
 if (-not $SkipPreprocess) {
     foreach ($mode in $Modes) {
@@ -188,7 +208,18 @@ foreach ($mode in $Modes) {
         RunPy "src\models\UGR16\train_ml_binary_mlp.py" $mlpArgs
     }
 
-    RunPy "src\models\UGR16\train_anomaly_isoforest.py" @("--split_mode", $mode, "--epochs", "$AnomalyEstimators")
+    $anomalyArgs = @(
+        "--split_mode", $mode,
+        "--epochs", "$AnomalyEstimators",
+        "--max_train_rows", "$AnomalyMaxTrainRows",
+        "--max_eval_rows", "$AnomalyMaxEvalRows",
+        "--n_jobs", "$AnomalyNJobs",
+        "--seed", "$Seed"
+    )
+    if ($hasSampleFrac) {
+        $anomalyArgs += @("--sample_frac", "$SampleFrac")
+    }
+    RunPy "src\models\UGR16\train_anomaly_isoforest.py" $anomalyArgs
 }
 
 if (-not $SkipCompare) {

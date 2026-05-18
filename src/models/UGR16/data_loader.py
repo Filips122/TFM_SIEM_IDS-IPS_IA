@@ -100,6 +100,55 @@ def _read_parquets(paths: List[Path], columns: Optional[Sequence[str]] = None) -
     return pd.concat(frames, ignore_index=True)
 
 
+def _read_parquets_bounded(
+    paths: List[Path],
+    columns: Optional[Sequence[str]] = None,
+    max_rows: Optional[int] = None,
+    sample_frac: Optional[float] = None,
+    seed: int = 42,
+    shuffle_files: bool = True,
+) -> pd.DataFrame:
+    if not paths:
+        return pd.DataFrame()
+    if max_rows is not None and max_rows <= 0:
+        raise ValueError("max_rows must be positive when provided")
+    if sample_frac is not None and not (0.0 < sample_frac <= 1.0):
+        raise ValueError("sample_frac must be in (0,1]")
+
+    selected_paths = list(paths)
+    rng = np.random.default_rng(seed)
+    if shuffle_files and len(selected_paths) > 1:
+        order = rng.permutation(len(selected_paths))
+        selected_paths = [selected_paths[int(i)] for i in order]
+
+    frames: List[pd.DataFrame] = []
+    rows_loaded = 0
+    for file_index, path in enumerate(selected_paths):
+        if max_rows is not None and rows_loaded >= max_rows:
+            break
+
+        df = pd.read_parquet(path, columns=columns)
+        if sample_frac is not None and sample_frac < 1.0 and not df.empty:
+            df = df.sample(frac=sample_frac, random_state=seed + file_index)
+        if df.empty:
+            continue
+
+        if max_rows is not None:
+            remaining = max_rows - rows_loaded
+            if len(df) > remaining:
+                if shuffle_files:
+                    df = df.sample(n=remaining, random_state=seed + file_index)
+                else:
+                    df = df.iloc[:remaining]
+
+        frames.append(df)
+        rows_loaded += len(df)
+
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True)
+
+
 def _infer_numeric_feature_columns(df: pd.DataFrame, target_col: str = "target") -> List[str]:
     drop = {"target", "label_raw", "timeline_primary_family_meta", "archive_name_meta", "split_name_meta"}
     feats = []
@@ -197,6 +246,53 @@ def load_split(
     return _to_xy(df, target_col="target", dtype=dtype, feature_cols=feature_cols)
 
 
+def load_split_bounded(
+    datasets_base: Union[str, Path] = "src/models/UGR16/datasets",
+    split_mode: str = "date",
+    dataset: str = "UGR16",
+    pipeline: str = "binary",
+    split: str = "train",
+    fold: Optional[int] = None,
+    max_rows: Optional[int] = None,
+    sample_frac: Optional[float] = None,
+    seed: int = 42,
+    dtype: np.dtype = np.float32,
+    feature_cols: Optional[Sequence[str]] = None,
+    shuffle_files: bool = True,
+) -> LoadedSplit:
+    folder = get_split_folder(datasets_base, split_mode, dataset, pipeline, split, fold)
+    paths = _list_parquets(folder)
+    if not paths:
+        raise FileNotFoundError(f"No parquet files in: {folder}")
+
+    if feature_cols is None:
+        feature_cols = load_persisted_feature_columns(datasets_base, split_mode, dataset)
+
+    columns = None
+    if feature_cols is not None:
+        columns = list(dict.fromkeys(["target", *feature_cols]))
+
+    df = _read_parquets_bounded(
+        paths,
+        columns=columns,
+        max_rows=max_rows,
+        sample_frac=sample_frac,
+        seed=seed,
+        shuffle_files=shuffle_files,
+    )
+
+    if df.empty:
+        cap_note = f" with max_rows={max_rows}" if max_rows is not None else ""
+        sample_note = f" and sample_frac={sample_frac}" if sample_frac is not None else ""
+        raise EmptySplitError(
+            "Loaded zero rows"
+            f" for split={split!r}, pipeline={pipeline!r}, split_mode={split_mode!r}, fold={fold}"
+            f" from {folder}{cap_note}{sample_note}."
+        )
+
+    return _to_xy(df, target_col="target", dtype=dtype, feature_cols=feature_cols)
+
+
 def load_splits(
     datasets_base: Union[str, Path] = "src/models/UGR16/datasets",
     split_mode: str = "date",
@@ -212,4 +308,63 @@ def load_splits(
 
     va = load_split(datasets_base, split_mode, dataset, pipeline, "val", fold, sample_frac, seed, dtype, feature_cols=feature_cols)
     te = load_split(datasets_base, split_mode, dataset, pipeline, "test", fold, sample_frac, seed, dtype, feature_cols=feature_cols)
+    return tr, va, te
+
+
+def load_splits_bounded(
+    datasets_base: Union[str, Path] = "src/models/UGR16/datasets",
+    split_mode: str = "date",
+    dataset: str = "UGR16",
+    pipeline: str = "binary",
+    fold: Optional[int] = None,
+    max_train_rows: Optional[int] = None,
+    max_eval_rows: Optional[int] = None,
+    sample_frac: Optional[float] = None,
+    seed: int = 42,
+    dtype: np.dtype = np.float32,
+    shuffle_files: bool = True,
+) -> Tuple[LoadedSplit, LoadedSplit, LoadedSplit]:
+    tr = load_split_bounded(
+        datasets_base=datasets_base,
+        split_mode=split_mode,
+        dataset=dataset,
+        pipeline=pipeline,
+        split="train",
+        fold=fold,
+        max_rows=max_train_rows,
+        sample_frac=sample_frac,
+        seed=seed,
+        dtype=dtype,
+        shuffle_files=shuffle_files,
+    )
+    feature_cols = tr.feature_names
+
+    va = load_split_bounded(
+        datasets_base=datasets_base,
+        split_mode=split_mode,
+        dataset=dataset,
+        pipeline=pipeline,
+        split="val",
+        fold=fold,
+        max_rows=max_eval_rows,
+        sample_frac=sample_frac,
+        seed=seed + 1,
+        dtype=dtype,
+        feature_cols=feature_cols,
+        shuffle_files=shuffle_files,
+    )
+    te = load_split_bounded(
+        datasets_base=datasets_base,
+        split_mode=split_mode,
+        dataset=dataset,
+        pipeline=pipeline,
+        split="test",
+        fold=fold,
+        max_rows=max_eval_rows,
+        sample_frac=sample_frac,
+        seed=seed + 2,
+        dtype=dtype,
+        feature_cols=feature_cols,
+        shuffle_files=shuffle_files,
+    )
     return tr, va, te

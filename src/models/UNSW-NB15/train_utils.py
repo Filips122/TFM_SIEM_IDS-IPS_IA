@@ -16,7 +16,7 @@ from data_loader import load_splits
 
 
 def repo_root() -> Path:
-    # <root>/src/models/NUSW-NB15/train_utils.py
+    # <root>/src/models/UNSW-NB15/train_utils.py
     return Path(__file__).resolve().parents[3]
 
 
@@ -42,7 +42,7 @@ def save_json(path: Path, obj: Dict) -> None:
 
 def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None) -> Path:
     run_id = run_id or now_run_id()
-    root = resolve_from_root(f"src/models/NUSW-NB15/artifacts/{model_name}/{split_mode}/{run_id}")
+    root = resolve_from_root(f"src/models/UNSW-NB15/artifacts/{model_name}/{split_mode}/{run_id}")
     ensure_dir(root)
     return root
 

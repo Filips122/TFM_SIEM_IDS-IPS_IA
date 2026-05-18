@@ -8,7 +8,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.preprocessing import LabelEncoder
 
 from data_loader import EmptySplitError, load_persisted_label_map, load_splits
-from reporting import plot_corr_matrix, save_metrics_and_plots
+from reporting import plot_corr_matrix, save_metrics_and_plots, save_staged_classification_history
 from train_utils import artifacts_root, now_run_id, save_json, save_label_encoder, validate_persisted_label_map
 
 
@@ -47,6 +47,7 @@ def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs
         random_state=42,
     )
     model.fit(Xtr, ytr)
+    save_staged_classification_history(out_dir, model, Xtr, ytr, Xva, yva, le.classes_)
 
     ptr = model.predict_proba(Xtr)
     pva = model.predict_proba(Xva)
@@ -76,7 +77,7 @@ def main() -> None:
     ap.add_argument("--fold", type=int, default=None)
     ap.add_argument("--n_folds", type=int, default=8)
     ap.add_argument("--sample_frac", type=float, default=None)
-    ap.add_argument("--epochs", type=int, default=250)
+    ap.add_argument("--epochs", type=int, default=265)
     ap.add_argument("--dataset", type=str, default="UGR16")
     args = ap.parse_args()
 

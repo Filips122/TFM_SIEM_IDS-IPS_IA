@@ -1,3 +1,10 @@
+param(
+    [string]$PythonExe = "python",
+    [int]$Epochs = 20,
+    [switch]$SkipCompare,
+    [switch]$DryRun
+)
+
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
@@ -7,19 +14,29 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 # Repo root assumed: src\scripts -> ..\..
 $repoRoot = Resolve-Path (Join-Path $scriptDir "..\..")
 
-$py = "python"
-$epochs = "5"
+$py = $PythonExe
+$epochs = "$Epochs"
 
 function RunPy([string]$relPath, [string[]]$pyArgs) {
     $fullPath = Join-Path $repoRoot $relPath
     if (!(Test-Path $fullPath)) {
         throw "No existe el script: $fullPath"
     }
+    Write-Host "`n>>> python -u $relPath $($pyArgs -join ' ')" -ForegroundColor Cyan
+    if ($DryRun) {
+        return
+    }
     & $py -u $fullPath @pyArgs
     if ($LASTEXITCODE -ne 0) {
         throw "Fallo: $relPath (exit code $LASTEXITCODE)"
     }
 }
+
+Write-Host "=== CIC-IDS2017 orchestration ===" -ForegroundColor Green
+Write-Host "Repo root : $repoRoot"
+Write-Host "Python    : $py"
+Write-Host "Epochs    : $epochs"
+Write-Host "Dry run   : $DryRun"
 
 # --- Online TL ---
 RunPy "src\models\CIC-IDS2017\train_tl_binary_logreg_torch.py" @("--split_mode","day","--epochs",$epochs)
@@ -48,4 +65,8 @@ RunPy "src\models\CIC-IDS2017\train_seq_tl_gru.py" @("--mode","day","--task","bi
 RunPy "src\models\CIC-IDS2017\train_seq_tl_gru.py" @("--mode","groupkfold","--task","binary","--fold","4","--epochs",$epochs)
 
 # --- Comparativa final ---
-RunPy "src\models\CIC-IDS2017\compare_models.py" @("--artifacts_dir", (Join-Path $repoRoot "src\models\CIC-IDS2017\artifacts"))
+if (-not $SkipCompare) {
+    RunPy "src\models\CIC-IDS2017\compare_models.py" @("--artifacts_dir", (Join-Path $repoRoot "src\models\CIC-IDS2017\artifacts"))
+}
+
+Write-Host "`nCIC-IDS2017 orchestration finished." -ForegroundColor Green

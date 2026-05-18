@@ -9,8 +9,17 @@ src/models/UNSW-NB15/datasets/
 src/models/UNSW-NB15/artifacts/
 src/models/UGR16/artifacts/
 src/models/UGR16/datasets/
-src/models/TON_IoT/datasets/
+src/models/CSR-LANL/artifacts/
+src/models/CSR-LANL/datasets/
+src/models/CSR-LANL/datasets_redteam_smoke/
+src/models/CSR-LANL/datasets_smoke/
+src/models/CSR-LANL/datasets_subsample/
+src/models/CSR-LANL/datasets_subsample_v1/
+src/models/CSR-LANL/datasets_subsample_v2/
+src/models/COWRIE_FULL/artifacts/
+src/models/COWRIE_FULL/datasets/
 src/models/TON_IoT/artifacts/
+src/models/TON_IoT/datasets/
 src/scripts/tree.txt
 
 # Byte-compiled / optimized / DLL files

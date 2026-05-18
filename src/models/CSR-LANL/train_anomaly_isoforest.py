@@ -40,7 +40,7 @@ def main() -> None:
     parser.add_argument("--all_folds", action="store_true")
     parser.add_argument("--fold", type=int, default=None)
     parser.add_argument("--n_folds", type=int, default=5)
-    parser.add_argument("--epochs", type=int, default=300)
+    parser.add_argument("--epochs", type=int, default=315)
     args = parser.parse_args()
     root = artifacts_root("anomaly_isoforest_CSR_LANL", args.split_mode, now_run_id())
     if args.split_mode != "groupkfold":

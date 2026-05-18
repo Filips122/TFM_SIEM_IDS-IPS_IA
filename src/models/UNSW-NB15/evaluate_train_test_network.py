@@ -46,8 +46,8 @@ def to_md_table(rows: list[dict]) -> str:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--root", default="out/NUSW-NB15")
-    ap.add_argument("--out", default="src/models/NUSW-NB15/artifacts/evaluations")
+    ap.add_argument("--root", default="out/UNSW-NB15")
+    ap.add_argument("--out", default="src/models/UNSW-NB15/artifacts/evaluations")
     args = ap.parse_args()
 
     root = resolve_from_root(args.root)
@@ -59,7 +59,7 @@ def main() -> None:
     net_file = root / "train_test_network.csv"
 
     if not primary_train.exists() or not primary_test.exists() or not net_file.exists():
-        raise SystemExit("Missing expected files in out/NUSW-NB15")
+        raise SystemExit("Missing expected files in out/UNSW-NB15")
 
     train_cols = set(read_columns(primary_train))
     test_cols = set(read_columns(primary_test))

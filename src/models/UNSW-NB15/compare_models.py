@@ -240,7 +240,7 @@ def collect_rows(artifacts_dir: Path) -> List[Dict[str, Any]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--artifacts_dir", default="src/models/NUSW-NB15/artifacts")
+    ap.add_argument("--artifacts_dir", default="src/models/UNSW-NB15/artifacts")
     ap.add_argument("--out_dir", default=None)
     args = ap.parse_args()
 

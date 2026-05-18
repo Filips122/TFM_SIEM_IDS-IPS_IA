@@ -1,13 +1,17 @@
 param(
     [string[]]$Modes = @("date"),
-    [string]$Dataset = "UGR16_V3_80GB",
+    [string]$Dataset = "UGR16_MARAPR_HYBRID",
     [string]$PythonExe = "python",
-    [int]$BinaryEpochs = 200,
-    [int]$MulticlassEpochs = 250,
-    [int]$AnomalyEstimators = 300,
-    [int]$MlpEpochs = 25,
+    [int]$BinaryEpochs = 215,
+    [int]$MulticlassEpochs = 265,
+    [int]$AnomalyEstimators = 315,
+    [int]$AnomalyMaxTrainRows = 500000,
+    [int]$AnomalyMaxEvalRows = 200000,
+    [int]$AnomalyNJobs = 1,
+    [int]$MlpEpochs = 40,
     [int]$NFolds = 8,
     [int[]]$GroupFolds = @(0),
+    [int]$Seed = 42,
     [double]$SampleFrac,
     [switch]$AllGroupFolds,
     [switch]$SkipBinaryHgb,
@@ -54,18 +58,18 @@ if ($PythonExe -eq "python" -and (Test-Path $venvPython)) {
 }
 $hasSampleFrac = $PSBoundParameters.ContainsKey("SampleFrac")
 
-function RunPy([string]$relPath, [string[]]$pyArgs) {
+function RunPy([string]$relPath, [string[]]$pythonParams) {
     $fullPath = Join-Path $repoRoot $relPath
     if (!(Test-Path $fullPath)) {
         throw "No existe el script: $fullPath"
     }
 
-    Write-Host "`n>>> python -u $relPath $($pyArgs -join ' ')" -ForegroundColor Cyan
+    Write-Host "`n>>> python -u $relPath $($pythonParams -join ' ')" -ForegroundColor Cyan
     if ($DryRun) {
         return
     }
 
-    & $PythonExe -u $fullPath @pyArgs
+    & $PythonExe -u $fullPath @pythonParams
     if ($LASTEXITCODE -ne 0) {
         throw "Fallo: $relPath (exit code $LASTEXITCODE)"
     }
@@ -167,29 +171,84 @@ function Test-OptionalPipeline([string]$mode, [string]$pipeline) {
 }
 
 function New-BaseTrainerArgs([string]$mode, [int]$epochs) {
-    $args = @("--split_mode", $mode, "--dataset", $Dataset, "--epochs", "$epochs")
+    $trainerParams = @("--split_mode", $mode, "--dataset", $Dataset, "--epochs", "$epochs")
     if ($hasSampleFrac) {
-        $args += @("--sample_frac", "$SampleFrac")
+        $trainerParams += @("--sample_frac", "$SampleFrac")
     }
-    return $args
+    return $trainerParams
+}
+
+function New-AnomalyTrainerArgs([string]$mode, [int]$epochs) {
+    $trainerParams = @(
+        "--split_mode", $mode,
+        "--dataset", $Dataset,
+        "--epochs", "$epochs",
+        "--max_train_rows", "$AnomalyMaxTrainRows",
+        "--max_eval_rows", "$AnomalyMaxEvalRows",
+        "--n_jobs", "$AnomalyNJobs",
+        "--seed", "$Seed"
+    )
+    if ($hasSampleFrac) {
+        $trainerParams += @("--sample_frac", "$SampleFrac")
+    }
+    return $trainerParams
 }
 
 function Invoke-GroupedTrainer([string]$relPath, [int]$epochs, [switch]$NoSampleFrac) {
     if ($AllGroupFolds) {
-        $args = @("--split_mode", "groupkfold", "--dataset", $Dataset, "--all_folds", "--n_folds", "$NFolds", "--epochs", "$epochs")
+        $trainerParams = @("--split_mode", "groupkfold", "--dataset", $Dataset, "--all_folds", "--n_folds", "$NFolds", "--epochs", "$epochs")
         if ($hasSampleFrac -and -not $NoSampleFrac) {
-            $args += @("--sample_frac", "$SampleFrac")
+            $trainerParams += @("--sample_frac", "$SampleFrac")
         }
-        RunPy $relPath $args
+        RunPy $relPath $trainerParams
         return
     }
 
     foreach ($fold in $GroupFolds) {
-        $args = @("--split_mode", "groupkfold", "--dataset", $Dataset, "--fold", "$fold", "--n_folds", "$NFolds", "--epochs", "$epochs")
+        $trainerParams = @("--split_mode", "groupkfold", "--dataset", $Dataset, "--fold", "$fold", "--n_folds", "$NFolds", "--epochs", "$epochs")
         if ($hasSampleFrac -and -not $NoSampleFrac) {
-            $args += @("--sample_frac", "$SampleFrac")
+            $trainerParams += @("--sample_frac", "$SampleFrac")
         }
-        RunPy $relPath $args
+        RunPy $relPath $trainerParams
+    }
+}
+
+function Invoke-GroupedAnomalyTrainer([int]$epochs) {
+    if ($AllGroupFolds) {
+        $trainerParams = @(
+            "--split_mode", "groupkfold",
+            "--dataset", $Dataset,
+            "--all_folds",
+            "--n_folds", "$NFolds",
+            "--epochs", "$epochs",
+            "--max_train_rows", "$AnomalyMaxTrainRows",
+            "--max_eval_rows", "$AnomalyMaxEvalRows",
+            "--n_jobs", "$AnomalyNJobs",
+            "--seed", "$Seed"
+        )
+        if ($hasSampleFrac) {
+            $trainerParams += @("--sample_frac", "$SampleFrac")
+        }
+        RunPy "src\models\UGR16\train_anomaly_isoforest.py" $trainerParams
+        return
+    }
+
+    foreach ($fold in $GroupFolds) {
+        $trainerParams = @(
+            "--split_mode", "groupkfold",
+            "--dataset", $Dataset,
+            "--fold", "$fold",
+            "--n_folds", "$NFolds",
+            "--epochs", "$epochs",
+            "--max_train_rows", "$AnomalyMaxTrainRows",
+            "--max_eval_rows", "$AnomalyMaxEvalRows",
+            "--n_jobs", "$AnomalyNJobs",
+            "--seed", "$Seed"
+        )
+        if ($hasSampleFrac) {
+            $trainerParams += @("--sample_frac", "$SampleFrac")
+        }
+        RunPy "src\models\UGR16\train_anomaly_isoforest.py" $trainerParams
     }
 }
 
@@ -198,6 +257,7 @@ Write-Host "Repo root   : $repoRoot"
 Write-Host "Python      : $PythonExe"
 Write-Host "Dataset     : $Dataset"
 Write-Host "Modes       : $($Modes -join ', ')"
+Write-Host "Anomaly rows: train<=${AnomalyMaxTrainRows}, eval<=${AnomalyMaxEvalRows}, n_jobs=${AnomalyNJobs}"
 Write-Host "Dry run     : $DryRun"
 Write-Host "No prepare_dataset script will be executed." -ForegroundColor Yellow
 
@@ -236,7 +296,7 @@ foreach ($mode in $Modes) {
             Invoke-GroupedTrainer "src\models\UGR16\train_ml_binary_mlp.py" $MlpEpochs
         }
         if (-not $SkipAnomaly) {
-            Invoke-GroupedTrainer "src\models\UGR16\train_anomaly_isoforest.py" $AnomalyEstimators -NoSampleFrac
+            Invoke-GroupedAnomalyTrainer $AnomalyEstimators
         }
         continue
     }
@@ -251,7 +311,7 @@ foreach ($mode in $Modes) {
         RunPy "src\models\UGR16\train_ml_binary_mlp.py" (New-BaseTrainerArgs $mode $MlpEpochs)
     }
     if (-not $SkipAnomaly) {
-        RunPy "src\models\UGR16\train_anomaly_isoforest.py" @("--split_mode", $mode, "--dataset", $Dataset, "--epochs", "$AnomalyEstimators")
+        RunPy "src\models\UGR16\train_anomaly_isoforest.py" (New-AnomalyTrainerArgs $mode $AnomalyEstimators)
     }
 }
 
