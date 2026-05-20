@@ -12,7 +12,7 @@ from sklearn.ensemble import IsolationForest
 from data_loader import EmptySplitError, load_splits
 from metrics import evaluate_anomaly_scores
 from reporting import save_anomaly_plots
-from train_utils import artifacts_root, now_run_id, save_json
+from train_utils import artifacts_root, now_run_id, save_dataset_profile_ref, save_json
 
 
 def run_one(datasets_base: str, split_mode: str, fold: int | None, epochs: int, out_dir, dataset: str) -> dict:
@@ -44,6 +44,7 @@ def main() -> None:
     args = parser.parse_args()
     root = artifacts_root("anomaly_isoforest_CSR_LANL", args.split_mode, now_run_id())
     if args.split_mode != "groupkfold":
+        save_dataset_profile_ref(root, args.datasets_base, args.split_mode, args.dataset)
         try:
             out = run_one(args.datasets_base, args.split_mode, None, args.epochs, root, args.dataset)
         except (FileNotFoundError, EmptySplitError) as exc:
@@ -57,6 +58,7 @@ def main() -> None:
     for fold in folds:
         fold_dir = root / f"fold_{fold}"
         fold_dir.mkdir(parents=True, exist_ok=True)
+        save_dataset_profile_ref(fold_dir, args.datasets_base, "groupkfold", args.dataset, int(fold))
         try:
             out = run_one(args.datasets_base, "groupkfold", int(fold), args.epochs, fold_dir, args.dataset)
         except (FileNotFoundError, EmptySplitError) as exc:

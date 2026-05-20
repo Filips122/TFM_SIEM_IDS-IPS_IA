@@ -38,18 +38,19 @@ Write-Host "Repo root: $repoRoot"
 Write-Host "Python   : $py"
 
 # 1) Preprocess datasets
-RunPy "src\models\UNSW-NB15\prepare_dataset.py" @("--split_mode", "random", "--source_set", "raw4", "--seed", "42")
+RunPy "src\models\UNSW-NB15\prepare_dataset.py" @("--split_mode", "random", "--source_set", "raw4", "--seed", "42", "--clean")
 RunPy "src\models\UNSW-NB15\prepare_dataset.py" @(
     "--split_mode", "groupkfold",
     "--source_set", "raw4",
     "--fold", $fold,
     "--n_folds", $nFolds,
-    "--anomaly_group_train_policy", "fallback_official_benign"
+    "--anomaly_group_train_policy", "fallback_official_benign",
+    "--clean"
 )
-RunPy "src\models\UNSW-NB15\prepare_dataset.py" @("--split_mode", "official", "--source_set", "official_pair", "--seed", "42")
+RunPy "src\models\UNSW-NB15\prepare_dataset.py" @("--split_mode", "official", "--source_set", "official_pair", "--seed", "42", "--clean")
 
 # 2) Validate generated datasets
-RunPy "src\models\UNSW-NB15\validate_datasets.py" @("--modes", "random", "groupkfold", "official", "--label_map_scope", "latest")
+RunPy "src\models\UNSW-NB15\validate_datasets.py" @("--modes", "random", "groupkfold", "official", "--label_map_scope", "none")
 
 # 3) Random mode - all UNSW models
 RunPy "src\models\UNSW-NB15\train_ml_binary_hgb.py" @("--split_mode", "random", "--epochs", $hgbEpochs)

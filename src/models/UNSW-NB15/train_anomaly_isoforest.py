@@ -12,7 +12,7 @@ from sklearn.ensemble import IsolationForest
 from data_loader import load_splits
 from metrics import evaluate_anomaly_scores
 from reporting import save_anomaly_plots
-from train_utils import artifacts_root, now_run_id, save_json
+from train_utils import artifacts_root, now_run_id, save_dataset_profile_ref, save_json
 
 
 def run_one(split_mode: str, fold: int | None, epochs: int, out_dir) -> dict:
@@ -92,6 +92,7 @@ def main() -> None:
             raise SystemExit("groupkfold requires --all_folds or --fold")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
+        save_dataset_profile_ref(fold_dir, "groupkfold", f)
         try:
             out = run_one("groupkfold", f, args.epochs, fold_dir)
         except FileNotFoundError as e:

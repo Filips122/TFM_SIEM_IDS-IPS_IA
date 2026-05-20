@@ -27,6 +27,8 @@ param(
     [switch]$SkipPreprocess,
     [switch]$SkipValidation,
     [switch]$SkipCompare,
+    [switch]$CleanDatasets,
+    [switch]$HashInputs,
     [switch]$DryRun
 )
 
@@ -90,6 +92,13 @@ function Invoke-Prepare([string]$mode) {
         "--chunksize", "$Chunksize",
         "--seed", "$Seed"
     )
+
+    if ($CleanDatasets) {
+        $prepareParams += "--clean"
+    }
+    if ($HashInputs) {
+        $prepareParams += "--hash_inputs"
+    }
 
     if ($mode -eq "groupkfold") {
         if ($AllGroupFolds) {
@@ -172,7 +181,11 @@ if (-not $SkipPreprocess) {
 }
 
 if (-not $SkipValidation) {
-    RunPy "src\models\UNSW-NB15\validate_datasets.py" (@("--modes") + $Modes)
+    $validationParams = @("--modes") + $Modes + @("--label_map_scope", "none")
+    if (($Modes -contains "groupkfold") -and (-not $AllGroupFolds)) {
+        $validationParams += @("--folds") + @($GroupFolds | ForEach-Object { "$($_)" })
+    }
+    RunPy "src\models\UNSW-NB15\validate_datasets.py" $validationParams
 }
 
 foreach ($mode in $Modes) {

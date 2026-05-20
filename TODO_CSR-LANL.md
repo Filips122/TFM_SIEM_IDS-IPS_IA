@@ -115,7 +115,10 @@ Notes:
 - [ ] Review class imbalance and decide whether binary downsampling is needed
 - [x] Review whether raw high-cardinality identifiers are safely excluded from features
 - [ ] Review memory usage on full compressed files
-- [ ] Add a dataset validation script similar to the UGR16 and NUSW workflows
+- [x] Add a dataset validation script similar to the UGR16 and NUSW workflows
+- [x] Add red-team-centered preparation wrapper for defensible CSR-LANL subsampling
+- [x] Add CSR-LANL runner support for explicit groupkfold folds
+- [x] Persist dataset profile references in new CSR-LANL artifacts
 
 ## Optional Next Extensions
 

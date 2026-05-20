@@ -24,6 +24,9 @@ NUMERIC_METRICS = [
     "test_best_threshold",
 ]
 
+SUPERVISED_RANK_METRICS = ["test_macro_f1", "test_macro_recall", "test_pr_auc", "test_roc_auc", "test_accuracy", "test_best_f1"]
+ANOMALY_RANK_METRICS = ["test_pr_auc", "test_best_f1", "test_roc_auc", "test_macro_f1", "test_accuracy"]
+
 
 def read_json(p: Path) -> Dict[str, Any]:
     return json.loads(p.read_text(encoding="utf-8"))
@@ -57,6 +60,31 @@ def build_row_base(model: str, dataset: str, split_mode: str, run_id: str, fold:
         "status": "ok",
         "reason": None,
     }
+
+
+def is_anomaly_model(model: str) -> bool:
+    name = str(model).lower()
+    return "anomaly" in name or "isoforest" in name
+
+
+def rank_metrics_for_model(model: str, aggregate: bool = False) -> List[str]:
+    metrics = ANOMALY_RANK_METRICS if is_anomaly_model(model) else SUPERVISED_RANK_METRICS
+    return [f"{metric}_mean" for metric in metrics] if aggregate else list(metrics)
+
+
+def metric_warning(row: pd.Series) -> str | None:
+    warnings: List[str] = []
+    model = str(row.get("model", ""))
+    accuracy = row.get("test_accuracy")
+    macro_f1 = row.get("test_macro_f1")
+    pr_auc = row.get("test_pr_auc")
+    if pd.notna(accuracy) and pd.notna(macro_f1) and float(accuracy) >= 0.95 and float(macro_f1) <= 0.55:
+        warnings.append("majority_class_collapse")
+    if is_anomaly_model(model) and pd.notna(pr_auc) and float(pr_auc) < 0.05:
+        warnings.append("weak_anomaly_pr_auc")
+    if (not is_anomaly_model(model)) and pd.isna(macro_f1):
+        warnings.append("missing_macro_f1")
+    return ";".join(warnings) if warnings else None
 
 
 def collect_run_rows(model_dir: Path, dataset: str, mode_dir: Path, run_dir: Path) -> List[Dict[str, Any]]:
@@ -136,16 +164,9 @@ def collect_run_rows(model_dir: Path, dataset: str, mode_dir: Path, run_dir: Pat
 
 
 def primary_score(row: pd.Series) -> Tuple[float, str]:
-    if pd.notna(row.get("test_roc_auc")):
-        return float(row["test_roc_auc"]), "test_roc_auc"
-    if pd.notna(row.get("test_pr_auc")):
-        return float(row["test_pr_auc"]), "test_pr_auc"
-    if pd.notna(row.get("test_macro_f1")):
-        return float(row["test_macro_f1"]), "test_macro_f1"
-    if pd.notna(row.get("test_accuracy")):
-        return float(row["test_accuracy"]), "test_accuracy"
-    if pd.notna(row.get("test_best_f1")):
-        return float(row["test_best_f1"]), "test_best_f1"
+    for metric in rank_metrics_for_model(str(row.get("model", ""))):
+        if pd.notna(row.get(metric)):
+            return float(row[metric]), metric
     return -1e9, "none"
 
 
@@ -204,23 +225,15 @@ def aggregate_rows(detailed: pd.DataFrame) -> pd.DataFrame:
     if agg.empty:
         return agg
 
-    score_cols = [
-        ("test_roc_auc_mean", "test_roc_auc_mean"),
-        ("test_pr_auc_mean", "test_pr_auc_mean"),
-        ("test_macro_f1_mean", "test_macro_f1_mean"),
-        ("test_accuracy_mean", "test_accuracy_mean"),
-        ("test_best_f1_mean", "test_best_f1_mean"),
-    ]
-
     rank_scores: List[float] = []
     rank_sources: List[str] = []
     for _, row in agg.iterrows():
         chosen_score = -1e9
         chosen_metric = "none"
-        for col, label in score_cols:
-            if col in agg.columns and pd.notna(row.get(col)):
-                chosen_score = float(row[col])
-                chosen_metric = label
+        for metric in rank_metrics_for_model(str(row.get("model", "")), aggregate=True):
+            if metric in agg.columns and pd.notna(row.get(metric)):
+                chosen_score = float(row[metric])
+                chosen_metric = metric
                 break
         rank_scores.append(chosen_score)
         rank_sources.append(chosen_metric)
@@ -285,6 +298,7 @@ def main() -> None:
     rank_data = detailed.apply(primary_score, axis=1, result_type="expand")
     detailed["rank_score"] = rank_data[0]
     detailed["rank_metric"] = rank_data[1]
+    detailed["metric_warning"] = detailed.apply(metric_warning, axis=1)
     detailed = detailed.sort_values(["rank_score", "model", "dataset", "split_mode"], ascending=[False, True, True, True])
 
     skipped = detailed[detailed["status"] == "skipped"]

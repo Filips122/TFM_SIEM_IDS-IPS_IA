@@ -12,7 +12,19 @@ from sklearn.preprocessing import LabelEncoder
 
 from data_loader import load_splits
 from reporting import plot_corr_matrix, save_metrics_and_plots, save_staged_classification_history
-from train_utils import artifacts_root, now_run_id, save_json, save_label_encoder
+from train_utils import artifacts_root, now_run_id, save_dataset_profile_ref, save_json, save_label_encoder
+
+
+def assert_eval_labels_seen_in_train(train_y: np.ndarray, val_y: np.ndarray, test_y: np.ndarray) -> None:
+    train_labels = set(map(str, train_y))
+    unseen_val = sorted(set(map(str, val_y)) - train_labels)
+    unseen_test = sorted(set(map(str, test_y)) - train_labels)
+    if unseen_val or unseen_test:
+        raise SystemExit(
+            "Evaluation labels absent from multiclass train split. "
+            f"unseen_val={unseen_val}; unseen_test={unseen_test}. "
+            "Regenerate the dataset after normalizing attack categories or change the split."
+        )
 
 
 def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs: int, out_dir) -> dict:
@@ -24,6 +36,8 @@ def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs
         sample_frac=sample_frac,
         seed=42,
     )
+
+    assert_eval_labels_seen_in_train(tr.y, va.y, te.y)
 
     le = LabelEncoder().fit(tr.y.astype(str))
     ytr = le.transform(tr.y.astype(str))
@@ -98,6 +112,7 @@ def main() -> None:
             raise SystemExit("groupkfold requires --all_folds or --fold")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
+        save_dataset_profile_ref(fold_dir, "groupkfold", f)
         out = run_one("groupkfold", f, args.sample_frac, args.epochs, fold_dir)
         save_json(fold_dir / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
         summary[f"fold_{f}"] = {"best_iter": out["best_iter"], "test": out["test"]}

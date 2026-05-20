@@ -6,12 +6,48 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from typing import List
 
 import pandas as pd
 
 
 def read_json(p: Path):
     return json.loads(p.read_text(encoding="utf-8"))
+
+
+SUPERVISED_RANK_METRICS = ["test_macro_f1", "test_macro_recall", "test_pr_auc", "test_roc_auc", "test_accuracy", "test_best_f1"]
+ANOMALY_RANK_METRICS = ["test_pr_auc", "test_best_f1", "test_roc_auc", "test_macro_f1", "test_accuracy"]
+
+
+def is_anomaly_model(model: str) -> bool:
+    name = str(model).lower()
+    return "anomaly" in name or "isoforest" in name
+
+
+def rank_metrics_for_model(model: str) -> List[str]:
+    return ANOMALY_RANK_METRICS if is_anomaly_model(model) else SUPERVISED_RANK_METRICS
+
+
+def primary_score(row: pd.Series):
+    for metric in rank_metrics_for_model(str(row.get("model", ""))):
+        if pd.notna(row.get(metric)):
+            return float(row[metric]), metric
+    return -1e9, "none"
+
+
+def metric_warning(row: pd.Series) -> str | None:
+    warnings: List[str] = []
+    model = str(row.get("model", ""))
+    accuracy = row.get("test_accuracy")
+    macro_f1 = row.get("test_macro_f1")
+    pr_auc = row.get("test_pr_auc")
+    if pd.notna(accuracy) and pd.notna(macro_f1) and float(accuracy) >= 0.95 and float(macro_f1) <= 0.55:
+        warnings.append("majority_class_collapse")
+    if is_anomaly_model(model) and pd.notna(pr_auc) and float(pr_auc) < 0.05:
+        warnings.append("weak_anomaly_pr_auc")
+    if (not is_anomaly_model(model)) and pd.isna(macro_f1):
+        warnings.append("missing_macro_f1")
+    return ";".join(warnings) if warnings else None
 
 
 def main():
@@ -45,6 +81,8 @@ def main():
                                 "test_macro_recall": mt.get("macro_recall"),
                                 "test_logloss": mt.get("logloss"),
                                 "test_roc_auc": mt.get("roc_auc"),
+                                "test_pr_auc": mt.get("pr_auc"),
+                                "test_best_f1": mt.get("best_f1"),
                                 "test_ece": mt.get("ece"),
                             })
                     continue
@@ -62,6 +100,8 @@ def main():
                         "test_macro_recall": mt.get("macro_recall"),
                         "test_logloss": mt.get("logloss"),
                         "test_roc_auc": mt.get("roc_auc"),
+                        "test_pr_auc": mt.get("pr_auc"),
+                        "test_best_f1": mt.get("best_f1"),
                         "test_ece": mt.get("ece"),
                     })
                 else:
@@ -80,6 +120,8 @@ def main():
                             "test_macro_recall": t.get("macro_recall"),
                             "test_logloss": t.get("test_logloss") or t.get("logloss"),
                             "test_roc_auc": t.get("roc_auc"),
+                            "test_pr_auc": t.get("pr_auc"),
+                            "test_best_f1": t.get("best_f1"),
                             "test_ece": t.get("ece"),
                         })
 
@@ -88,18 +130,11 @@ def main():
 
     df = pd.DataFrame(rows)
 
-    # sort by roc_auc if present else macro_f1 else accuracy
-    def sort_key(r):
-        if pd.notna(r.get("test_roc_auc")):
-            return float(r["test_roc_auc"])
-        if pd.notna(r.get("test_macro_f1")):
-            return float(r["test_macro_f1"])
-        if pd.notna(r.get("test_accuracy")):
-            return float(r["test_accuracy"])
-        return -1e9
-
-    df["_sort"] = df.apply(sort_key, axis=1)
-    df = df.sort_values("_sort", ascending=False).drop(columns=["_sort"])
+    rank_data = df.apply(primary_score, axis=1, result_type="expand")
+    df["rank_score"] = rank_data[0]
+    df["rank_metric"] = rank_data[1]
+    df["metric_warning"] = df.apply(metric_warning, axis=1)
+    df = df.sort_values(["rank_score", "model", "split_mode"], ascending=[False, True, True])
 
     out_dir = Path(args.out_dir) if args.out_dir else (art / "compare_models" / pd.Timestamp.now().strftime("%Y%m%d_%H%M%S"))
     out_dir.mkdir(parents=True, exist_ok=True)

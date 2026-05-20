@@ -17,6 +17,7 @@ from train_utils import (
     fit_label_encoder,
     get_device,
     now_run_id,
+    save_dataset_profile_ref,
     save_json,
     save_label_encoder,
     save_scaler_stats,
@@ -198,6 +199,7 @@ def main() -> None:
             raise SystemExit("groupkfold requires --all_folds or --fold")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
+        save_dataset_profile_ref(fold_dir, "groupkfold", f)
         out = run_one("groupkfold", f, fold_dir, args)
         save_json(fold_dir / "results.json", {"best_epoch": out["best_epoch"], "test": out["test"]})
         summary[f"fold_{f}"] = {"best_epoch": out["best_epoch"], "test": out["test"]}

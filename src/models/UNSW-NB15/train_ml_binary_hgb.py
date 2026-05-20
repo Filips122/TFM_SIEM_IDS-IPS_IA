@@ -11,7 +11,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 
 from data_loader import load_splits
 from reporting import plot_corr_matrix, save_metrics_and_plots, save_staged_classification_history
-from train_utils import artifacts_root, fit_label_encoder, now_run_id, save_json, save_label_encoder
+from train_utils import artifacts_root, fit_label_encoder, now_run_id, save_dataset_profile_ref, save_json, save_label_encoder
 
 
 def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs: int, out_dir) -> dict:
@@ -97,6 +97,7 @@ def main() -> None:
             raise SystemExit("groupkfold requires --all_folds or --fold")
         fold_dir = root / f"fold_{f}"
         fold_dir.mkdir(parents=True, exist_ok=True)
+        save_dataset_profile_ref(fold_dir, "groupkfold", f)
         out = run_one("groupkfold", f, args.sample_frac, args.epochs, fold_dir)
         save_json(fold_dir / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
         summary[f"fold_{f}"] = {"best_iter": out["best_iter"], "test": out["test"]}

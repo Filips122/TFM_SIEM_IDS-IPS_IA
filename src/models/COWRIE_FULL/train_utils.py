@@ -37,10 +37,25 @@ def save_json(path: Path, payload: Dict) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def save_run_metadata(root: Path, model_name: str, split_mode: str, run_id: str, dataset: str = "COWRIE_FULL") -> None:
+    save_json(
+        root / "run_metadata.json",
+        {
+            "dataset": dataset,
+            "model_name": model_name,
+            "split_mode": split_mode,
+            "run_id": run_id,
+            "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "artifact_root": str(root),
+        },
+    )
+
+
 def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None) -> Path:
     run_id = run_id or now_run_id()
     root = resolve_from_root(f"src/models/COWRIE_FULL/artifacts/{model_name}/{split_mode}/{run_id}")
     ensure_dir(root)
+    save_run_metadata(root, model_name, split_mode, run_id)
     return root
 
 

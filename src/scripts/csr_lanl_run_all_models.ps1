@@ -6,7 +6,10 @@ param(
     [int]$BinaryEpochs = 215,
     [int]$MulticlassEpochs = 215,
     [int]$AnomalyEstimators = 315,
+    [int]$NFolds = 5,
+    [int[]]$GroupFolds = @(0),
     [double]$SampleFrac,
+    [switch]$AllGroupFolds,
     [switch]$SkipBinaryHgb,
     [switch]$SkipMulticlass,
     [switch]$SkipAnomaly,
@@ -109,32 +112,96 @@ function Test-PipelineReady([string]$baseDir, [string]$pipeline) {
     }
 }
 
-function Assert-PipelineReady([string]$mode, [string]$pipeline) {
+function Assert-PipelineReady([string]$mode, [string]$pipeline, [int]$fold = -1) {
     if ($SkipDatasetCheck) {
         return
     }
 
+    $baseDir = Get-DatasetRoot $mode
     if ($mode -eq "groupkfold") {
-        throw "groupkfold mode is only supported after preparing groupkfold CSR-LANL splits. Use -SkipDatasetCheck only if those splits already exist."
+        if ($fold -lt 0) {
+            throw "groupkfold dataset check requires a fold number."
+        }
+        $baseDir = Join-Path $baseDir "fold_$fold"
     }
 
-    $status = Test-PipelineReady (Get-DatasetRoot $mode) $pipeline
+    $status = Test-PipelineReady $baseDir $pipeline
     if (-not $status.Ready) {
-        throw "Dataset '$Dataset' is not ready for pipeline '$pipeline' in mode '$mode'. Missing parquet files in: $($status.Missing -join ', ')"
+        $foldText = if ($mode -eq "groupkfold") { " fold_$fold" } else { "" }
+        throw "Dataset '$Dataset' is not ready for pipeline '$pipeline' in mode '$mode'$foldText. Missing parquet files in: $($status.Missing -join ', ')"
     }
 }
 
-function New-TrainerArgs([string]$mode, [int]$epochs) {
+function New-TrainerArgs([string]$mode, [int]$epochs, [int]$fold = -1, [switch]$AllFolds) {
     $args = @(
         "--datasets_base", "$DatasetsBase",
         "--split_mode", $mode,
         "--dataset", $Dataset,
         "--epochs", "$epochs"
     )
+    if ($mode -eq "groupkfold") {
+        if ($AllFolds) {
+            $args += @("--all_folds", "--n_folds", "$NFolds")
+        }
+        else {
+            $args += @("--fold", "$fold", "--n_folds", "$NFolds")
+        }
+    }
     if ($hasSampleFrac) {
         $args += @("--sample_frac", "$SampleFrac")
     }
     return $args
+}
+
+function Invoke-SupervisedTrainer([string]$relPath, [string]$mode, [int]$epochs) {
+    if ($mode -ne "groupkfold") {
+        RunPy $relPath (New-TrainerArgs $mode $epochs)
+        return
+    }
+
+    if ($AllGroupFolds) {
+        RunPy $relPath (New-TrainerArgs $mode $epochs -AllFolds)
+        return
+    }
+
+    foreach ($fold in $GroupFolds) {
+        RunPy $relPath (New-TrainerArgs $mode $epochs $fold)
+    }
+}
+
+function Invoke-AnomalyTrainer([string]$mode) {
+    if ($mode -ne "groupkfold") {
+        RunPy "src\models\CSR-LANL\train_anomaly_isoforest.py" @(
+            "--datasets_base", "$DatasetsBase",
+            "--split_mode", $mode,
+            "--dataset", $Dataset,
+            "--epochs", "$AnomalyEstimators"
+        )
+        return
+    }
+
+    if ($AllGroupFolds) {
+        RunPy "src\models\CSR-LANL\train_anomaly_isoforest.py" @(
+            "--datasets_base", "$DatasetsBase",
+            "--split_mode", $mode,
+            "--dataset", $Dataset,
+            "--epochs", "$AnomalyEstimators",
+            "--all_folds",
+            "--n_folds", "$NFolds"
+        )
+        return
+    }
+
+    foreach ($fold in $GroupFolds) {
+        RunPy "src\models\CSR-LANL\train_anomaly_isoforest.py" @(
+            "--datasets_base", "$DatasetsBase",
+            "--split_mode", $mode,
+            "--dataset", $Dataset,
+            "--epochs", "$AnomalyEstimators",
+            "--fold", "$fold",
+            "--n_folds", "$NFolds"
+        )
+    }
 }
 
 Write-Host "=== CSR-LANL model training ===" -ForegroundColor Green
@@ -143,32 +210,35 @@ Write-Host "Python       : $PythonExe"
 Write-Host "Dataset      : $Dataset"
 Write-Host "DatasetsBase : $datasetsBaseFull"
 Write-Host "Modes        : $($Modes -join ', ')"
+Write-Host "Group folds  : $(if ($AllGroupFolds) { 'all' } else { $GroupFolds -join ', ' })"
 Write-Host "Dry run      : $DryRun"
 
 foreach ($mode in $Modes) {
-    if (-not $SkipBinaryHgb) {
-        Assert-PipelineReady $mode "binary"
+    $foldsToCheck = if ($mode -eq "groupkfold") {
+        if ($AllGroupFolds) { 0..($NFolds - 1) } else { $GroupFolds }
     }
-    if (-not $SkipMulticlass) {
-        Assert-PipelineReady $mode "multiclass"
-    }
-    if (-not $SkipAnomaly) {
-        Assert-PipelineReady $mode "anomaly"
+    else {
+        @(-1)
     }
 
     if (-not $SkipBinaryHgb) {
-        RunPy "src\models\CSR-LANL\train_ml_binary_hgb.py" (New-TrainerArgs $mode $BinaryEpochs)
+        foreach ($fold in $foldsToCheck) { Assert-PipelineReady $mode "binary" $fold }
     }
     if (-not $SkipMulticlass) {
-        RunPy "src\models\CSR-LANL\train_ml_multiclass_hgb.py" (New-TrainerArgs $mode $MulticlassEpochs)
+        foreach ($fold in $foldsToCheck) { Assert-PipelineReady $mode "multiclass" $fold }
     }
     if (-not $SkipAnomaly) {
-        RunPy "src\models\CSR-LANL\train_anomaly_isoforest.py" @(
-            "--datasets_base", "$DatasetsBase",
-            "--split_mode", $mode,
-            "--dataset", $Dataset,
-            "--epochs", "$AnomalyEstimators"
-        )
+        foreach ($fold in $foldsToCheck) { Assert-PipelineReady $mode "anomaly" $fold }
+    }
+
+    if (-not $SkipBinaryHgb) {
+        Invoke-SupervisedTrainer "src\models\CSR-LANL\train_ml_binary_hgb.py" $mode $BinaryEpochs
+    }
+    if (-not $SkipMulticlass) {
+        Invoke-SupervisedTrainer "src\models\CSR-LANL\train_ml_multiclass_hgb.py" $mode $MulticlassEpochs
+    }
+    if (-not $SkipAnomaly) {
+        Invoke-AnomalyTrainer $mode
     }
 }
 

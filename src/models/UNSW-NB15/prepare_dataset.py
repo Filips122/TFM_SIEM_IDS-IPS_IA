@@ -4,8 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
+import shutil
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -42,6 +45,11 @@ EXCLUDED_INPUT_PATTERNS = (
     "train_test_network",
 )
 
+FEATURE_DICTIONARY_CANDIDATES = (
+    "NUSW-NB15_features.csv",
+    "UNSW-NB15_features.csv",
+)
+
 
 def _ensure_pyarrow() -> None:
     if pa is None or pq is None:
@@ -55,7 +63,9 @@ def safe_mkdir(p: Path) -> None:
 def normalize_colname(c: str) -> str:
     c = c.replace("\ufeff", "")
     c = " ".join(c.split())
-    return c.strip().lower()
+    c = c.strip().lower()
+    c = c.replace(" _", "_").replace("_ ", "_")
+    return c
 
 
 def normalize_text(v: object) -> str:
@@ -67,9 +77,22 @@ def normalize_text(v: object) -> str:
 
 def normalize_attack_cat(v: object) -> str:
     s = normalize_text(v)
-    if s.lower() == "normal":
-        return "Normal"
-    return s
+    aliases = {
+        "analysis": "Analysis",
+        "backdoor": "Backdoor",
+        "backdoors": "Backdoor",
+        "dos": "DoS",
+        "exploits": "Exploits",
+        "fuzzers": "Fuzzers",
+        "generic": "Generic",
+        "normal": "Normal",
+        "reconnaissance": "Reconnaissance",
+        "shellcode": "Shellcode",
+        "worms": "Worms",
+        "unknown": "Unknown",
+        "unknownattack": "UnknownAttack",
+    }
+    return aliases.get(s.lower(), s)
 
 
 def list_data_csvs(root: Path) -> List[Path]:
@@ -100,6 +123,52 @@ def detect_group_files(csvs: List[Path]) -> List[Path]:
     pat = re.compile(r"^unsw-nb15_\d+\.csv$", flags=re.IGNORECASE)
     out = [p for p in csvs if pat.match(p.name)]
     return sorted(out)
+
+
+def is_raw4_file(path: Path) -> bool:
+    return re.match(r"^unsw-nb15_\d+\.csv$", path.name, flags=re.IGNORECASE) is not None
+
+
+def feature_dictionary_path(root: Path) -> Optional[Path]:
+    for name in FEATURE_DICTIONARY_CANDIDATES:
+        candidate = root / name
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def load_raw4_columns(root: Path) -> List[str]:
+    path = feature_dictionary_path(root)
+    if path is None:
+        raise SystemExit(
+            "UNSW raw4 files are headerless and require NUSW-NB15_features.csv "
+            f"or UNSW-NB15_features.csv in: {root}"
+        )
+
+    df = pd.read_csv(path, encoding="utf-8", encoding_errors="replace", on_bad_lines="skip")
+    normalized = {normalize_colname(c): c for c in df.columns}
+    name_col = normalized.get("name")
+    if name_col is None:
+        raise SystemExit(f"Feature dictionary does not contain a Name column: {path}")
+
+    columns = [normalize_colname(value) for value in df[name_col].dropna().astype(str).tolist()]
+    columns = [value for value in columns if value]
+    if not columns:
+        raise SystemExit(f"No feature names found in: {path}")
+    return columns
+
+
+def read_csv_kwargs(csv_path: Path, raw4_columns: List[str]) -> Dict[str, Any]:
+    kwargs: Dict[str, Any] = {
+        "low_memory": False,
+        "encoding": "utf-8",
+        "encoding_errors": "replace",
+        "on_bad_lines": "skip",
+    }
+    if is_raw4_file(csv_path):
+        kwargs["header"] = None
+        kwargs["names"] = raw4_columns
+    return kwargs
 
 
 def select_csv_source_set(csvs: List[Path], source_set: str) -> List[Path]:
@@ -152,22 +221,107 @@ def update_stats(st: Stats, counts: Dict[str, int], binary_view: bool) -> None:
         st.attack += int(sum(counts.values()) - benign)
 
 
-def write_stats(base_dir: Path, stats: Dict[str, Dict[str, Stats]]) -> None:
+def stats_to_payload(stats: Dict[str, Dict[str, Stats]]) -> Dict[str, Dict[str, Dict[str, Any]]]:
+    payload: Dict[str, Dict[str, Dict[str, Any]]] = {}
     for pipeline_name, splits in stats.items():
-        out = base_dir / pipeline_name / "stats.json"
-        safe_mkdir(out.parent)
-        payload = {}
+        payload[pipeline_name] = {}
         for split, st in splits.items():
-            payload[split] = {
+            payload[pipeline_name][split] = {
                 "rows": st.rows,
                 "benign": st.benign,
                 "attack": st.attack,
                 "label_counts": dict(sorted(st.label_counts.items(), key=lambda x: x[1], reverse=True)),
             }
-        out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return payload
 
 
-def collect_categorical_vocab(csv_files: List[Path], chunksize: int) -> Dict[str, Dict[str, int]]:
+def write_stats(base_dir: Path, stats: Dict[str, Dict[str, Stats]]) -> None:
+    payload = stats_to_payload(stats)
+    for pipeline_name, splits in payload.items():
+        out = base_dir / pipeline_name / "stats.json"
+        safe_mkdir(out.parent)
+        out.write_text(json.dumps(splits, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for block in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def file_info(path: Path, include_hash: bool) -> Dict[str, Any]:
+    st = path.stat()
+    info: Dict[str, Any] = {
+        "name": path.name,
+        "path": str(path),
+        "size_bytes": int(st.st_size),
+        "mtime_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(st.st_mtime)),
+    }
+    if include_hash:
+        info["sha256"] = sha256_file(path)
+    return info
+
+
+def write_dataset_profile(
+    out_path: Path,
+    args: argparse.Namespace,
+    in_dir: Path,
+    out_dir: Path,
+    csvs: List[Path],
+    cat_maps: Dict[str, Dict[str, int]],
+    feature_cols: List[str],
+    stats_payload: Dict[str, Any],
+    extra: Optional[Dict[str, Any]] = None,
+) -> None:
+    vocab_sizes = {k: len(v) for k, v in cat_maps.items()}
+    config = {
+        "split_mode": args.split_mode,
+        "source_set": args.source_set,
+        "chunksize": args.chunksize,
+        "seed": args.seed,
+        "train_ratio": args.train_ratio,
+        "val_ratio": args.val_ratio,
+        "n_folds": args.n_folds,
+        "all_folds": bool(args.all_folds),
+        "fold": args.fold,
+        "anomaly_group_train_policy": args.anomaly_group_train_policy,
+    }
+    input_files = [file_info(p, include_hash=bool(args.hash_inputs)) for p in csvs]
+    fingerprint_source = {
+        "config": config,
+        "input_files": input_files,
+        "feature_columns": feature_cols,
+        "vocab_sizes": vocab_sizes,
+    }
+    config_fingerprint = hashlib.sha256(
+        json.dumps(fingerprint_source, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+
+    payload: Dict[str, Any] = {
+        "dataset": "NUSW-NB15",
+        "profile_version": 1,
+        "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "input_dir": str(in_dir),
+        "output_dir": str(out_dir),
+        "config": config,
+        "input_files": input_files,
+        "input_file_count": len(input_files),
+        "feature_count": len(feature_cols),
+        "categorical_columns": sorted(vocab_sizes.keys()),
+        "vocab_sizes": vocab_sizes,
+        "stats": stats_payload,
+        "config_fingerprint": config_fingerprint,
+    }
+    if extra:
+        payload.update(extra)
+
+    safe_mkdir(out_path.parent)
+    out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def collect_categorical_vocab(csv_files: List[Path], chunksize: int, raw4_columns: List[str]) -> Dict[str, Dict[str, int]]:
     """
     Build deterministic category maps from all input files once.
     This keeps encoded values stable across splits/files.
@@ -177,14 +331,7 @@ def collect_categorical_vocab(csv_files: List[Path], chunksize: int) -> Dict[str
 
     for i, csv_path in enumerate(csv_files, start=1):
         print(f"[vocab] ({i}/{len(csv_files)}) {csv_path.name}")
-        reader = pd.read_csv(
-            csv_path,
-            chunksize=chunksize,
-            low_memory=False,
-            encoding="utf-8",
-            encoding_errors="replace",
-            on_bad_lines="skip",
-        )
+        reader = pd.read_csv(csv_path, chunksize=chunksize, **read_csv_kwargs(csv_path, raw4_columns))
         for chunk in reader:
             if chunk.empty:
                 continue
@@ -207,21 +354,18 @@ def collect_categorical_vocab(csv_files: List[Path], chunksize: int) -> Dict[str
     return maps
 
 
-def collect_feature_columns(csv_files: List[Path]) -> List[str]:
+def collect_feature_columns(csv_files: List[Path], raw4_columns: List[str]) -> List[str]:
     cols = set()
     for p in csv_files:
-        try:
-            df0 = pd.read_csv(
-                p,
-                nrows=0,
-                low_memory=False,
-                encoding="utf-8",
-                encoding_errors="replace",
-                on_bad_lines="skip",
-            )
-        except Exception:
-            continue
-        for c in df0.columns:
+        if is_raw4_file(p):
+            source_columns = raw4_columns
+        else:
+            try:
+                df0 = pd.read_csv(p, nrows=0, **read_csv_kwargs(p, raw4_columns))
+            except Exception:
+                continue
+            source_columns = [str(c) for c in df0.columns]
+        for c in source_columns:
             cn = normalize_colname(c)
             if cn in {"label", "attack_cat"}:
                 continue
@@ -245,7 +389,12 @@ def derive_binary_target(df: pd.DataFrame) -> pd.Series:
 
 def derive_multiclass_target(df: pd.DataFrame) -> pd.Series:
     if "attack_cat" in df.columns:
-        return df["attack_cat"].map(normalize_attack_cat)
+        out = df["attack_cat"].map(normalize_attack_cat)
+        if "label" in df.columns:
+            y = pd.to_numeric(df["label"], errors="coerce")
+            out.loc[y == 0] = "Normal"
+            out.loc[(y == 1) & (out.isin(["Normal", "Unknown"]))] = "UnknownAttack"
+        return out
     if "label" in df.columns:
         y = pd.to_numeric(df["label"], errors="coerce")
         out = pd.Series(np.where(y == 0, "Normal", "UnknownAttack"), index=df.index)
@@ -330,6 +479,7 @@ def process_csv_random(
     rng: np.random.Generator,
     train_ratio: float,
     val_ratio: float,
+    raw4_columns: List[str],
 ) -> Dict[str, Dict[str, Dict[str, int]]]:
     thresholds = (train_ratio, train_ratio + val_ratio)
     stem = csv_path.stem
@@ -349,14 +499,7 @@ def process_csv_random(
             ks = str(k)
             counts[pipeline][split][ks] = counts[pipeline][split].get(ks, 0) + int(v)
 
-    reader = pd.read_csv(
-        csv_path,
-        chunksize=chunksize,
-        low_memory=False,
-        encoding="utf-8",
-        encoding_errors="replace",
-        on_bad_lines="skip",
-    )
+    reader = pd.read_csv(csv_path, chunksize=chunksize, **read_csv_kwargs(csv_path, raw4_columns))
     for chunk in reader:
         chunk = preprocess_chunk(chunk, cat_maps)
         if chunk.empty:
@@ -424,6 +567,7 @@ def process_csv_fixed_split(
     cat_maps: Dict[str, Dict[str, int]],
     feature_cols: List[str],
     chunksize: int,
+    raw4_columns: List[str],
 ) -> Dict[str, Dict[str, int]]:
     counts = {
         "binary": {},
@@ -440,14 +584,7 @@ def process_csv_fixed_split(
             ks = str(k)
             counts[name][ks] = counts[name].get(ks, 0) + int(v)
 
-    reader = pd.read_csv(
-        csv_path,
-        chunksize=chunksize,
-        low_memory=False,
-        encoding="utf-8",
-        encoding_errors="replace",
-        on_bad_lines="skip",
-    )
+    reader = pd.read_csv(csv_path, chunksize=chunksize, **read_csv_kwargs(csv_path, raw4_columns))
     for chunk in reader:
         chunk = preprocess_chunk(chunk, cat_maps)
         if chunk.empty:
@@ -496,6 +633,7 @@ def process_csv_anomaly_train_benign_only(
     feature_cols: List[str],
     chunksize: int,
     out_stem: str,
+    raw4_columns: List[str],
 ) -> int:
     """
     Append only BENIGN rows to anomaly/train_benign for policy-based fallback.
@@ -505,14 +643,7 @@ def process_csv_anomaly_train_benign_only(
     writers: Dict[Path, Any] = {}
     schemas: Dict[Path, List[str]] = {}
 
-    reader = pd.read_csv(
-        csv_path,
-        chunksize=chunksize,
-        low_memory=False,
-        encoding="utf-8",
-        encoding_errors="replace",
-        on_bad_lines="skip",
-    )
+    reader = pd.read_csv(csv_path, chunksize=chunksize, **read_csv_kwargs(csv_path, raw4_columns))
 
     for chunk in reader:
         chunk = preprocess_chunk(chunk, cat_maps)
@@ -554,6 +685,8 @@ def main() -> None:
     ap.add_argument("--fold", type=int, default=None)
     ap.add_argument("--n_folds", type=int, default=8, help="Number of groupkfold folds to generate")
     ap.add_argument("--source_set", type=str, default="raw4", choices=["all", "raw4", "official_pair"])
+    ap.add_argument("--clean", action="store_true", help="Remove the target split output before regenerating it")
+    ap.add_argument("--hash_inputs", action="store_true", help="Include SHA-256 hashes of input CSV files in dataset_profile.json")
     ap.add_argument(
         "--anomaly_group_train_policy",
         type=str,
@@ -568,12 +701,19 @@ def main() -> None:
     in_dir = resolve_from_root(args.in_dir)
     out_base = resolve_from_root(args.out_dir)
     out_mode = out_base / args.split_mode / "NUSW-NB15"
-    safe_mkdir(out_mode)
 
     csvs_all = list_data_csvs(in_dir)
     csvs = select_csv_source_set(csvs_all, args.source_set)
     if not csvs:
         raise SystemExit(f"No data CSV files found in: {in_dir}")
+
+    if args.clean and args.split_mode != "groupkfold":
+        shutil.rmtree(out_mode, ignore_errors=True)
+
+    if args.clean and args.split_mode == "groupkfold" and args.all_folds:
+        shutil.rmtree(out_mode, ignore_errors=True)
+
+    safe_mkdir(out_mode)
 
     if args.split_mode == "random":
         if not (0.0 < args.train_ratio < 1.0) or not (0.0 <= args.val_ratio < 1.0) or not (args.train_ratio + args.val_ratio < 1.0):
@@ -587,10 +727,15 @@ def main() -> None:
     print(f"Chunksize : {args.chunksize}")
     print(f"Source set: {args.source_set}")
     print(f"Anomaly group policy: {args.anomaly_group_train_policy}")
+    print(f"Clean mode: {args.clean}")
     print(f"CSV files : {[p.name for p in csvs]}")
 
-    cat_maps = collect_categorical_vocab(csvs, chunksize=args.chunksize)
-    feature_cols = collect_feature_columns(csvs)
+    raw4_columns = load_raw4_columns(in_dir) if any(is_raw4_file(path) for path in csvs) else []
+    if raw4_columns:
+        print(f"Raw4 schema: {len(raw4_columns)} columns from feature dictionary")
+
+    cat_maps = collect_categorical_vocab(csvs, chunksize=args.chunksize, raw4_columns=raw4_columns)
+    feature_cols = collect_feature_columns(csvs, raw4_columns=raw4_columns)
     vocab_info = {k: len(v) for k, v in cat_maps.items()}
     (out_mode / "vocab_sizes.json").write_text(json.dumps(vocab_info, ensure_ascii=False, indent=2), encoding="utf-8")
     (out_mode / "feature_columns.json").write_text(json.dumps(feature_cols, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -614,6 +759,7 @@ def main() -> None:
                 rng=rng,
                 train_ratio=args.train_ratio,
                 val_ratio=args.val_ratio,
+                raw4_columns=raw4_columns,
             )
 
             for split in ["train", "val", "test"]:
@@ -622,6 +768,17 @@ def main() -> None:
                 update_stats(stats["anomaly"][split], c["anomaly"][split], binary_view=True)
 
         write_stats(out_mode, stats)
+        write_dataset_profile(
+            out_mode / "dataset_profile.json",
+            args=args,
+            in_dir=in_dir,
+            out_dir=out_mode,
+            csvs=csvs,
+            cat_maps=cat_maps,
+            feature_cols=feature_cols,
+            stats_payload=stats_to_payload(stats),
+            extra={"split_policy": "row_random"},
+        )
 
     elif args.split_mode == "groupkfold":
         group_files = detect_group_files(csvs)
@@ -645,6 +802,8 @@ def main() -> None:
                 raise SystemExit(f"Invalid fold: {fold}")
 
             fold_dir = out_mode / f"fold_{fold}"
+            if args.clean and not args.all_folds:
+                shutil.rmtree(fold_dir, ignore_errors=True)
             safe_mkdir(fold_dir)
 
             mapped = fold % n_groups
@@ -664,7 +823,7 @@ def main() -> None:
             }
 
             for p in train_files:
-                c = process_csv_fixed_split(p, "train", fold_dir, cat_maps, feature_cols, args.chunksize)
+                c = process_csv_fixed_split(p, "train", fold_dir, cat_maps, feature_cols, args.chunksize, raw4_columns)
                 update_stats(fold_stats["binary"]["train"], c["binary"], True)
                 update_stats(fold_stats["multiclass"]["train"], c["multiclass"], False)
                 update_stats(fold_stats["anomaly"]["train"], c["anomaly"], True)
@@ -686,6 +845,7 @@ def main() -> None:
                         feature_cols=feature_cols,
                         chunksize=args.chunksize,
                         out_stem="fallback_official_train_benign",
+                        raw4_columns=raw4_columns,
                     )
                     if fallback_rows > 0:
                         fold_stats["anomaly"]["train"].rows += fallback_rows
@@ -697,21 +857,56 @@ def main() -> None:
                         anomaly_policy_info["fallback_source"] = official_train.name
                         anomaly_policy_info["fallback_rows"] = int(fallback_rows)
 
-            c = process_csv_fixed_split(val_file, "val", fold_dir, cat_maps, feature_cols, args.chunksize)
+            c = process_csv_fixed_split(val_file, "val", fold_dir, cat_maps, feature_cols, args.chunksize, raw4_columns)
             update_stats(fold_stats["binary"]["val"], c["binary"], True)
             update_stats(fold_stats["multiclass"]["val"], c["multiclass"], False)
             update_stats(fold_stats["anomaly"]["val"], c["anomaly"], True)
 
-            c = process_csv_fixed_split(test_file, "test", fold_dir, cat_maps, feature_cols, args.chunksize)
+            c = process_csv_fixed_split(test_file, "test", fold_dir, cat_maps, feature_cols, args.chunksize, raw4_columns)
             update_stats(fold_stats["binary"]["test"], c["binary"], True)
             update_stats(fold_stats["multiclass"]["test"], c["multiclass"], False)
             update_stats(fold_stats["anomaly"]["test"], c["anomaly"], True)
 
             write_stats(fold_dir, fold_stats)
+            write_dataset_profile(
+                fold_dir / "dataset_profile.json",
+                args=args,
+                in_dir=in_dir,
+                out_dir=fold_dir,
+                csvs=csvs,
+                cat_maps=cat_maps,
+                feature_cols=feature_cols,
+                stats_payload=stats_to_payload(fold_stats),
+                extra={
+                    "split_policy": "source_file_groupkfold",
+                    "fold": int(fold),
+                    "fold_assignment": {
+                        "test": test_file.name,
+                        "val": val_file.name,
+                        "train": [p.name for p in train_files],
+                    },
+                    "anomaly_policy": anomaly_policy_info,
+                },
+            )
             (fold_dir / "anomaly_policy.json").write_text(
                 json.dumps(anomaly_policy_info, ensure_ascii=False, indent=2),
                 encoding="utf-8",
             )
+
+        write_dataset_profile(
+            out_mode / "dataset_profile.json",
+            args=args,
+            in_dir=in_dir,
+            out_dir=out_mode,
+            csvs=csvs,
+            cat_maps=cat_maps,
+            feature_cols=feature_cols,
+            stats_payload={},
+            extra={
+                "split_policy": "source_file_groupkfold",
+                "selected_folds": [int(f) for f in folds],
+            },
+        )
 
     elif args.split_mode == "official":
         train_file, test_file = detect_official_train_test(csvs_all)
@@ -720,7 +915,7 @@ def main() -> None:
 
         print(f"\n[official] train={train_file.name} test={test_file.name}")
 
-        c = process_csv_fixed_split(train_file, "train", out_mode, cat_maps, feature_cols, args.chunksize)
+        c = process_csv_fixed_split(train_file, "train", out_mode, cat_maps, feature_cols, args.chunksize, raw4_columns)
         update_stats(stats["binary"]["train"], c["binary"], True)
         update_stats(stats["multiclass"]["train"], c["multiclass"], False)
         update_stats(stats["anomaly"]["train"], c["anomaly"], True)
@@ -736,6 +931,7 @@ def main() -> None:
             rng=rng,
             train_ratio=0.0,
             val_ratio=0.5,
+            raw4_columns=raw4_columns,
         )
         update_stats(stats["binary"]["val"], tmp_counts["binary"]["val"], True)
         update_stats(stats["binary"]["test"], tmp_counts["binary"]["test"], True)
@@ -745,6 +941,21 @@ def main() -> None:
         update_stats(stats["anomaly"]["test"], tmp_counts["anomaly"]["test"], True)
 
         write_stats(out_mode, stats)
+        write_dataset_profile(
+            out_mode / "dataset_profile.json",
+            args=args,
+            in_dir=in_dir,
+            out_dir=out_mode,
+            csvs=[train_file, test_file],
+            cat_maps=cat_maps,
+            feature_cols=feature_cols,
+            stats_payload=stats_to_payload(stats),
+            extra={
+                "split_policy": "official_train_plus_testing_val_test_half_split",
+                "official_train_file": train_file.name,
+                "official_test_file": test_file.name,
+            },
+        )
 
     print("\nDone")
     print(f"Parquets generated under: {out_mode}")

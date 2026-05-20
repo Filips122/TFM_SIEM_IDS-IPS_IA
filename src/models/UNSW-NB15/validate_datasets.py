@@ -7,7 +7,7 @@ import argparse
 import importlib
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 
 import pandas as pd
 
@@ -40,6 +40,97 @@ def list_parquets(folder: Path) -> List[Path]:
     if not folder.exists():
         return []
     return sorted([p for p in folder.rglob("*.parquet") if p.is_file()])
+
+
+def read_json(path: Path) -> Dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def validate_dataset_profile(profile_path: Path, expected_mode: str) -> Dict[str, Any]:
+    if not profile_path.exists():
+        return {"ok": False, "error": f"Missing dataset profile: {profile_path}"}
+
+    try:
+        profile = read_json(profile_path)
+    except Exception as exc:
+        return {"ok": False, "error": f"Invalid dataset profile JSON: {exc}"}
+
+    config = profile.get("config", {}) if isinstance(profile, dict) else {}
+    errors: List[str] = []
+    warnings: List[str] = []
+
+    if profile.get("dataset") != "NUSW-NB15":
+        errors.append("dataset_mismatch")
+    if config.get("split_mode") != expected_mode:
+        errors.append("split_mode_mismatch")
+    if not profile.get("config_fingerprint"):
+        errors.append("missing_config_fingerprint")
+    if not profile.get("input_files"):
+        errors.append("missing_input_files")
+    if int(profile.get("feature_count") or 0) <= 0:
+        errors.append("missing_feature_count")
+    if not profile.get("stats") and expected_mode != "groupkfold":
+        warnings.append("missing_embedded_stats")
+
+    return {
+        "ok": len(errors) == 0,
+        "path": str(profile_path),
+        "split_mode": config.get("split_mode"),
+        "source_set": config.get("source_set"),
+        "feature_count": profile.get("feature_count"),
+        "input_file_count": profile.get("input_file_count"),
+        "config_fingerprint": profile.get("config_fingerprint"),
+        "errors": errors,
+        "warnings": warnings,
+    }
+
+
+def validate_stats_file(base_dir: Path, pipeline: str, min_positive_eval: int) -> Dict[str, Any]:
+    stats_path = base_dir / pipeline / "stats.json"
+    if not stats_path.exists():
+        return {"ok": False, "error": f"Missing stats file: {stats_path}"}
+
+    try:
+        data = read_json(stats_path)
+    except Exception as exc:
+        return {"ok": False, "error": f"Invalid stats JSON: {exc}"}
+
+    errors: List[str] = []
+    warnings: List[str] = []
+
+    def split_value(split: str, key: str) -> int:
+        info = data.get(split, {}) if isinstance(data, dict) else {}
+        return int(info.get(key) or 0)
+
+    for split in ["train", "val", "test"]:
+        if split_value(split, "rows") <= 0:
+            errors.append(f"{split}_empty")
+
+    if pipeline == "anomaly":
+        if split_value("train", "benign") <= 0:
+            errors.append("anomaly_train_without_benign")
+        checked_splits = ["val", "test"]
+    else:
+        if split_value("train", "benign") <= 0:
+            errors.append("train_without_benign")
+        if split_value("train", "attack") <= 0:
+            errors.append("train_without_attack")
+        checked_splits = ["val", "test"]
+
+    for split in checked_splits:
+        positives = split_value(split, "attack")
+        if positives <= 0:
+            errors.append(f"{split}_without_attack")
+        elif positives < min_positive_eval:
+            warnings.append(f"{split}_low_attack_count:{positives}<min_positive_eval:{min_positive_eval}")
+
+    return {
+        "ok": len(errors) == 0,
+        "path": str(stats_path),
+        "errors": errors,
+        "warnings": warnings,
+        "splits": data,
+    }
 
 
 def read_union_columns(paths: List[Path]) -> Set[str]:
@@ -96,7 +187,7 @@ def validate_label_domain(pipeline: str, split_to_labels: Dict[str, Set[str]]) -
     }
 
 
-def validate_pipeline_split_set(base_dir: Path, pipeline: str, split_map: Dict[str, str]) -> Dict:
+def validate_pipeline_split_set(base_dir: Path, pipeline: str, split_map: Dict[str, str], min_positive_eval: int) -> Dict:
     cols_by_split: Dict[str, Set[str]] = {}
     labels_by_split: Dict[str, Set[str]] = {}
     missing_splits: List[str] = []
@@ -129,8 +220,23 @@ def validate_pipeline_split_set(base_dir: Path, pipeline: str, split_map: Dict[s
     has_target = "target" in ref
     has_label_raw = "label_raw" in ref
     labels_info = validate_label_domain(pipeline, labels_by_split)
+    stats_info = validate_stats_file(base_dir, pipeline, min_positive_eval=min_positive_eval)
+    label_coverage = {"ok": True, "unseen_by_split": {}}
+    if pipeline in {"binary", "multiclass"}:
+        train_labels = labels_by_split.get("train", set())
+        for split in ["val", "test"]:
+            unseen = sorted(labels_by_split.get(split, set()) - train_labels)
+            if unseen:
+                label_coverage["ok"] = False
+                label_coverage["unseen_by_split"][split] = unseen
 
-    ok = consistent_schema and has_target and labels_info.get("ok", False)
+    ok = (
+        consistent_schema
+        and has_target
+        and labels_info.get("ok", False)
+        and stats_info.get("ok", False)
+        and label_coverage.get("ok", False)
+    )
 
     return {
         "ok": ok,
@@ -141,27 +247,48 @@ def validate_pipeline_split_set(base_dir: Path, pipeline: str, split_map: Dict[s
         "splits_present": sorted(non_empty_cols.keys()),
         "missing_splits": missing_splits,
         "labels": labels_info,
+        "label_coverage": label_coverage,
+        "stats": stats_info,
     }
 
 
-def validate_mode(base: Path, mode: str) -> Dict:
+def validate_mode(base: Path, mode: str, min_positive_eval: int, folds: Optional[List[int]] = None) -> Dict:
     out: Dict = {"mode": mode, "ok": True, "details": {}}
 
     if mode == "groupkfold":
         mode_dir = base / "groupkfold" / "NUSW-NB15"
-        folds = sorted([p for p in mode_dir.glob("fold_*") if p.is_dir()])
-        if not folds:
+        profile_info = validate_dataset_profile(mode_dir / "dataset_profile.json", mode)
+        out["profile"] = profile_info
+        if not profile_info.get("ok", False):
+            out["ok"] = False
+
+        if folds is None:
+            fold_dirs = sorted([p for p in mode_dir.glob("fold_*") if p.is_dir()])
+        else:
+            fold_dirs = [mode_dir / f"fold_{fold}" for fold in folds]
+
+        if not fold_dirs:
             return {"mode": mode, "ok": False, "error": f"No folds found in {mode_dir}"}
 
-        for fd in folds:
+        out["selected_folds"] = [fd.name for fd in fold_dirs]
+        for fd in fold_dirs:
+            if not fd.exists():
+                out["ok"] = False
+                out["details"][fd.name] = {"ok": False, "error": f"Missing fold directory: {fd}"}
+                continue
+
             fold_info = {}
+            fold_profile = validate_dataset_profile(fd / "dataset_profile.json", mode)
+            fold_info["dataset_profile"] = fold_profile
+            if not fold_profile.get("ok", False):
+                out["ok"] = False
             for pipeline in ["binary", "multiclass", "anomaly"]:
                 if pipeline == "anomaly":
                     split_map = {"train": "train_benign", "val": "val_mixed", "test": "test_mixed"}
                 else:
                     split_map = {"train": "train", "val": "val", "test": "test"}
 
-                pipeline_info = validate_pipeline_split_set(fd, pipeline, split_map)
+                pipeline_info = validate_pipeline_split_set(fd, pipeline, split_map, min_positive_eval)
                 if not pipeline_info.get("ok", False):
                     out["ok"] = False
                 fold_info[pipeline] = pipeline_info
@@ -174,6 +301,11 @@ def validate_mode(base: Path, mode: str) -> Dict:
     if not mode_dir.exists():
         return {"mode": mode, "ok": False, "error": f"Missing mode directory: {mode_dir}"}
 
+    profile_info = validate_dataset_profile(mode_dir / "dataset_profile.json", mode)
+    out["profile"] = profile_info
+    if not profile_info.get("ok", False):
+        out["ok"] = False
+
     mode_info = {}
     for pipeline in ["binary", "multiclass", "anomaly"]:
         if pipeline == "anomaly":
@@ -181,7 +313,7 @@ def validate_mode(base: Path, mode: str) -> Dict:
         else:
             split_map = {"train": "train", "val": "val", "test": "test"}
 
-        pipeline_info = validate_pipeline_split_set(mode_dir, pipeline, split_map)
+        pipeline_info = validate_pipeline_split_set(mode_dir, pipeline, split_map, min_positive_eval)
         if not pipeline_info.get("ok", False):
             out["ok"] = False
         mode_info[pipeline] = pipeline_info
@@ -347,8 +479,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--datasets_base", default="src/models/UNSW-NB15/datasets")
     ap.add_argument("--artifacts_base", default="src/models/UNSW-NB15/artifacts")
-    ap.add_argument("--label_map_scope", default="latest", choices=["latest", "all"])
+    ap.add_argument("--label_map_scope", default="none", choices=["none", "latest", "all"])
+    ap.add_argument("--min_positive_eval", type=int, default=10)
     ap.add_argument("--modes", nargs="+", default=["random", "groupkfold"])
+    ap.add_argument("--folds", nargs="+", type=int, default=None, help="Groupkfold fold numbers to validate. If omitted, all existing fold_* directories are validated.")
     ap.add_argument("--out", default="src/models/UNSW-NB15/datasets/validation_report.json")
     args = ap.parse_args()
 
@@ -360,12 +494,16 @@ def main() -> None:
 
     global_ok = True
     for mode in args.modes:
-        r = validate_mode(base, mode)
+        mode_folds = args.folds if mode == "groupkfold" else None
+        r = validate_mode(base, mode, min_positive_eval=args.min_positive_eval, folds=mode_folds)
         report["modes"].append(r)
         if not r.get("ok", False):
             global_ok = False
 
-    label_map_report = validate_label_maps(base, artifacts_base, scope=args.label_map_scope)
+    if args.label_map_scope == "none":
+        label_map_report = {"ok": True, "skipped": True, "reason": "label_map_scope=none"}
+    else:
+        label_map_report = validate_label_maps(base, artifacts_base, scope=args.label_map_scope)
     report["label_mapping"] = label_map_report
     report["artifacts_base"] = str(artifacts_base)
     if not label_map_report.get("ok", False):
@@ -379,6 +517,8 @@ def main() -> None:
 
     print(f"Validation report written to: {out_path}")
     print(f"Global OK: {global_ok}")
+    if not global_ok:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

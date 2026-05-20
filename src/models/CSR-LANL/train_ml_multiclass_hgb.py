@@ -12,7 +12,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from data_loader import EmptySplitError, load_splits
 from reporting import plot_corr_matrix, save_metrics_and_plots, save_staged_classification_history
-from train_utils import artifacts_root, now_run_id, save_json, save_label_encoder
+from train_utils import artifacts_root, now_run_id, save_dataset_profile_ref, save_json, save_label_encoder
 
 
 def run_one(datasets_base: str, split_mode: str, fold: int | None, sample_frac: float | None, epochs: int, out_dir, dataset: str) -> dict:
@@ -54,6 +54,7 @@ def main() -> None:
     args = parser.parse_args()
     root = artifacts_root("offline_CSR_LANL_multiclass_hgb", args.split_mode, now_run_id())
     if args.split_mode != "groupkfold":
+        save_dataset_profile_ref(root, args.datasets_base, args.split_mode, args.dataset)
         try:
             out = run_one(args.datasets_base, args.split_mode, None, args.sample_frac, args.epochs, root, args.dataset)
         except (FileNotFoundError, EmptySplitError) as exc:
@@ -66,6 +67,7 @@ def main() -> None:
     for fold in folds:
         fold_dir = root / f"fold_{fold}"
         fold_dir.mkdir(parents=True, exist_ok=True)
+        save_dataset_profile_ref(fold_dir, args.datasets_base, "groupkfold", args.dataset, int(fold))
         try:
             out = run_one(args.datasets_base, "groupkfold", int(fold), args.sample_frac, args.epochs, fold_dir, args.dataset)
         except (FileNotFoundError, EmptySplitError) as exc:

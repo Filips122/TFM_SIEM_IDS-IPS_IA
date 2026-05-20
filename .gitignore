@@ -12,6 +12,7 @@ src/models/UGR16/datasets/
 src/models/CSR-LANL/artifacts/
 src/models/CSR-LANL/datasets/
 src/models/CSR-LANL/datasets_redteam_smoke/
+src/models/CSR-LANL/datasets_redteam/
 src/models/CSR-LANL/datasets_smoke/
 src/models/CSR-LANL/datasets_subsample/
 src/models/CSR-LANL/datasets_subsample_v1/

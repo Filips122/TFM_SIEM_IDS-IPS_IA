@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shutil
 import time
@@ -967,33 +968,76 @@ def write_dataset_metadata(
     rare_classes: Dict[str, int],
     source_counts: Dict[str, int],
     redteam_policy: Dict[str, Any],
+    fold: int | None = None,
 ) -> None:
+    source_manifest = {"source_set": args.source_set, "sources": source_set_to_sources(args.source_set), "rows_read": source_counts}
+    split_policy = split_policy_payload(split_mode, split_indices, df, group_key="entity")
+    summary = {
+        "dataset": args.dataset,
+        "input_dir": str(resolve_from_root(args.in_dir)),
+        "rows": int(len(df)),
+        "window_seconds": int(args.window_seconds),
+        "source_set": args.source_set,
+        "time_min": args.time_min,
+        "time_max": args.time_max,
+        "time_window_hours": args.time_window_hours,
+        "redteam_window_hours": args.redteam_window_hours,
+        "redteam_window_limit": args.redteam_window_limit,
+        "effective_time_intervals": getattr(args, "effective_time_intervals", None),
+        "max_rows_per_source": args.max_rows_per_source,
+        "min_multiclass_windows": args.min_multiclass_windows,
+        "collapsed_multiclass_classes": rare_classes,
+        "binary_counts": count_labels(df["binary_target"]),
+        "multiclass_counts": count_labels(df["multiclass_target"]),
+        "feature_count": len(FEATURE_COLUMNS),
+    }
+    profile_config = {
+        "dataset": args.dataset,
+        "split_mode": split_mode,
+        "source_set": args.source_set,
+        "window_seconds": int(args.window_seconds),
+        "train_ratio": float(args.train_ratio),
+        "val_ratio": float(args.val_ratio),
+        "seed": int(args.seed),
+        "n_folds": int(args.n_folds),
+        "fold": fold,
+        "redteam_window_hours": args.redteam_window_hours,
+        "redteam_window_limit": int(args.redteam_window_limit),
+        "redteam_exclusion_windows": int(args.redteam_exclusion_windows),
+        "max_rows_per_source": args.max_rows_per_source,
+    }
+    fingerprint_source = {
+        "config": profile_config,
+        "source_manifest": source_manifest,
+        "redteam_policy": redteam_policy,
+        "split_policy": split_policy,
+        "feature_columns": FEATURE_COLUMNS,
+    }
+    config_fingerprint = hashlib.sha256(json.dumps(fingerprint_source, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+
     write_json(base_dir / "feature_columns.json", FEATURE_COLUMNS)
     write_json(base_dir / "category_maps.json", maps)
-    write_json(base_dir / "source_manifest.json", {"source_set": args.source_set, "sources": source_set_to_sources(args.source_set), "rows_read": source_counts})
+    write_json(base_dir / "source_manifest.json", source_manifest)
     write_json(base_dir / "redteam_policy.json", redteam_policy)
-    write_json(base_dir / "split_policy.json", split_policy_payload(split_mode, split_indices, df, group_key="entity"))
+    write_json(base_dir / "split_policy.json", split_policy)
     write_json(
-        base_dir / "prepare_dataset_summary.json",
+        base_dir / "dataset_profile.json",
         {
             "dataset": args.dataset,
-            "input_dir": str(resolve_from_root(args.in_dir)),
-            "rows": int(len(df)),
-            "window_seconds": int(args.window_seconds),
-            "source_set": args.source_set,
-            "time_min": args.time_min,
-            "time_max": args.time_max,
-            "time_window_hours": args.time_window_hours,
-            "redteam_window_hours": args.redteam_window_hours,
-            "redteam_window_limit": args.redteam_window_limit,
-            "effective_time_intervals": getattr(args, "effective_time_intervals", None),
-            "max_rows_per_source": args.max_rows_per_source,
-            "min_multiclass_windows": args.min_multiclass_windows,
-            "collapsed_multiclass_classes": rare_classes,
-            "binary_counts": count_labels(df["binary_target"]),
-            "multiclass_counts": count_labels(df["multiclass_target"]),
-            "feature_count": len(FEATURE_COLUMNS),
+            "profile_version": 1,
+            "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "sampling_profile": "redteam_centered" if args.redteam_window_hours is not None else "full_or_time_bounded",
+            "config": profile_config,
+            "source_manifest": source_manifest,
+            "redteam_policy": redteam_policy,
+            "split_policy": split_policy,
+            "summary": summary,
+            "config_fingerprint": config_fingerprint,
         },
+    )
+    write_json(
+        base_dir / "prepare_dataset_summary.json",
+        summary,
     )
 
 
@@ -1023,7 +1067,7 @@ def prepare_mode(
     clear_dir(out_base)
     split_indices = build_split_indices(df, args, split_mode, fold=fold)
     materialize(out_base, df, split_indices)
-    write_dataset_metadata(out_base, df, maps, args, split_mode, split_indices, rare_classes, source_counts, redteam_policy)
+    write_dataset_metadata(out_base, df, maps, args, split_mode, split_indices, rare_classes, source_counts, redteam_policy, fold=fold)
     print(f"Prepared {split_mode}{'' if fold is None else f' fold_{fold}'}: {out_base}")
 
 
@@ -1133,6 +1177,7 @@ def main() -> None:
     parser.add_argument("--redteam_window_hours", type=float, default=None, help="Limit processing to +/- N hours around redteam events")
     parser.add_argument("--redteam_window_limit", type=int, default=1, help="Number of redteam events used with --redteam_window_hours; 0 means all matching events")
     parser.add_argument("--redteam_exclusion_windows", type=int, default=1)
+    parser.add_argument("--min_redteam_matches", type=int, default=0, help="Minimum matched red-team entity-windows required after aggregation")
     parser.add_argument("--min_multiclass_windows", type=int, default=5)
     parser.add_argument("--no_progress", action="store_true", help="Disable per-source progress messages")
     parser.add_argument("--progress_every_chunks", type=int, default=4, help="Print progress every N raw chunks per source")
@@ -1153,6 +1198,8 @@ def main() -> None:
         raise SystemExit("redteam_window_hours must be positive")
     if args.redteam_window_limit < 0:
         raise SystemExit("redteam_window_limit must be zero or positive")
+    if args.min_redteam_matches < 0:
+        raise SystemExit("min_redteam_matches must be zero or positive")
     input_dir = resolve_from_root(args.in_dir)
     if not input_dir.exists() or not input_dir.is_dir():
         raise SystemExit(f"Input directory does not exist: {input_dir}")
@@ -1181,6 +1228,12 @@ def main() -> None:
     print(f"Binary      : {count_labels(windows['binary_target'])}")
     print(f"Multiclass  : {count_labels(windows['multiclass_target'])}")
     print(f"Redteam     : matched {redteam_policy['matched_redteam_entity_windows']:,}/{redteam_policy['redteam_entity_windows']:,} entity-windows")
+    if int(redteam_policy["matched_redteam_entity_windows"]) < int(args.min_redteam_matches):
+        raise SystemExit(
+            "Matched red-team entity-windows below required minimum: "
+            f"{redteam_policy['matched_redteam_entity_windows']} < {args.min_redteam_matches}. "
+            "Increase --redteam_window_hours, remove row caps, or include more sources."
+        )
     if rare_classes:
         print(f"Collapsed rare multiclass labels into RedTeamOther: {rare_classes}")
 
