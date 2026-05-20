@@ -5,10 +5,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from compare_artifacts import augment_row_metadata, selected_run_dirs
 
 
 def read_json(p: Path):
@@ -50,10 +54,23 @@ def metric_warning(row: pd.Series) -> str | None:
     return ";".join(warnings) if warnings else None
 
 
+def build_row(model_dir: Path, mode_dir: Path, run_dir: Path, fold: str | None = None, artifact_dir: Path | None = None) -> Dict[str, Any]:
+    row: Dict[str, Any] = {
+        "model": model_dir.name,
+        "split_mode": mode_dir.name,
+        "run_id": run_dir.name,
+        "fold": fold,
+    }
+    augment_row_metadata(row, run_dir, artifact_dir)
+    return row
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--artifacts_dir", default="src/models/CIC-IDS2017/artifacts")
     ap.add_argument("--out_dir", default=None)
+    ap.add_argument("--split_modes", nargs="*", default=None, help="Optional split modes to include")
+    ap.add_argument("--all_runs", action="store_true", help="Include all historical runs instead of only the latest run per model/split")
     args = ap.parse_args()
 
     art = Path(args.artifacts_dir)
@@ -63,7 +80,7 @@ def main():
     rows = []
     for model_dir in sorted([p for p in art.iterdir() if p.is_dir() and p.name != "compare_models"]):
         for mode_dir in sorted([p for p in model_dir.iterdir() if p.is_dir()]):
-            for run_dir in sorted([p for p in mode_dir.iterdir() if p.is_dir()]):
+            for run_dir in selected_run_dirs(mode_dir, args.all_runs):
                 # groupkfold folds
                 fold_dirs = sorted([p for p in run_dir.glob("fold_*") if p.is_dir()])
                 if fold_dirs:
@@ -71,11 +88,8 @@ def main():
                         mtest = fd / "metrics_test.json"
                         if mtest.exists():
                             mt = read_json(mtest)
-                            rows.append({
-                                "model": model_dir.name,
-                                "split_mode": mode_dir.name,
-                                "run_id": run_dir.name,
-                                "fold": fd.name,
+                            row = build_row(model_dir, mode_dir, run_dir, fd.name, fd)
+                            row.update({
                                 "test_accuracy": mt.get("accuracy"),
                                 "test_macro_f1": mt.get("macro_f1"),
                                 "test_macro_recall": mt.get("macro_recall"),
@@ -85,16 +99,14 @@ def main():
                                 "test_best_f1": mt.get("best_f1"),
                                 "test_ece": mt.get("ece"),
                             })
+                            rows.append(row)
                     continue
 
                 mtest = run_dir / "metrics_test.json"
                 if mtest.exists():
                     mt = read_json(mtest)
-                    rows.append({
-                        "model": model_dir.name,
-                        "split_mode": mode_dir.name,
-                        "run_id": run_dir.name,
-                        "fold": None,
+                    row = build_row(model_dir, mode_dir, run_dir)
+                    row.update({
                         "test_accuracy": mt.get("accuracy"),
                         "test_macro_f1": mt.get("macro_f1"),
                         "test_macro_recall": mt.get("macro_recall"),
@@ -104,17 +116,15 @@ def main():
                         "test_best_f1": mt.get("best_f1"),
                         "test_ece": mt.get("ece"),
                     })
+                    rows.append(row)
                 else:
                     # fallback to results.json (older runs)
                     rj = run_dir / "results.json"
                     if rj.exists():
                         r = read_json(rj)
                         t = r.get("test", r)
-                        rows.append({
-                            "model": model_dir.name,
-                            "split_mode": mode_dir.name,
-                            "run_id": run_dir.name,
-                            "fold": None,
+                        row = build_row(model_dir, mode_dir, run_dir)
+                        row.update({
                             "test_accuracy": t.get("accuracy"),
                             "test_macro_f1": t.get("macro_f1"),
                             "test_macro_recall": t.get("macro_recall"),
@@ -124,11 +134,17 @@ def main():
                             "test_best_f1": t.get("best_f1"),
                             "test_ece": t.get("ece"),
                         })
+                        rows.append(row)
 
     if not rows:
         raise SystemExit("No se encontraron métricas en artifacts (metrics_test.json o results.json).")
 
     df = pd.DataFrame(rows)
+    if args.split_modes:
+        requested_modes = {str(mode) for mode in args.split_modes}
+        df = df[df["split_mode"].isin(requested_modes)].copy()
+        if df.empty:
+            raise SystemExit(f"No metrics found for requested split modes: {sorted(requested_modes)}")
 
     rank_data = df.apply(primary_score, axis=1, result_type="expand")
     df["rank_score"] = rank_data[0]
@@ -164,6 +180,9 @@ def main():
     (out_dir / "comparison.md").write_text(md_text, encoding="utf-8")
 
     print("\n=== MODEL COMPARISON ===")
+    print("Scope:", "all historical runs" if args.all_runs else "latest run per model/split")
+    if args.split_modes:
+        print("Split modes:", ", ".join(args.split_modes))
     print(md_text)
     print("\nSaved:", out_dir)
 

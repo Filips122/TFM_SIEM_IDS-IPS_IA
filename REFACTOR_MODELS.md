@@ -20,6 +20,13 @@ Cambios:
 - Incluir avisos en comparativas para detectar colapso de clase mayoritaria, PR-AUC inutil o metricas ausentes.
 - Separar en la comparativa lo que es `random`, `date`, `groupkfold`, `official`, dataset version y feature profile.
 
+Primeros cambios aplicados:
+- Los `compare_models.py` comparan por defecto solo el ultimo run por modelo/split, y `--all_runs` conserva la comparativa historica.
+- Los comparadores aceptan `--split_modes` para que los runners comparen solo los modos ejecutados en esa tanda.
+- Las tablas detalladas y agregadas incluyen metadata disponible como `feature_profile`, `feature_count`, `sampling_profile`, `source_set`, `config_fingerprint` y `sample_frac`.
+- Los runners pasan los modos ejecutados a `compare_models.py`, evitando mezclar `date` reciente con `random/groupkfold` antiguos.
+- Los nuevos entrenamientos guardan `run_config` y `sample_frac` en `run_metadata.json` cuando aplica.
+
 Comentario:
 Esta fase no cambia los datasets ni invalida artefactos antiguos. Solo mejora la trazabilidad de nuevos entrenamientos y reduce lecturas incorrectas de resultados.
 
@@ -79,13 +86,19 @@ Con 6 ataques en train y 1 en test, el experimento actual solo sirve como smoke 
 
 ## Fase 4 - Feature profiles sin leakage para LAB-ALERTS y COWRIE_FULL
 
-Estado: pendiente.
+Estado: en progreso.
 
 Cambios:
-- Crear perfiles `full_heuristic` y `operational_no_label_proxy`.
+- Crear perfiles `full` y `operational_no_label_proxy`.
 - Excluir features que sean casi la definicion directa del label en el perfil defendible.
 - Guardar `feature_profile` en metadata y en la ruta o comparativa.
 - Mantener el perfil completo como sanity check, no como resultado principal.
+
+Primeros cambios aplicados:
+- LAB-ALERTS y COWRIE_FULL soportan `--feature_profile full|operational_no_label_proxy` en `prepare_dataset.py`.
+- Los preparadores escriben `feature_columns.json`, `feature_profile.json` y `prepare_dataset_summary.json` con el perfil y features excluidas.
+- Los artefactos de entrenamiento guardan `dataset_profile_ref.json` y enlazan `run_metadata.json` con el dataset preparado.
+- Los runners LAB/COWRIE, `run_all_models.ps1` y `run_all_refactored_models.ps1` propagan el perfil de features.
 
 Comentario:
 HGB casi perfecto en estos datasets no demuestra deteccion generalizable; demuestra que el modelo aprende la politica de etiquetado.

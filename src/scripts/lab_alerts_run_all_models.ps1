@@ -10,6 +10,8 @@ param(
     [int]$MulticlassEpochs = 215,
     [int]$AnomalyEstimators = 315,
     [int]$MinMulticlassWindows = 30,
+    [ValidateSet("full", "operational_no_label_proxy")]
+    [string]$FeatureProfile = "full",
     [double]$SampleFrac,
     [switch]$AllGroupFolds,
     [switch]$SkipPreprocess,
@@ -97,9 +99,10 @@ Write-Host "Repo root : $repoRoot"
 Write-Host "Python    : $PythonExe"
 Write-Host "Dataset   : $Dataset"
 Write-Host "Modes     : $($Modes -join ', ')"
+Write-Host "Features  : $FeatureProfile"
 
 if (-not $SkipPreprocess) {
-    $prepareArgs = @("--dataset", $Dataset, "--window_size", $WindowSize, "--seed", "$Seed", "--n_folds", "$NFolds", "--min_multiclass_windows", "$MinMulticlassWindows", "--split_mode")
+    $prepareArgs = @("--dataset", $Dataset, "--window_size", $WindowSize, "--seed", "$Seed", "--n_folds", "$NFolds", "--min_multiclass_windows", "$MinMulticlassWindows", "--feature_profile", $FeatureProfile, "--split_mode")
     $prepareArgs += $Modes
     if ($AllGroupFolds) {
         $prepareArgs += "--all_folds"
@@ -136,7 +139,8 @@ foreach ($mode in $Modes) {
 }
 
 if (-not $SkipCompare) {
-    RunPy "src\models\LAB-ALERTS\compare_models.py" @("--artifacts_dir", (Join-Path $repoRoot "src\models\LAB-ALERTS\artifacts"))
+    $compareArgs = @("--artifacts_dir", (Join-Path $repoRoot "src\models\LAB-ALERTS\artifacts"), "--split_modes") + $Modes
+    RunPy "src\models\LAB-ALERTS\compare_models.py" $compareArgs
 }
 
 Write-Host "`nLAB-ALERTS orchestration finished." -ForegroundColor Green

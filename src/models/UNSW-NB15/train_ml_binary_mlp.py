@@ -181,7 +181,7 @@ def main() -> None:
 
     model_name = "offline_NUSW_binary_mlp"
     run_id = now_run_id()
-    root = artifacts_root(model_name, args.split_mode, run_id)
+    root = artifacts_root(model_name, args.split_mode, run_id, run_config={"sample_frac": args.sample_frac, "epochs": args.epochs})
 
     if args.split_mode != "groupkfold":
         out = run_one(args.split_mode, None, root, args)

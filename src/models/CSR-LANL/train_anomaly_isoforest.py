@@ -42,7 +42,7 @@ def main() -> None:
     parser.add_argument("--n_folds", type=int, default=5)
     parser.add_argument("--epochs", type=int, default=315)
     args = parser.parse_args()
-    root = artifacts_root("anomaly_isoforest_CSR_LANL", args.split_mode, now_run_id())
+    root = artifacts_root("anomaly_isoforest_CSR_LANL", args.split_mode, now_run_id(), run_config={"epochs": args.epochs, "datasets_base": args.datasets_base})
     if args.split_mode != "groupkfold":
         save_dataset_profile_ref(root, args.datasets_base, args.split_mode, args.dataset)
         try:

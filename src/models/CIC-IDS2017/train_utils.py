@@ -63,18 +63,20 @@ def save_json(path: Path, obj: Dict) -> None:
     path.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def save_run_metadata(root: Path, model_name: str, split_mode: str, run_id: str, dataset: str = "CIC-IDS2017") -> None:
-    save_json(
-        root / "run_metadata.json",
-        {
-            "dataset": dataset,
-            "model_name": model_name,
-            "split_mode": split_mode,
-            "run_id": run_id,
-            "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "artifact_root": str(root),
-        },
-    )
+def save_run_metadata(root: Path, model_name: str, split_mode: str, run_id: str, dataset: str = "CIC-IDS2017", run_config: Optional[Dict[str, object]] = None) -> None:
+    payload: Dict[str, object] = {
+        "dataset": dataset,
+        "model_name": model_name,
+        "split_mode": split_mode,
+        "run_id": run_id,
+        "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "artifact_root": str(root),
+    }
+    if run_config is not None:
+        payload["run_config"] = run_config
+        if "sample_frac" in run_config:
+            payload["sample_frac"] = run_config.get("sample_frac")
+    save_json(root / "run_metadata.json", payload)
 
 
 # -----------------------------
@@ -408,11 +410,11 @@ def history_to_csv(path: Path, history: List[TorchHistoryRow]) -> None:
 # -----------------------------
 # Artifacts helpers
 # -----------------------------
-def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None) -> Path:
+def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None, run_config: Optional[Dict[str, object]] = None) -> Path:
     run_id = run_id or now_run_id()
     root = resolve_from_root(f"src/models/CIC-IDS2017/artifacts/{model_name}/{split_mode}/{run_id}")
     ensure_dir(root)
-    save_run_metadata(root, model_name, split_mode, run_id)
+    save_run_metadata(root, model_name, split_mode, run_id, run_config=run_config)
     return root
 
 

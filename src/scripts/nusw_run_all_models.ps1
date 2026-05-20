@@ -231,9 +231,8 @@ foreach ($mode in $Modes) {
 }
 
 if (-not $SkipCompare) {
-    RunPy "src\models\UNSW-NB15\compare_models.py" @(
-        "--artifacts_dir", (Join-Path $repoRoot "src\models\UNSW-NB15\artifacts")
-    )
+    $compareArgs = @("--artifacts_dir", (Join-Path $repoRoot "src\models\UNSW-NB15\artifacts"), "--split_modes") + $Modes
+    RunPy "src\models\UNSW-NB15\compare_models.py" $compareArgs
 }
 
 Write-Host "`nUNSW-NB15 orchestration finished." -ForegroundColor Green

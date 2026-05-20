@@ -12,7 +12,7 @@ from sklearn.ensemble import IsolationForest
 from data_loader import EmptySplitError, load_splits
 from metrics import evaluate_anomaly_scores
 from reporting import save_anomaly_plots
-from train_utils import artifacts_root, now_run_id, save_json
+from train_utils import artifacts_root, now_run_id, save_dataset_profile_ref, save_json
 
 
 def run_one(split_mode: str, fold: int | None, epochs: int, out_dir, dataset: str, n_jobs: int) -> dict:
@@ -43,7 +43,7 @@ def main() -> None:
     parser.add_argument("--epochs", type=int, default=315)
     parser.add_argument("--n_jobs", type=int, default=1)
     args = parser.parse_args()
-    root = artifacts_root("anomaly_isoforest_COWRIE_FULL", args.split_mode, now_run_id())
+    root = artifacts_root("anomaly_isoforest_COWRIE_FULL", args.split_mode, now_run_id(), dataset=args.dataset, run_config={"epochs": args.epochs, "n_jobs": args.n_jobs})
     if args.split_mode != "groupkfold":
         try:
             out = run_one(args.split_mode, None, args.epochs, root, args.dataset, args.n_jobs)
@@ -51,6 +51,7 @@ def main() -> None:
             raise SystemExit(f"{args.dataset} anomaly split is missing or empty: {exc}")
         joblib.dump(out["model"], root / "model.joblib")
         save_json(root / "results.json", {"val": out["val"], "test": out["test"], "data": out["data"], "best_epoch": None})
+        save_dataset_profile_ref(root, args.split_mode, args.dataset)
         print("Saved:", root)
         return
     folds = range(args.n_folds) if args.all_folds else [0 if args.fold is None else args.fold]
@@ -65,6 +66,7 @@ def main() -> None:
             continue
         joblib.dump(out["model"], fold_dir / "model.joblib")
         save_json(fold_dir / "results.json", {"val": out["val"], "test": out["test"], "data": out["data"], "best_epoch": None})
+        save_dataset_profile_ref(fold_dir, "groupkfold", args.dataset, int(fold))
         summary[f"fold_{fold}"] = {"val": out["val"], "test": out["test"], "data": out["data"]}
     save_json(root / "summary.json", summary)
     print("Saved:", root)

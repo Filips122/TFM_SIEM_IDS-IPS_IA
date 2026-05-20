@@ -11,6 +11,10 @@ param(
     [string]$CowrieDataset = "COWRIE_FULL",
     [string]$CsrDataset = "CSR-LANL",
     [string]$CsrDatasetsBase = "src/models/CSR-LANL/datasets_subsample",
+    [ValidateSet("full", "operational_no_label_proxy")]
+    [string]$LabFeatureProfile = "full",
+    [ValidateSet("full", "operational_no_label_proxy")]
+    [string]$CowrieFeatureProfile = "full",
     [int]$CicEpochs = 20,
     [int]$BinaryEpochs = 215,
     [int]$MulticlassEpochs = 215,
@@ -225,7 +229,8 @@ foreach ($dataset in $selectedDatasets) {
                 "-BinaryEpochs", "$BinaryEpochs",
                 "-MulticlassEpochs", "$MulticlassEpochs",
                 "-AnomalyEstimators", "$AnomalyEstimators",
-                "-NFolds", "$LabNFolds"
+                "-NFolds", "$LabNFolds",
+                "-FeatureProfile", "$LabFeatureProfile"
             )
             if (-not $RunPreprocess) {
                 $childArgs += "-SkipPreprocess"
@@ -242,7 +247,8 @@ foreach ($dataset in $selectedDatasets) {
                 "-BinaryEpochs", "$BinaryEpochs",
                 "-MulticlassEpochs", "$MulticlassEpochs",
                 "-AnomalyEstimators", "$AnomalyEstimators",
-                "-NFolds", "$CowrieNFolds"
+                "-NFolds", "$CowrieNFolds",
+                "-FeatureProfile", "$CowrieFeatureProfile"
             )
             if (-not $RunPreprocess) {
                 $childArgs += "-SkipPreprocess"

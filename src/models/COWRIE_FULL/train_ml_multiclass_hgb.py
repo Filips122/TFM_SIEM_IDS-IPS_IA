@@ -12,7 +12,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from data_loader import EmptySplitError, load_splits
 from reporting import plot_corr_matrix, save_metrics_and_plots, save_staged_classification_history
-from train_utils import artifacts_root, now_run_id, save_json, save_label_encoder
+from train_utils import artifacts_root, now_run_id, save_dataset_profile_ref, save_json, save_label_encoder
 
 
 def run_one(split_mode: str, fold: int | None, sample_frac: float | None, epochs: int, out_dir, dataset: str) -> dict:
@@ -49,13 +49,14 @@ def main() -> None:
     parser.add_argument("--sample_frac", type=float, default=None)
     parser.add_argument("--epochs", type=int, default=215)
     args = parser.parse_args()
-    root = artifacts_root("offline_COWRIE_FULL_multiclass_hgb", args.split_mode, now_run_id())
+    root = artifacts_root("offline_COWRIE_FULL_multiclass_hgb", args.split_mode, now_run_id(), dataset=args.dataset, run_config={"sample_frac": args.sample_frac, "epochs": args.epochs})
     if args.split_mode != "groupkfold":
         try:
             out = run_one(args.split_mode, None, args.sample_frac, args.epochs, root, args.dataset)
         except (FileNotFoundError, EmptySplitError) as exc:
             raise SystemExit(f"{args.dataset} multiclass split is missing or empty: {exc}")
         save_json(root / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
+        save_dataset_profile_ref(root, args.split_mode, args.dataset)
         print("Saved:", root)
         return
     folds = range(args.n_folds) if args.all_folds else [0 if args.fold is None else args.fold]
@@ -69,6 +70,7 @@ def main() -> None:
             summary[f"fold_{fold}"] = {"skipped": True, "reason": str(exc)}
             continue
         save_json(fold_dir / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
+        save_dataset_profile_ref(fold_dir, "groupkfold", args.dataset, int(fold))
         summary[f"fold_{fold}"] = {"best_iter": out["best_iter"], "test": out["test"]}
     save_json(root / "summary.json", summary)
     print("Saved:", root)

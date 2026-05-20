@@ -71,7 +71,7 @@ RunPy "src\models\UNSW-NB15\train_ml_binary_mlp.py" @("--split_mode", "official"
 RunPy "src\models\UNSW-NB15\train_anomaly_isoforest.py" @("--split_mode", "official", "--epochs", $anomalyEstimators)
 
 # 6) Comparison and dataset decision report
-RunPy "src\models\UNSW-NB15\compare_models.py" @("--artifacts_dir", (Join-Path $repoRoot "src\models\UNSW-NB15\artifacts"))
+RunPy "src\models\UNSW-NB15\compare_models.py" @("--artifacts_dir", (Join-Path $repoRoot "src\models\UNSW-NB15\artifacts"), "--split_modes", "random", "groupkfold", "official")
 RunPy "src\models\UNSW-NB15\evaluate_train_test_network.py" @()
 
 Write-Host "UNSW train-all finished." -ForegroundColor Green

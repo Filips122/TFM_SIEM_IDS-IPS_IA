@@ -243,7 +243,8 @@ foreach ($mode in $Modes) {
 }
 
 if (-not $SkipCompare) {
-    RunPy "src\models\CSR-LANL\compare_models.py" @("--artifacts_dir", "$artifactsDir")
+    $compareArgs = @("--artifacts_dir", "$artifactsDir", "--split_modes") + $Modes
+    RunPy "src\models\CSR-LANL\compare_models.py" $compareArgs
 }
 
 Write-Host "`nCSR-LANL model training finished." -ForegroundColor Green

@@ -66,7 +66,7 @@ RunPy "src\models\CIC-IDS2017\train_seq_tl_gru.py" @("--mode","groupkfold","--ta
 
 # --- Comparativa final ---
 if (-not $SkipCompare) {
-    RunPy "src\models\CIC-IDS2017\compare_models.py" @("--artifacts_dir", (Join-Path $repoRoot "src\models\CIC-IDS2017\artifacts"))
+    RunPy "src\models\CIC-IDS2017\compare_models.py" @("--artifacts_dir", (Join-Path $repoRoot "src\models\CIC-IDS2017\artifacts"), "--split_modes", "day", "groupkfold", "random")
 }
 
 Write-Host "`nCIC-IDS2017 orchestration finished." -ForegroundColor Green

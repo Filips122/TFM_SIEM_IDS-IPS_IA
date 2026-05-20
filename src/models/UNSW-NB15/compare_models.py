@@ -5,11 +5,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from compare_artifacts import aggregate_group_columns, augment_row_metadata, key_to_dict, selected_run_dirs
 
 
 NUMERIC_METRICS = [
@@ -101,6 +105,7 @@ def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dic
             fold_name = fold_dir.name
             seen_folds.add(fold_name)
             row = build_row_base(model, split_mode, run_id, fold_name)
+            augment_row_metadata(row, run_dir, fold_dir)
 
             mtest = fold_dir / "metrics_test.json"
             if mtest.exists():
@@ -128,6 +133,7 @@ def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dic
                 if fold_name in seen_folds:
                     continue
                 row = build_row_base(model, split_mode, run_id, fold_name)
+                augment_row_metadata(row, run_dir)
                 if isinstance(fold_data, dict) and fold_data.get("skipped", False):
                     row["status"] = "skipped"
                     row["reason"] = fold_data.get("reason", "skipped")
@@ -141,6 +147,7 @@ def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dic
         return rows
 
     row = build_row_base(model, split_mode, run_id, None)
+    augment_row_metadata(row, run_dir)
     mtest = run_dir / "metrics_test.json"
     if mtest.exists():
         row.update(normalize_test_metrics(read_json(mtest)))
@@ -194,18 +201,17 @@ def aggregate_rows(detailed: pd.DataFrame) -> pd.DataFrame:
         if col in ok_df.columns:
             ok_df[col] = pd.to_numeric(ok_df[col], errors="coerce")
 
-    group_cols = ["model", "split_mode"]
+    group_cols = aggregate_group_columns(ok_df, ["model", "split_mode"])
     grouped = ok_df.groupby(group_cols, dropna=False)
 
     rows: List[Dict[str, Any]] = []
-    for (model, split_mode), g in grouped:
-        row: Dict[str, Any] = {
-            "model": model,
-            "split_mode": split_mode,
+    for key, g in grouped:
+        row: Dict[str, Any] = key_to_dict(group_cols, key)
+        row.update({
             "n_rows": int(len(g)),
             "n_runs": int(g["run_id"].nunique()),
             "n_folds": int(g["fold"].notna().sum()),
-        }
+        })
 
         for metric in NUMERIC_METRICS:
             if metric not in g.columns:
@@ -239,14 +245,13 @@ def aggregate_rows(detailed: pd.DataFrame) -> pd.DataFrame:
     return agg
 
 
-def collect_rows(artifacts_dir: Path) -> List[Dict[str, Any]]:
+def collect_rows(artifacts_dir: Path, all_runs: bool = False) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
     model_dirs = sorted([p for p in artifacts_dir.iterdir() if p.is_dir() and p.name != "compare_models"])
     for model_dir in model_dirs:
         mode_dirs = sorted([p for p in model_dir.iterdir() if p.is_dir()])
         for mode_dir in mode_dirs:
-            run_dirs = sorted([p for p in mode_dir.iterdir() if p.is_dir()])
-            for run_dir in run_dirs:
+            for run_dir in selected_run_dirs(mode_dir, all_runs):
                 rows.extend(collect_run_rows(model_dir, mode_dir, run_dir))
     return rows
 
@@ -255,17 +260,24 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--artifacts_dir", default="src/models/UNSW-NB15/artifacts")
     ap.add_argument("--out_dir", default=None)
+    ap.add_argument("--split_modes", nargs="*", default=None, help="Optional split modes to include")
+    ap.add_argument("--all_runs", action="store_true", help="Include all historical runs instead of only the latest run per model/split")
     args = ap.parse_args()
 
     art = Path(args.artifacts_dir)
     if not art.exists():
         raise SystemExit(f"Does not exist: {art}")
 
-    rows = collect_rows(art)
+    rows = collect_rows(art, all_runs=args.all_runs)
     if not rows:
         raise SystemExit("No metrics found in artifacts")
 
     detailed = pd.DataFrame(rows)
+    if args.split_modes:
+        requested_modes = {str(mode) for mode in args.split_modes}
+        detailed = detailed[detailed["split_mode"].isin(requested_modes)].copy()
+        if detailed.empty:
+            raise SystemExit(f"No metrics found for requested split modes: {sorted(requested_modes)}")
     for col in NUMERIC_METRICS:
         if col in detailed.columns:
             detailed[col] = pd.to_numeric(detailed[col], errors="coerce")
@@ -299,6 +311,9 @@ def main() -> None:
         (out_dir / "comparison_missing_metrics.md").write_text(df_to_md(missing), encoding="utf-8")
 
     print("\n=== NUSW MODEL COMPARISON (detailed) ===")
+    print("Scope:", "all historical runs" if args.all_runs else "latest run per model/split")
+    if args.split_modes:
+        print("Split modes:", ", ".join(args.split_modes))
     print(df_to_md(detailed))
     if not aggregated.empty:
         print("\n=== NUSW MODEL COMPARISON (aggregated) ===")

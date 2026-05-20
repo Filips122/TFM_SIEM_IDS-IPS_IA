@@ -114,7 +114,7 @@ def main() -> None:
 
     model_name = "anomaly_isoforest_UGR16"
     run_id = now_run_id()
-    root = artifacts_root(model_name, args.split_mode, run_id, dataset=args.dataset)
+    root = artifacts_root(model_name, args.split_mode, run_id, dataset=args.dataset, run_config={"sample_frac": args.sample_frac, "epochs": args.epochs, "max_train_rows": args.max_train_rows, "max_eval_rows": args.max_eval_rows, "n_jobs": args.n_jobs})
 
     if args.split_mode != "groupkfold":
         try:

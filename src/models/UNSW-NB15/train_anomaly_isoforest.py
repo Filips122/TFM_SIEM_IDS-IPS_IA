@@ -66,7 +66,7 @@ def main() -> None:
 
     model_name = "anomaly_isoforest_NUSW-NB15"
     run_id = now_run_id()
-    root = artifacts_root(model_name, args.split_mode, run_id)
+    root = artifacts_root(model_name, args.split_mode, run_id, run_config={"epochs": args.epochs})
 
     if args.split_mode != "groupkfold":
         try:

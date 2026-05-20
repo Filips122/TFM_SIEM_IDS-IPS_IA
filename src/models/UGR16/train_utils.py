@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import time
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import numpy as np
 import torch
@@ -35,28 +35,30 @@ def save_json(path: Path, obj: Dict) -> None:
     path.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def save_run_metadata(root: Path, model_name: str, split_mode: str, run_id: str, dataset: Optional[str] = None) -> None:
-    save_json(
-        root / "run_metadata.json",
-        {
-            "dataset": dataset or "UGR16",
-            "model_name": model_name,
-            "split_mode": split_mode,
-            "run_id": run_id,
-            "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "artifact_root": str(root),
-        },
-    )
+def save_run_metadata(root: Path, model_name: str, split_mode: str, run_id: str, dataset: Optional[str] = None, run_config: Optional[Dict[str, Any]] = None) -> None:
+    payload: Dict[str, Any] = {
+        "dataset": dataset or "UGR16",
+        "model_name": model_name,
+        "split_mode": split_mode,
+        "run_id": run_id,
+        "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "artifact_root": str(root),
+    }
+    if run_config is not None:
+        payload["run_config"] = run_config
+        if "sample_frac" in run_config:
+            payload["sample_frac"] = run_config.get("sample_frac")
+    save_json(root / "run_metadata.json", payload)
 
 
-def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None, dataset: Optional[str] = None) -> Path:
+def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None, dataset: Optional[str] = None, run_config: Optional[Dict[str, Any]] = None) -> Path:
     run_id = run_id or now_run_id()
     if dataset:
         root = resolve_from_root(f"src/models/UGR16/artifacts/{model_name}/{dataset}/{split_mode}/{run_id}")
     else:
         root = resolve_from_root(f"src/models/UGR16/artifacts/{model_name}/{split_mode}/{run_id}")
     ensure_dir(root)
-    save_run_metadata(root, model_name, split_mode, run_id, dataset)
+    save_run_metadata(root, model_name, split_mode, run_id, dataset, run_config=run_config)
     return root
 
 

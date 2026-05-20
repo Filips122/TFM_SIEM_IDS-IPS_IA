@@ -316,7 +316,8 @@ foreach ($mode in $Modes) {
 }
 
 if (-not $SkipCompare) {
-    RunPy "src\models\UGR16\compare_models.py" @("--artifacts_dir", $artifactsDir)
+    $compareArgs = @("--artifacts_dir", $artifactsDir, "--datasets", $Dataset, "--split_modes") + $Modes
+    RunPy "src\models\UGR16\compare_models.py" $compareArgs
 }
 
 Write-Host "`nUGR16 existing-dataset model run finished." -ForegroundColor Green

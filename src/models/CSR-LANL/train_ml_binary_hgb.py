@@ -51,7 +51,7 @@ def main() -> None:
     parser.add_argument("--sample_frac", type=float, default=None)
     parser.add_argument("--epochs", type=int, default=215)
     args = parser.parse_args()
-    root = artifacts_root("offline_CSR_LANL_binary_hgb", args.split_mode, now_run_id())
+    root = artifacts_root("offline_CSR_LANL_binary_hgb", args.split_mode, now_run_id(), run_config={"sample_frac": args.sample_frac, "epochs": args.epochs, "datasets_base": args.datasets_base})
     if args.split_mode != "groupkfold":
         save_dataset_profile_ref(root, args.datasets_base, args.split_mode, args.dataset)
         try:

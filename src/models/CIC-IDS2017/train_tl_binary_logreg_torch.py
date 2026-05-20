@@ -120,7 +120,7 @@ def main():
 
     model_name = "online_TL_binary_logreg_torch"
     run_id = now_run_id()
-    root = artifacts_root(model_name, args.split_mode, run_id)
+    root = artifacts_root(model_name, args.split_mode, run_id, run_config={"sample_frac": args.sample_frac, "epochs": args.epochs})
 
     if args.split_mode == "day":
         out = run_one("day", None, cfg, args.sample_frac, root)

@@ -5,11 +5,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from compare_artifacts import aggregate_group_columns, augment_row_metadata, key_to_dict, selected_run_dirs
 
 
 NUMERIC_METRICS = [
@@ -82,6 +86,7 @@ def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dic
     if fold_dirs:
         for fold_dir in fold_dirs:
             row = row_base(model_dir.name, mode_dir.name, run_dir.name, fold_dir.name)
+            augment_row_metadata(row, run_dir, fold_dir)
             result_path = fold_dir / "results.json"
             if result_path.exists():
                 row.update(normalize_test_metrics(read_json(result_path)))
@@ -91,6 +96,7 @@ def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dic
             rows.append(row)
         return rows
     row = row_base(model_dir.name, mode_dir.name, run_dir.name, None)
+    augment_row_metadata(row, run_dir)
     result_path = run_dir / "results.json"
     if result_path.exists():
         row.update(normalize_test_metrics(read_json(result_path)))
@@ -133,8 +139,10 @@ def aggregate_rows(detailed: pd.DataFrame) -> pd.DataFrame:
         if column in ok_df.columns:
             ok_df[column] = pd.to_numeric(ok_df[column], errors="coerce")
     rows: List[Dict[str, Any]] = []
-    for (model, split_mode), group in ok_df.groupby(["model", "split_mode"], dropna=False):
-        row: Dict[str, Any] = {"model": model, "split_mode": split_mode, "n_rows": int(len(group)), "n_runs": int(group["run_id"].nunique())}
+    group_cols = aggregate_group_columns(ok_df, ["model", "split_mode"])
+    for key, group in ok_df.groupby(group_cols, dropna=False):
+        row: Dict[str, Any] = key_to_dict(group_cols, key)
+        row.update({"n_rows": int(len(group)), "n_runs": int(group["run_id"].nunique())})
         for metric in NUMERIC_METRICS:
             if metric in group.columns:
                 series = pd.to_numeric(group[metric], errors="coerce")
@@ -160,11 +168,11 @@ def aggregate_rows(detailed: pd.DataFrame) -> pd.DataFrame:
     return agg.sort_values(["rank_score", "n_rows"], ascending=[False, False])
 
 
-def collect_rows(artifacts_dir: Path) -> List[Dict[str, Any]]:
+def collect_rows(artifacts_dir: Path, all_runs: bool = False) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
     for model_dir in sorted([path for path in artifacts_dir.iterdir() if path.is_dir() and path.name != "compare_models"]):
         for mode_dir in sorted([path for path in model_dir.iterdir() if path.is_dir()]):
-            for run_dir in sorted([path for path in mode_dir.iterdir() if path.is_dir()]):
+            for run_dir in selected_run_dirs(mode_dir, all_runs):
                 rows.extend(collect_run_rows(model_dir, mode_dir, run_dir))
     return rows
 
@@ -173,14 +181,21 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifacts_dir", default="src/models/CSR-LANL/artifacts")
     parser.add_argument("--out_dir", default=None)
+    parser.add_argument("--split_modes", nargs="*", default=None, help="Optional split modes to include")
+    parser.add_argument("--all_runs", action="store_true", help="Include all historical runs instead of only the latest run per model/split")
     args = parser.parse_args()
     artifacts_dir = Path(args.artifacts_dir)
     if not artifacts_dir.exists():
         raise SystemExit(f"Does not exist: {artifacts_dir}")
-    rows = collect_rows(artifacts_dir)
+    rows = collect_rows(artifacts_dir, all_runs=args.all_runs)
     if not rows:
         raise SystemExit("No metrics found in artifacts")
     detailed = pd.DataFrame(rows)
+    if args.split_modes:
+        requested_modes = {str(mode) for mode in args.split_modes}
+        detailed = detailed[detailed["split_mode"].isin(requested_modes)].copy()
+        if detailed.empty:
+            raise SystemExit(f"No metrics found for requested split modes: {sorted(requested_modes)}")
     for column in NUMERIC_METRICS:
         if column in detailed.columns:
             detailed[column] = pd.to_numeric(detailed[column], errors="coerce")
@@ -198,6 +213,9 @@ def main() -> None:
         aggregated.to_csv(out_dir / "comparison_aggregated.csv", index=False)
         (out_dir / "comparison_aggregated.md").write_text(df_to_md(aggregated), encoding="utf-8")
     print("\n=== CSR-LANL MODEL COMPARISON ===")
+    print("Scope:", "all historical runs" if args.all_runs else "latest run per model/split")
+    if args.split_modes:
+        print("Split modes:", ", ".join(args.split_modes))
     print(df_to_md(detailed))
     if not aggregated.empty:
         print("\n=== CSR-LANL MODEL COMPARISON (aggregated) ===")

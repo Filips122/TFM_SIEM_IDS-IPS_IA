@@ -110,6 +110,38 @@ FEATURE_COLUMNS = [
     "location_code",
 ]
 
+FEATURE_PROFILES = ("full", "operational_no_label_proxy")
+
+LABEL_PROXY_EXCLUSIONS = {
+    "rule_level_mean": "Wazuh severity is part of the weak-label policy.",
+    "rule_level_max": "Wazuh severity is part of the weak-label policy.",
+    "rule_level_sum": "Wazuh severity is part of the weak-label policy.",
+    "rule_level_std": "Wazuh severity is part of the weak-label policy.",
+    "rule_firedtimes_mean": "Rule firing statistics can proxy the generating detection rule.",
+    "rule_firedtimes_max": "Rule firing statistics can proxy the generating detection rule.",
+    "rule_firedtimes_sum": "Rule firing statistics can proxy the generating detection rule.",
+    "level_ge_7_count": "Severity threshold features are close to the weak-label policy.",
+    "level_ge_10_count": "Severity threshold features are close to the weak-label policy.",
+    "mitre_tagged_count": "MITRE tags are used by the weak-label policy.",
+    "mitre_tagged_ratio": "MITRE tags are used by the weak-label policy.",
+    "credential_tactic_count": "MITRE tactic counts are used by the weak-label policy.",
+    "lateral_tactic_count": "MITRE tactic counts are used by the weak-label policy.",
+    "recon_tactic_count": "MITRE tactic counts are used by the weak-label policy.",
+    "auth_group_count": "Rule group counts are used by the weak-label policy.",
+    "sshd_group_count": "Rule group counts are used by the weak-label policy.",
+    "pam_group_count": "Rule group counts are used by the weak-label policy.",
+    "invalid_login_group_count": "Rule group counts are used by the weak-label policy.",
+    "systemd_group_count": "Rule group counts are used by the weak-label policy.",
+    "syscheck_group_count": "Rule group counts are used by the weak-label policy.",
+    "web_group_count": "Rule group counts are used by the weak-label policy.",
+    "docker_group_count": "Rule group counts are used by the weak-label policy.",
+    "windows_group_count": "Rule group counts are used by the weak-label policy.",
+    "dpkg_group_count": "Rule group counts are used by the weak-label policy.",
+    "decoder_code": "Top decoder category can act as a label proxy.",
+    "program_code": "Top program category can act as a label proxy.",
+    "location_code": "Top location category can act as a label proxy.",
+}
+
 META_COLUMNS = [
     "window_start",
     "agent_id",
@@ -163,6 +195,28 @@ def clear_dir(path: Path) -> None:
 def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def feature_columns_for_profile(profile: str) -> List[str]:
+    if profile == "full":
+        return list(FEATURE_COLUMNS)
+    if profile == "operational_no_label_proxy":
+        excluded = set(LABEL_PROXY_EXCLUSIONS)
+        return [column for column in FEATURE_COLUMNS if column not in excluded]
+    raise ValueError(f"Unsupported feature profile: {profile}")
+
+
+def feature_profile_payload(profile: str) -> Dict[str, Any]:
+    selected = feature_columns_for_profile(profile)
+    excluded = {column: reason for column, reason in LABEL_PROXY_EXCLUSIONS.items() if column in FEATURE_COLUMNS and column not in selected}
+    return {
+        "feature_profile": profile,
+        "description": "All engineered LAB-ALERTS features." if profile == "full" else "Operational LAB-ALERTS profile excluding direct weak-label proxy features.",
+        "feature_count": len(selected),
+        "feature_columns": selected,
+        "excluded_feature_count": len(excluded),
+        "excluded_features": excluded,
+    }
 
 
 def normalize_text(value: object, default: str = "Unknown") -> str:
@@ -533,8 +587,8 @@ def write_label_map(path: Path, labels: Sequence[str], binary: bool) -> None:
     write_json(path, {label: index for index, label in enumerate(ordered)})
 
 
-def frame_for_target(df: pd.DataFrame, target_column: str) -> pd.DataFrame:
-    columns = FEATURE_COLUMNS + META_COLUMNS
+def frame_for_target(df: pd.DataFrame, target_column: str, feature_columns: Sequence[str]) -> pd.DataFrame:
+    columns = list(feature_columns) + META_COLUMNS
     out = df.loc[:, columns].copy()
     out["target"] = df[target_column].astype(str).to_numpy(copy=True)
     return out
@@ -548,7 +602,7 @@ def write_parquet_split(base_dir: Path, pipeline: str, split_name: str, df: pd.D
     df.to_parquet(folder / "part-00000.parquet", index=False)
 
 
-def materialize(base_dir: Path, df: pd.DataFrame, split_indices: Dict[str, np.ndarray]) -> Dict[str, Dict[str, Stats]]:
+def materialize(base_dir: Path, df: pd.DataFrame, split_indices: Dict[str, np.ndarray], feature_columns: Sequence[str]) -> Dict[str, Dict[str, Stats]]:
     stats: Dict[str, Dict[str, Stats]] = {
         "binary": {split: Stats() for split in SPLITS},
         "multiclass": {split: Stats() for split in SPLITS},
@@ -560,17 +614,17 @@ def materialize(base_dir: Path, df: pd.DataFrame, split_indices: Dict[str, np.nd
         if split_df.empty:
             raise SystemExit(f"Split {split_name} is empty")
 
-        binary_df = frame_for_target(split_df, "binary_target")
+        binary_df = frame_for_target(split_df, "binary_target", feature_columns)
         write_parquet_split(base_dir, "binary", split_name, binary_df)
         update_stats(stats["binary"][split_name], count_labels(binary_df["target"]), binary_view=True)
 
-        multiclass_df = frame_for_target(split_df, "multiclass_target")
+        multiclass_df = frame_for_target(split_df, "multiclass_target", feature_columns)
         write_parquet_split(base_dir, "multiclass", split_name, multiclass_df)
         update_stats(stats["multiclass"][split_name], count_labels(multiclass_df["target"]), binary_view=False)
 
         anomaly_source = split_df if split_name != "train" else split_df[split_df["binary_target"] == "BENIGN"]
         anomaly_dir = {"train": "train_benign", "val": "val_mixed", "test": "test_mixed"}[split_name]
-        anomaly_df = frame_for_target(anomaly_source, "binary_target")
+        anomaly_df = frame_for_target(anomaly_source, "binary_target", feature_columns)
         write_parquet_split(base_dir, "anomaly", anomaly_dir, anomaly_df)
         update_stats(stats["anomaly"][split_name], count_labels(anomaly_df["target"]), binary_view=True)
 
@@ -598,8 +652,10 @@ def split_policy_payload(split_mode: str, split_indices: Dict[str, np.ndarray], 
     return payload
 
 
-def write_dataset_metadata(base_dir: Path, df: pd.DataFrame, maps: Dict[str, Dict[str, int]], args: argparse.Namespace, split_mode: str, split_indices: Dict[str, np.ndarray], rare_classes: Dict[str, int]) -> None:
-    write_json(base_dir / "feature_columns.json", FEATURE_COLUMNS)
+def write_dataset_metadata(base_dir: Path, df: pd.DataFrame, maps: Dict[str, Dict[str, int]], args: argparse.Namespace, split_mode: str, split_indices: Dict[str, np.ndarray], rare_classes: Dict[str, int], feature_columns: Sequence[str]) -> None:
+    profile_payload = feature_profile_payload(args.feature_profile)
+    write_json(base_dir / "feature_columns.json", list(feature_columns))
+    write_json(base_dir / "feature_profile.json", profile_payload)
     write_json(base_dir / "category_maps.json", maps)
     write_json(base_dir / "split_policy.json", split_policy_payload(split_mode, split_indices, df))
     write_json(
@@ -615,7 +671,10 @@ def write_dataset_metadata(base_dir: Path, df: pd.DataFrame, maps: Dict[str, Dic
             "collapsed_multiclass_classes": rare_classes,
             "binary_counts": count_labels(df["binary_target"]),
             "multiclass_counts": count_labels(df["multiclass_target"]),
-            "feature_count": len(FEATURE_COLUMNS),
+            "feature_profile": args.feature_profile,
+            "feature_profile_description": profile_payload["description"],
+            "feature_count": len(feature_columns),
+            "excluded_feature_count": profile_payload["excluded_feature_count"],
         },
     )
 
@@ -636,8 +695,9 @@ def prepare_mode(df: pd.DataFrame, maps: Dict[str, Dict[str, int]], args: argpar
         out_base = out_base / f"fold_{fold}"
     clear_dir(out_base)
     split_indices = build_split_indices(df, args, split_mode, fold=fold)
-    materialize(out_base, df, split_indices)
-    write_dataset_metadata(out_base, df, maps, args, split_mode, split_indices, rare_classes)
+    feature_columns = feature_columns_for_profile(args.feature_profile)
+    materialize(out_base, df, split_indices, feature_columns)
+    write_dataset_metadata(out_base, df, maps, args, split_mode, split_indices, rare_classes, feature_columns)
     print(f"Prepared {split_mode}{'' if fold is None else f' fold_{fold}'}: {out_base}")
 
 
@@ -671,6 +731,7 @@ def main() -> None:
     parser.add_argument("--fold", type=int, default=0)
     parser.add_argument("--all_folds", action="store_true")
     parser.add_argument("--min_multiclass_windows", type=int, default=30)
+    parser.add_argument("--feature_profile", default="full", choices=FEATURE_PROFILES)
     args = parser.parse_args()
 
     ensure_pyarrow()
@@ -687,6 +748,7 @@ def main() -> None:
     print(f"Dataset     : {args.dataset}")
     print(f"Split modes : {split_modes}")
     print(f"Window size : {args.window_size}")
+    print(f"Features    : {args.feature_profile}")
 
     events = parse_jsonl(input_file)
     windows, maps = aggregate_alerts(events, args.window_size)
@@ -703,7 +765,8 @@ def main() -> None:
             folds = range(args.n_folds) if args.all_folds else [args.fold]
             mode_root = resolve_from_root(args.out_dir) / split_mode / args.dataset
             mode_root.mkdir(parents=True, exist_ok=True)
-            write_json(mode_root / "feature_columns.json", FEATURE_COLUMNS)
+            write_json(mode_root / "feature_columns.json", feature_columns_for_profile(args.feature_profile))
+            write_json(mode_root / "feature_profile.json", feature_profile_payload(args.feature_profile))
             for fold in folds:
                 prepare_mode(windows, maps, args, split_mode, rare_classes, fold=int(fold))
         else:

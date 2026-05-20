@@ -13,6 +13,11 @@ param(
     [string]$CsrDataset = "CSR-LANL",
     [string]$CsrDatasetsBase = "src/models/CSR-LANL/datasets_redteam",
 
+    [ValidateSet("full", "operational_no_label_proxy")]
+    [string]$LabFeatureProfile = "full",
+    [ValidateSet("full", "operational_no_label_proxy")]
+    [string]$CowrieFeatureProfile = "full",
+
     [ValidateSet("auth", "auth_flow", "auth_flow_dns", "all")]
     [string]$CsrSourceSet = "auth_flow",
 
@@ -276,6 +281,8 @@ if ($coreDatasets.Count -gt 0) {
         "-UgrDataset", "$UgrDataset",
         "-LabDataset", "$LabDataset",
         "-CowrieDataset", "$CowrieDataset",
+        "-LabFeatureProfile", "$LabFeatureProfile",
+        "-CowrieFeatureProfile", "$CowrieFeatureProfile",
         "-CicEpochs", "$CicEpochs",
         "-BinaryEpochs", "$BinaryEpochs",
         "-MulticlassEpochs", "$MulticlassEpochs",

@@ -223,9 +223,8 @@ foreach ($mode in $Modes) {
 }
 
 if (-not $SkipCompare) {
-    RunPy "src\models\UGR16\compare_models.py" @(
-        "--artifacts_dir", (Join-Path $repoRoot "src\models\UGR16\artifacts")
-    )
+    $compareArgs = @("--artifacts_dir", (Join-Path $repoRoot "src\models\UGR16\artifacts"), "--split_modes") + $Modes
+    RunPy "src\models\UGR16\compare_models.py" $compareArgs
 }
 
 Write-Host "`nUGR16 orchestration finished." -ForegroundColor Green

@@ -12,6 +12,8 @@ param(
     [int]$MinMulticlassWindows = 30,
     [int]$FailedLoginThreshold = 3,
     [int]$AnomalyNJobs = 1,
+    [ValidateSet("full", "operational_no_label_proxy")]
+    [string]$FeatureProfile = "full",
     [double]$SampleFrac,
     [switch]$AllGroupFolds,
     [switch]$SkipPreprocess,
@@ -119,6 +121,7 @@ Write-Host "Python    : $PythonExe"
 Write-Host "Dataset   : $Dataset"
 Write-Host "Modes     : $($Modes -join ', ')"
 Write-Host "Window    : $WindowSize"
+Write-Host "Features  : $FeatureProfile"
 Write-Host "Dry run   : $DryRun"
 
 if (-not $SkipPreprocess) {
@@ -129,6 +132,7 @@ if (-not $SkipPreprocess) {
         "--n_folds", "$NFolds",
         "--min_multiclass_windows", "$MinMulticlassWindows",
         "--failed_login_threshold", "$FailedLoginThreshold",
+        "--feature_profile", $FeatureProfile,
         "--split_mode"
     )
     $prepareParams += $Modes
@@ -167,7 +171,8 @@ foreach ($mode in $Modes) {
 }
 
 if (-not $SkipCompare) {
-    RunPy "src\models\COWRIE_FULL\compare_models.py" @("--artifacts_dir", (Join-Path $repoRoot "src\models\COWRIE_FULL\artifacts"))
+    $compareArgs = @("--artifacts_dir", (Join-Path $repoRoot "src\models\COWRIE_FULL\artifacts"), "--split_modes") + $Modes
+    RunPy "src\models\COWRIE_FULL\compare_models.py" $compareArgs
 }
 
 Write-Host "`nCOWRIE_FULL orchestration finished." -ForegroundColor Green

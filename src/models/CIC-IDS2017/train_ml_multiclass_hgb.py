@@ -22,7 +22,7 @@ def main():
 
     model_name = "offline_ML_multiclass_hgb"
     run_id = now_run_id()
-    root = artifacts_root(model_name, args.split_mode, run_id)
+    root = artifacts_root(model_name, args.split_mode, run_id, run_config={"sample_frac": args.sample_frac, "epochs": args.epochs})
 
     def run_one(split_mode: str, fold: int | None, out_dir):
         tr, va, te = load_splits(split_mode=split_mode, dataset="MachineLearningCVE", pipeline="multiclass", fold=fold, sample_frac=args.sample_frac)

@@ -82,26 +82,28 @@ def save_dataset_profile_ref(root: Path, split_mode: str, fold: Optional[int] = 
     return ref
 
 
-def save_run_metadata(root: Path, model_name: str, split_mode: str, run_id: str, dataset: str = "NUSW-NB15") -> None:
-    save_json(
-        root / "run_metadata.json",
-        {
-            "dataset": dataset,
-            "model_name": model_name,
-            "split_mode": split_mode,
-            "run_id": run_id,
-            "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "artifact_root": str(root),
-            "dataset_profile": dataset_profile_reference(split_mode),
-        },
-    )
+def save_run_metadata(root: Path, model_name: str, split_mode: str, run_id: str, dataset: str = "NUSW-NB15", run_config: Optional[Dict[str, Any]] = None) -> None:
+    payload: Dict[str, Any] = {
+        "dataset": dataset,
+        "model_name": model_name,
+        "split_mode": split_mode,
+        "run_id": run_id,
+        "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "artifact_root": str(root),
+        "dataset_profile": dataset_profile_reference(split_mode),
+    }
+    if run_config is not None:
+        payload["run_config"] = run_config
+        if "sample_frac" in run_config:
+            payload["sample_frac"] = run_config.get("sample_frac")
+    save_json(root / "run_metadata.json", payload)
 
 
-def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None) -> Path:
+def artifacts_root(model_name: str, split_mode: str, run_id: Optional[str] = None, run_config: Optional[Dict[str, Any]] = None) -> Path:
     run_id = run_id or now_run_id()
     root = resolve_from_root(f"src/models/UNSW-NB15/artifacts/{model_name}/{split_mode}/{run_id}")
     ensure_dir(root)
-    save_run_metadata(root, model_name, split_mode, run_id)
+    save_run_metadata(root, model_name, split_mode, run_id, run_config=run_config)
     save_dataset_profile_ref(root, split_mode)
     return root
 
