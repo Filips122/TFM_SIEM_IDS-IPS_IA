@@ -15,7 +15,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--out_dir", default="src/models/CSR-LANL/datasets_redteam")
     parser.add_argument("--dataset", default="CSR-LANL")
     parser.add_argument("--source_set", default="auth_flow", choices=["auth", "auth_flow", "auth_flow_dns", "all"])
-    parser.add_argument("--split_mode", nargs="+", default=["date", "groupkfold"], help="date, random, groupkfold, all")
+    parser.add_argument("--split_mode", nargs="+", default=["date", "redteam_stratified_groupkfold"], help="date, random, groupkfold, redteam_stratified_groupkfold, all")
     parser.add_argument("--window_seconds", type=int, default=60)
     parser.add_argument("--redteam_window_hours", type=float, default=1.0, help="Hours before and after each red-team event to keep")
     parser.add_argument("--redteam_window_limit", type=int, default=0, help="0 keeps all red-team events")

@@ -45,7 +45,7 @@ def read_json_optional(path: Path) -> Optional[Dict[str, Any]]:
 
 def dataset_profile_path(datasets_base: str | Path, split_mode: str, dataset: str, fold: Optional[int] = None) -> Path:
     base = resolve_from_root(datasets_base) / split_mode / dataset
-    if split_mode == "groupkfold" and fold is not None:
+    if split_mode in {"groupkfold", "redteam_stratified_groupkfold"} and fold is not None:
         return base / f"fold_{fold}" / "dataset_profile.json"
     return base / "dataset_profile.json"
 

@@ -8,13 +8,27 @@ import argparse
 import joblib
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.utils.class_weight import compute_sample_weight
 
 from data_loader import EmptySplitError, load_splits
 from reporting import plot_corr_matrix, save_metrics_and_plots, save_staged_classification_history
 from train_utils import artifacts_root, fit_label_encoder, now_run_id, save_dataset_profile_ref, save_json, save_label_encoder
 
 
-def run_one(datasets_base: str, split_mode: str, fold: int | None, sample_frac: float | None, epochs: int, out_dir, dataset: str) -> dict:
+SPLIT_MODE_CHOICES = ["date", "random", "groupkfold", "redteam_stratified_groupkfold"]
+GROUP_FOLD_SPLIT_MODES = {"groupkfold", "redteam_stratified_groupkfold"}
+
+
+def run_one(
+    datasets_base: str,
+    split_mode: str,
+    fold: int | None,
+    sample_frac: float | None,
+    epochs: int,
+    out_dir,
+    dataset: str,
+    class_weight: str,
+) -> dict:
     train, val, test = load_splits(datasets_base=datasets_base, split_mode=split_mode, dataset=dataset, pipeline="binary", fold=fold, sample_frac=sample_frac)
     encoder = fit_label_encoder(train.y)
     if len(encoder.classes_) < 2:
@@ -26,7 +40,8 @@ def run_one(datasets_base: str, split_mode: str, fold: int | None, sample_frac: 
     X_val = val.X.astype(np.float32)
     X_test = test.X.astype(np.float32)
     model = HistGradientBoostingClassifier(max_iter=epochs, learning_rate=0.08, max_depth=3, early_stopping=True, validation_fraction=0.15, random_state=42)
-    model.fit(X_train, y_train)
+    sample_weight = compute_sample_weight(class_weight="balanced", y=y_train) if class_weight == "balanced" else None
+    model.fit(X_train, y_train, sample_weight=sample_weight)
     save_staged_classification_history(out_dir, model, X_train, y_train, X_val, y_val, encoder.classes_)
     p_train = model.predict_proba(X_train)
     p_val = model.predict_proba(X_val)
@@ -43,19 +58,25 @@ def run_one(datasets_base: str, split_mode: str, fold: int | None, sample_frac: 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--datasets_base", default="src/models/CSR-LANL/datasets")
-    parser.add_argument("--split_mode", default="date", choices=["date", "random", "groupkfold"])
+    parser.add_argument("--split_mode", default="date", choices=SPLIT_MODE_CHOICES)
     parser.add_argument("--dataset", default="CSR-LANL")
     parser.add_argument("--all_folds", action="store_true")
     parser.add_argument("--fold", type=int, default=None)
     parser.add_argument("--n_folds", type=int, default=5)
     parser.add_argument("--sample_frac", type=float, default=None)
     parser.add_argument("--epochs", type=int, default=215)
+    parser.add_argument("--class_weight", default="none", choices=["none", "balanced"])
     args = parser.parse_args()
-    root = artifacts_root("offline_CSR_LANL_binary_hgb", args.split_mode, now_run_id(), run_config={"sample_frac": args.sample_frac, "epochs": args.epochs, "datasets_base": args.datasets_base})
-    if args.split_mode != "groupkfold":
+    root = artifacts_root(
+        "offline_CSR_LANL_binary_hgb",
+        args.split_mode,
+        now_run_id(),
+        run_config={"sample_frac": args.sample_frac, "epochs": args.epochs, "datasets_base": args.datasets_base, "class_weight": args.class_weight},
+    )
+    if args.split_mode not in GROUP_FOLD_SPLIT_MODES:
         save_dataset_profile_ref(root, args.datasets_base, args.split_mode, args.dataset)
         try:
-            out = run_one(args.datasets_base, args.split_mode, None, args.sample_frac, args.epochs, root, args.dataset)
+            out = run_one(args.datasets_base, args.split_mode, None, args.sample_frac, args.epochs, root, args.dataset, args.class_weight)
         except (FileNotFoundError, EmptySplitError) as exc:
             raise SystemExit(f"{args.dataset} binary split is missing, empty, or single-class: {exc}")
         save_json(root / "results.json", {"best_iter": out["best_iter"], "test": out["test"]})
@@ -66,9 +87,9 @@ def main() -> None:
     for fold in folds:
         fold_dir = root / f"fold_{fold}"
         fold_dir.mkdir(parents=True, exist_ok=True)
-        save_dataset_profile_ref(fold_dir, args.datasets_base, "groupkfold", args.dataset, int(fold))
+        save_dataset_profile_ref(fold_dir, args.datasets_base, args.split_mode, args.dataset, int(fold))
         try:
-            out = run_one(args.datasets_base, "groupkfold", int(fold), args.sample_frac, args.epochs, fold_dir, args.dataset)
+            out = run_one(args.datasets_base, args.split_mode, int(fold), args.sample_frac, args.epochs, fold_dir, args.dataset, args.class_weight)
         except (FileNotFoundError, EmptySplitError) as exc:
             summary[f"fold_{fold}"] = {"skipped": True, "reason": str(exc)}
             continue

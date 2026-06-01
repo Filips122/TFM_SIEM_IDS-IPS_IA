@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from compare_artifacts import aggregate_group_columns, augment_row_metadata, key_to_dict, selected_run_dirs
 
 
-NUMERIC_METRICS = [
+BASE_NUMERIC_METRICS = [
     "test_accuracy",
     "test_macro_f1",
     "test_macro_recall",
@@ -28,8 +28,140 @@ NUMERIC_METRICS = [
     "test_best_threshold",
 ]
 
-SUPERVISED_RANK_METRICS = ["test_macro_f1", "test_macro_recall", "test_pr_auc", "test_roc_auc", "test_accuracy", "test_best_f1"]
-ANOMALY_RANK_METRICS = ["test_pr_auc", "test_best_f1", "test_roc_auc", "test_macro_f1", "test_accuracy"]
+TOPK_BUDGETS = [10, 25, 50, 100, 250, 500]
+DAILY_BUDGETS = [5, 10, 25, 50]
+POLICY_NAMES = ["max_f2_on_val"] + [f"budget_daily_{budget}_on_val" for budget in DAILY_BUDGETS]
+POLICY_METRICS = [
+    "threshold",
+    "alerts",
+    "alerts_per_day",
+    "attack_windows_found",
+    "precision",
+    "recall",
+    "f1",
+    "redteam_entities_found",
+    "redteam_entity_recall",
+    "attack_days_found",
+    "attack_day_recall",
+]
+ENTITY_POLICY_NAMES = ["entity_max_f2_on_val"] + [f"entity_budget_{budget}_on_val" for budget in TOPK_BUDGETS] + [
+    f"entity_budget_daily_{budget}_on_val" for budget in DAILY_BUDGETS
+]
+ENTITY_POLICY_METRICS = [
+    "threshold",
+    "entities",
+    "redteam_entities",
+    "selected_entities",
+    "selected_entities_per_day",
+    "redteam_entities_found",
+    "entity_precision",
+    "entity_recall",
+    "entity_f1",
+    "windows_in_selected_entities",
+    "selected_entity_days",
+    "selected_entity_days_per_day",
+    "redteam_entity_days_found",
+    "entity_day_precision",
+    "entity_day_recall",
+    "entity_day_f1",
+    "attack_windows_found",
+    "window_recall",
+    "attack_days_found",
+    "attack_day_recall",
+]
+OPERATIONAL_NUMERIC_METRICS = [
+    "test_rows",
+    "test_attack_windows",
+    "test_attack_rate",
+    "test_first_attack_rank",
+    "test_median_attack_rank",
+    "test_mean_attack_rank",
+    "test_days",
+    "test_attack_days",
+    "test_entities",
+    "test_redteam_entities",
+    "test_first_redteam_entity_rank",
+    "test_median_redteam_entity_rank",
+    "test_mean_redteam_entity_rank",
+    "test_entity_days",
+    "test_redteam_entity_days",
+]
+for budget in TOPK_BUDGETS:
+    OPERATIONAL_NUMERIC_METRICS.extend(
+        [
+            f"test_alerts_at_{budget}",
+            f"test_attack_windows_found_at_{budget}",
+            f"test_precision_at_{budget}",
+            f"test_recall_at_{budget}",
+            f"test_f1_at_{budget}",
+            f"test_redteam_entity_recall_at_{budget}",
+            f"test_entity_precision_at_{budget}",
+            f"test_redteam_entities_found_at_{budget}",
+        ]
+    )
+for budget in DAILY_BUDGETS:
+    OPERATIONAL_NUMERIC_METRICS.extend(
+        [
+            f"test_alerts_at_daily_{budget}",
+            f"test_alerts_per_day_at_{budget}",
+            f"test_attack_windows_found_at_daily_{budget}",
+            f"test_precision_at_daily_{budget}",
+            f"test_recall_at_daily_{budget}",
+            f"test_attack_days_found_at_daily_{budget}",
+            f"test_attack_day_recall_at_daily_{budget}",
+            f"test_entity_days_at_daily_{budget}",
+            f"test_redteam_entity_days_found_at_daily_{budget}",
+            f"test_entity_day_precision_at_daily_{budget}",
+            f"test_entity_day_recall_at_daily_{budget}",
+            f"test_entity_day_f1_at_daily_{budget}",
+            f"test_attack_windows_found_in_entity_days_at_daily_{budget}",
+            f"test_window_recall_in_entity_days_at_daily_{budget}",
+            f"test_redteam_entities_found_in_entity_days_at_daily_{budget}",
+            f"test_redteam_entity_recall_in_entity_days_at_daily_{budget}",
+            f"test_attack_days_found_in_entity_days_at_daily_{budget}",
+            f"test_attack_day_recall_in_entity_days_at_daily_{budget}",
+        ]
+    )
+for policy_name in POLICY_NAMES:
+    for metric_name in POLICY_METRICS:
+        OPERATIONAL_NUMERIC_METRICS.append(f"test_policy_{policy_name}_{metric_name}")
+for policy_name in ENTITY_POLICY_NAMES:
+    for metric_name in ENTITY_POLICY_METRICS:
+        OPERATIONAL_NUMERIC_METRICS.append(f"test_entity_policy_{policy_name}_{metric_name}")
+
+NUMERIC_METRICS = BASE_NUMERIC_METRICS + OPERATIONAL_NUMERIC_METRICS
+
+SUPERVISED_RANK_METRICS = [
+    "test_policy_max_f2_on_val_recall",
+    "test_policy_budget_daily_50_on_val_recall",
+    "test_entity_policy_entity_budget_daily_5_on_val_entity_recall",
+    "test_entity_policy_entity_budget_25_on_val_entity_recall",
+    "test_recall_at_100",
+    "test_redteam_entity_recall_at_25",
+    "test_precision_at_100",
+    "test_recall_at_daily_25",
+    "test_pr_auc",
+    "test_macro_f1",
+    "test_macro_recall",
+    "test_roc_auc",
+    "test_accuracy",
+    "test_best_f1",
+]
+ANOMALY_RANK_METRICS = [
+    "test_policy_max_f2_on_val_recall",
+    "test_policy_budget_daily_50_on_val_recall",
+    "test_entity_policy_entity_budget_daily_5_on_val_entity_recall",
+    "test_entity_policy_entity_budget_25_on_val_entity_recall",
+    "test_recall_at_100",
+    "test_redteam_entity_recall_at_25",
+    "test_precision_at_100",
+    "test_recall_at_daily_25",
+    "test_pr_auc",
+    "test_best_f1",
+    "test_roc_auc",
+    "test_macro_f1",
+    "test_accuracy",
+]
 
 
 def read_json(path: Path) -> Dict[str, Any]:
@@ -51,6 +183,87 @@ def normalize_test_metrics(payload: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def normalize_operational_metrics(payload: Dict[str, Any]) -> Dict[str, Any]:
+    test = payload.get("test", {}) if isinstance(payload, dict) else {}
+    if not isinstance(test, dict):
+        return {}
+    row: Dict[str, Any] = {}
+    scalar_keys = [
+        "rows",
+        "attack_windows",
+        "attack_rate",
+        "first_attack_rank",
+        "median_attack_rank",
+        "mean_attack_rank",
+        "days",
+        "attack_days",
+        "entities",
+        "redteam_entities",
+        "first_redteam_entity_rank",
+        "median_redteam_entity_rank",
+        "mean_redteam_entity_rank",
+        "entity_days",
+        "redteam_entity_days",
+    ]
+    for key in scalar_keys:
+        row[f"test_{key}"] = test.get(key)
+    for budget in TOPK_BUDGETS:
+        for key in [
+            "alerts_at",
+            "attack_windows_found_at",
+            "precision_at",
+            "recall_at",
+            "f1_at",
+            "redteam_entity_recall_at",
+            "entity_precision_at",
+            "redteam_entities_found_at",
+        ]:
+            metric = f"{key}_{budget}"
+            row[f"test_{metric}"] = test.get(metric)
+    for budget in DAILY_BUDGETS:
+        for key in [
+            "alerts_at_daily",
+            "alerts_per_day_at",
+            "attack_windows_found_at_daily",
+            "precision_at_daily",
+            "recall_at_daily",
+            "attack_days_found_at_daily",
+            "attack_day_recall_at_daily",
+            "entity_days_at_daily",
+            "redteam_entity_days_found_at_daily",
+            "entity_day_precision_at_daily",
+            "entity_day_recall_at_daily",
+            "entity_day_f1_at_daily",
+            "attack_windows_found_in_entity_days_at_daily",
+            "window_recall_in_entity_days_at_daily",
+            "redteam_entities_found_in_entity_days_at_daily",
+            "redteam_entity_recall_in_entity_days_at_daily",
+            "attack_days_found_in_entity_days_at_daily",
+            "attack_day_recall_in_entity_days_at_daily",
+        ]:
+            metric = f"{key}_{budget}"
+            row[f"test_{metric}"] = test.get(metric)
+    policies = payload.get("policies", {}) if isinstance(payload, dict) else {}
+    if isinstance(policies, dict):
+        for policy_name in POLICY_NAMES:
+            policy = policies.get(policy_name, {})
+            policy_test = policy.get("test", {}) if isinstance(policy, dict) else {}
+            if not isinstance(policy_test, dict):
+                continue
+            for metric_name in POLICY_METRICS:
+                row[f"test_policy_{policy_name}_{metric_name}"] = policy_test.get(metric_name)
+    entity_policies = payload.get("entity_policies", {}) if isinstance(payload, dict) else {}
+    if isinstance(entity_policies, dict):
+        for policy_name in ENTITY_POLICY_NAMES:
+            policy = entity_policies.get(policy_name, {})
+            policy_test = policy.get("test", {}) if isinstance(policy, dict) else {}
+            if not isinstance(policy_test, dict):
+                continue
+            for metric_name in ENTITY_POLICY_METRICS:
+                row[f"test_entity_policy_{policy_name}_{metric_name}"] = policy_test.get(metric_name)
+    return row
+
+
 def row_base(model: str, split_mode: str, run_id: str, fold: str | None) -> Dict[str, Any]:
     return {"model": model, "split_mode": split_mode, "run_id": run_id, "fold": fold, "status": "ok", "reason": None}
 
@@ -58,6 +271,11 @@ def row_base(model: str, split_mode: str, run_id: str, fold: str | None) -> Dict
 def is_anomaly_model(model: str) -> bool:
     name = str(model).lower()
     return "anomaly" in name or "isoforest" in name
+
+
+def is_operational_model(model: str) -> bool:
+    name = str(model).lower()
+    return "operational_ensemble" in name or "operational" in name
 
 
 def rank_metrics_for_model(model: str, aggregate: bool = False) -> List[str]:
@@ -75,7 +293,10 @@ def metric_warning(row: pd.Series) -> str | None:
         warnings.append("majority_class_collapse")
     if is_anomaly_model(model) and pd.notna(pr_auc) and float(pr_auc) < 0.05:
         warnings.append("weak_anomaly_pr_auc")
-    if (not is_anomaly_model(model)) and pd.isna(macro_f1):
+    recall_at_100 = row.get("test_recall_at_100")
+    if pd.notna(recall_at_100) and float(recall_at_100) <= 0.0:
+        warnings.append("no_redteam_in_top100")
+    if (not is_anomaly_model(model)) and (not is_operational_model(model)) and pd.isna(macro_f1):
         warnings.append("missing_macro_f1")
     return ";".join(warnings) if warnings else None
 
@@ -93,6 +314,9 @@ def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dic
             else:
                 row["status"] = "missing_metrics"
                 row["reason"] = "fold_dir_without_results"
+            operational_path = fold_dir / "operational_metrics.json"
+            if operational_path.exists():
+                row.update(normalize_operational_metrics(read_json(operational_path)))
             rows.append(row)
         return rows
     row = row_base(model_dir.name, mode_dir.name, run_dir.name, None)
@@ -103,6 +327,9 @@ def collect_run_rows(model_dir: Path, mode_dir: Path, run_dir: Path) -> List[Dic
     else:
         row["status"] = "missing_metrics"
         row["reason"] = "run_dir_without_results"
+    operational_path = run_dir / "operational_metrics.json"
+    if operational_path.exists():
+        row.update(normalize_operational_metrics(read_json(operational_path)))
     rows.append(row)
     return rows
 

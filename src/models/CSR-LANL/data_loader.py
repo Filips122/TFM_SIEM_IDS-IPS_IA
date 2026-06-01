@@ -34,6 +34,28 @@ class LoadedSplit:
     feature_names: List[str]
 
 
+@dataclass
+class LoadedFrameSplit:
+    X: np.ndarray
+    y: np.ndarray
+    feature_names: List[str]
+    meta: pd.DataFrame
+    frame: pd.DataFrame
+
+
+META_COLUMNS = [
+    "window_start",
+    "window_end",
+    "entity",
+    "redteam_exact",
+    "redteam_near",
+    "redteam_roles",
+    "source_families",
+]
+
+GROUP_FOLD_SPLIT_MODES = {"groupkfold", "redteam_stratified_groupkfold"}
+
+
 def list_parquets(folder: Path) -> List[Path]:
     if not folder.exists():
         return []
@@ -48,9 +70,9 @@ def read_parquets(paths: List[Path]) -> pd.DataFrame:
 
 def mode_root(datasets_base: str | Path, split_mode: str, dataset: str, fold: Optional[int] = None) -> Path:
     root = resolve_from_root(datasets_base) / split_mode / dataset
-    if split_mode == "groupkfold":
+    if split_mode in GROUP_FOLD_SPLIT_MODES:
         if fold is None:
-            raise ValueError("split_mode=groupkfold requires fold=<int>")
+            raise ValueError(f"split_mode={split_mode} requires fold=<int>")
         return root / f"fold_{fold}"
     return root
 
@@ -58,7 +80,7 @@ def mode_root(datasets_base: str | Path, split_mode: str, dataset: str, fold: Op
 def load_feature_columns(datasets_base: str | Path, split_mode: str, dataset: str, fold: Optional[int] = None) -> List[str]:
     root = mode_root(datasets_base, split_mode, dataset, fold)
     path = root / "feature_columns.json"
-    if not path.exists() and split_mode == "groupkfold":
+    if not path.exists() and split_mode in GROUP_FOLD_SPLIT_MODES:
         path = resolve_from_root(datasets_base) / split_mode / dataset / "feature_columns.json"
     if not path.exists():
         raise FileNotFoundError(f"Missing feature_columns.json: {path}")
@@ -88,6 +110,49 @@ def to_xy(df: pd.DataFrame, feature_cols: Sequence[str], dtype: np.dtype) -> Loa
     np.nan_to_num(X, copy=False, nan=0.0, posinf=0.0, neginf=0.0)
     y = df["target"].astype(str).to_numpy(copy=True)
     return LoadedSplit(X=X, y=y, feature_names=list(feature_cols))
+
+
+def frame_to_xy_meta(df: pd.DataFrame, feature_cols: Sequence[str], dtype: np.dtype = np.float32) -> LoadedFrameSplit:
+    if df.empty:
+        raise EmptySplitError("Loaded zero rows")
+    if "target" not in df.columns:
+        raise ValueError("Missing target column")
+    missing = [column for column in feature_cols if column not in df.columns]
+    if missing:
+        raise ValueError(f"Missing features in split: {missing[:10]}")
+    X = df.loc[:, list(feature_cols)].to_numpy(dtype=dtype, copy=True)
+    np.nan_to_num(X, copy=False, nan=0.0, posinf=0.0, neginf=0.0)
+    y = df["target"].astype(str).to_numpy(copy=True)
+    meta_columns = [column for column in META_COLUMNS if column in df.columns]
+    meta = df.loc[:, meta_columns].copy()
+    meta["target"] = y
+    return LoadedFrameSplit(X=X, y=y, feature_names=list(feature_cols), meta=meta, frame=df)
+
+
+def load_split_frame(
+    datasets_base: str | Path = "src/models/CSR-LANL/datasets",
+    split_mode: str = "date",
+    dataset: str = "CSR-LANL",
+    pipeline: str = "binary",
+    split: str = "train",
+    fold: Optional[int] = None,
+    sample_frac: Optional[float] = None,
+    seed: int = 42,
+    dtype: np.dtype = np.float32,
+    feature_cols: Optional[Sequence[str]] = None,
+) -> LoadedFrameSplit:
+    folder = split_folder(datasets_base, split_mode, dataset, pipeline, split, fold)
+    paths = list_parquets(folder)
+    if not paths:
+        raise FileNotFoundError(f"No parquet files in: {folder}")
+    df = read_parquets(paths)
+    if sample_frac is not None:
+        if not (0.0 < sample_frac <= 1.0):
+            raise ValueError("sample_frac must be in (0, 1]")
+        df = df.sample(frac=sample_frac, random_state=seed)
+    if feature_cols is None:
+        feature_cols = load_feature_columns(datasets_base, split_mode, dataset, fold)
+    return frame_to_xy_meta(df, feature_cols, dtype)
 
 
 def load_split(

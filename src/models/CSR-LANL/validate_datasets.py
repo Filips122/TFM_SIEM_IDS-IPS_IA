@@ -12,6 +12,7 @@ from typing import Any, Dict, List
 
 PIPELINES = ["binary", "multiclass", "anomaly"]
 SPLITS = ["train", "val", "test"]
+GROUP_FOLD_SPLIT_MODES = {"groupkfold", "redteam_stratified_groupkfold"}
 
 
 def repo_root() -> Path:
@@ -143,7 +144,7 @@ def validate_dataset_root(base_dir: Path, mode: str, min_positive_eval: int) -> 
 
 def validate_mode(base: Path, dataset: str, mode: str, min_positive_eval: int) -> Dict[str, Any]:
     mode_root = base / mode / dataset
-    if mode == "groupkfold":
+    if mode in GROUP_FOLD_SPLIT_MODES:
         folds = sorted([path for path in mode_root.glob("fold_*") if path.is_dir()])
         if not folds:
             return {"mode": mode, "ok": False, "error": f"No fold_* directories found in {mode_root}"}
@@ -160,7 +161,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Validate prepared CSR-LANL datasets before training.")
     parser.add_argument("--datasets_base", default="src/models/CSR-LANL/datasets_redteam")
     parser.add_argument("--dataset", default="CSR-LANL")
-    parser.add_argument("--modes", nargs="+", default=["date", "groupkfold"])
+    parser.add_argument("--modes", nargs="+", default=["date", "redteam_stratified_groupkfold"])
     parser.add_argument("--min_positive_eval", type=int, default=3)
     parser.add_argument("--out", default=None)
     args = parser.parse_args()

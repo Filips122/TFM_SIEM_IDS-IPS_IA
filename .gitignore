@@ -12,8 +12,20 @@ src/models/UGR16/datasets/
 src/models/CSR-LANL/artifacts/
 src/models/CSR-LANL/datasets/
 src/models/CSR-LANL/datasets_redteam_smoke/
+src/models/CSR-LANL/datasets_redteam_identity/
+src/models/CSR-LANL/datasets_redteam_identity_500k/
+src/models/CSR-LANL/datasets_redteam_identity_1m/
+src/models/CSR-LANL/datasets_redteam_identity_v3/
+src/models/CSR-LANL/datasets_redteam_identity_smoke/
+src/models/CSR-LANL/datasets_redteam_temporal/
+src/models/CSR-LANL/datasets_redteam_temporal_rarity/
+src/models/CSR-LANL/datasets_redteam_temporal_rarity_entity_day/
+src/models/CSR-LANL/datasets_redteam_temporal_rarity_entity_day_scored/
 src/models/CSR-LANL/datasets_redteam/
 src/models/CSR-LANL/datasets_smoke/
+src/models/CSR-LANL/_smoke_temporal_rarity/
+src/models/CSR-LANL/_smoke_temporal_rarity_validation/
+src/models/CSR-LANL/_smoke_entity_day/
 src/models/CSR-LANL/datasets_subsample/
 src/models/CSR-LANL/datasets_subsample_v1/
 src/models/CSR-LANL/datasets_subsample_v2/
@@ -22,6 +34,7 @@ src/models/COWRIE_FULL/datasets/
 src/models/TON_IoT/artifacts/
 src/models/TON_IoT/datasets/
 src/scripts/tree.txt
+src/models/day20_comparison/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

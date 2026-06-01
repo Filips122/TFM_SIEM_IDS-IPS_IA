@@ -186,6 +186,7 @@ CSR-LANL should be treated as a **multi-source enterprise activity dataset**, no
 - date/time split strategy,
 - random split strategy for quick debugging,
 - grouped split strategy for entity generalization,
+- red-team-stratified grouped split strategy for defensible entity generalization,
 - baseline training scripts using the existing model pattern,
 - artifact persistence,
 - final comparison report.
@@ -201,6 +202,53 @@ CSR-LANL should be treated as a **multi-source enterprise activity dataset**, no
 - deep entity resolution beyond the provided user/computer identifiers.
 
 These capabilities may be added later, but they are out of scope for the first CSR-LANL implementation.
+
+---
+
+## Current Evaluation Position
+
+CSR-LANL is now treated as an operational prioritization dataset, not as a conventional row-level classification benchmark. The primary question is whether red-team windows or red-team entities appear among a limited daily alert budget.
+
+The main split for current reported results is `date`, because it has enough red-team support in test: 38 red-team windows and 15 red-team entities. The original `groupkfold/fold_0` is not suitable for final claims because its test split contains only one red-team window and one red-team entity.
+
+To address this, the pipeline includes a new split mode:
+
+```text
+redteam_stratified_groupkfold
+```
+
+This mode keeps entity separation between train, validation, and test, while distributing red-team entities across folds before assigning benign-only entities. Its purpose is to support entity-generalization experiments without producing folds that are effectively unevaluable.
+
+`redteam_stratified_groupkfold/fold_0` has now been materialized and validated from the prepared `date` Parquet dataset. Validation support is:
+
+- Test rows: 4,428,898.
+- Test red-team windows: 522.
+- Test red-team entities: 5.
+- Test attack days: 14.
+- Entity overlap between train, validation, and test: none reported by `validate_splits.py`.
+
+Initial model results on this fold show that HGB binary with balanced class weights is the best low-budget operational baseline: first red-team window at rank 8, 3/522 red-team windows in top-100/top-500, and 3/5 red-team entities in the top-50 entity ranking. HGB multiclass only improves window recall with very high alert volume, and IsolationForest does not produce useful top-k or calibrated-policy detections on this fold.
+
+A first temporal/entity-history feature profile has also been generated under `src/models/CSR-LANL/datasets_redteam_temporal`. It adds 31 causal features to the 51 baseline features using time encodings, off-hours flags, per-entity history, and shifted rolling means/deltas. On the primary `date` split, HGB binary balanced improves from first attack rank 121 to 22 and from 1/38 to 7/38 red-team windows in top-500. On `redteam_stratified_groupkfold/fold_0`, the same temporal profile is mixed: first attack rank improves from 8 to 7, but top-100 windows drops from 3/522 to 2/522 and top-500 remains 3/522. Therefore, temporal features are useful evidence for feature engineering, but they do not replace the non-temporal fold baseline yet.
+
+The operational evaluator now supports entity-calibrated policies. These policies select high-risk entities or entity-day pairs on validation-calibrated thresholds and then measure the red-team windows and attack days covered by that investigation scope. This is more aligned with SOC triage than direct per-window thresholding. In the current results, `date` temporal with `entity_budget_daily_25_on_val` covers 9/38 red-team windows and 2/15 red-team entities with 47 selected entity-days. On the temporal entity-generalization fold, `entity_budget_daily_25_on_val` covers 4/5 red-team entities but only 4/522 red-team windows, showing that entity triage improves prioritization but not yet precise window coverage.
+
+A new rarity/multi-scale feature derivation has been added and evaluated. `src/models/CSR-LANL/enrich_rarity_features.py` derives `datasets_redteam_temporal_rarity` from the temporal Parquet dataset, adding causal per-entity prior means, prior z-scores, rolling ratios over 15 and 60 previous entity observations, and compact novelty/pressure signals. This profile uses only already materialized aggregate columns, so it is reproducible without a raw log rescan. Exact rarity by concrete source-destination pair or destination port identity remains a later raw-materialization improvement because those identifiers are not preserved in the current prepared Parquet rows.
+
+On `date`, HGB binary balanced with temporal-rarity worsens direct window top-k versus temporal-only (first attack rank 72, top-500 3/38), but improves the entity-day policy view: `entity_budget_daily_25_on_val` covers 15/38 red-team windows and 3/15 red-team entities with 92 selected entity-days. On `redteam_stratified_groupkfold/fold_0`, temporal-rarity improves the earliest red-team hit from rank 8 to rank 4 and matches the fold baseline at top-100/top-500 windows (3/522) and top-50/top-500 entities (3/5 and 4/5). Its entity-day policies also match the best previous fold coverage with fewer selected entity-days: `entity_budget_daily_25_on_val` covers 4/5 entities and 4/522 windows with 316 entity-days, versus 341 for temporal-only.
+
+An entity-day scorer experiment was then implemented as a lower-cost alternative to raw re-materialization. `src/models/CSR-LANL/prepare_entity_day_dataset.py` derives `(entity, day_index)` rows from temporal-rarity windows, and `src/models/CSR-LANL/train_entity_day_hgb.py` trains a balanced HGB on those entity-days. A second variant adds aggregated `window_model_score` from the temporal-rarity HGB window model. This confirms that entity-day modeling is feasible and reproducible, but it does not replace the existing entity-day policies: on `date`, the scored entity-day model reaches 20/38 red-team windows in global top-500 but only 9/38 under validation-calibrated daily-25 policy; on `fold_0`, the scored variant reaches 3/522 windows under daily-25, below the current 4/522 temporal-rarity entity-day policy.
+
+Recommended split usage:
+
+- `date`: primary operational evidence.
+- `redteam_stratified_groupkfold`: secondary entity-generalization evidence; `fold_0` is now validated and usable.
+- `random`: sanity check only.
+- `groupkfold`: deprecated for thesis-level CSR-LANL conclusions unless explicitly marked as low-support.
+
+Accuracy should remain secondary for CSR-LANL. Main reporting should prioritize top-k window recall, top-k entity recall, entity-day policies, alert budget, validation-calibrated policies, and first red-team rank.
+
+The next CSR-LANL improvement should not be materializing all remaining folds yet. The temporal-rarity and entity-day experiments are useful SOC triage evidence, but they still do not solve sparse red-team window localization. P8E now preserves concrete destination, destination-port, and source-destination pair signals in a separate preparer, `src/models/CSR-LANL/prepare_dataset_identity.py`, using reproducible counters and compact sketches while leaving `src/models/CSR-LANL/prepare_dataset.py` as the original/base path. Retest only `date` and `redteam_stratified_groupkfold/fold_0` before expanding to more folds.
 
 ---
 
@@ -349,6 +397,12 @@ Useful initial features include:
 - process-to-authentication ratio,
 - red-team proximity flags for validation metadata,
 - rolling count features over previous windows when feasible.
+
+Implemented temporal profile:
+
+- `temporal_entity_history_v1` is materialized by `src/models/CSR-LANL/enrich_temporal_features.py`.
+- Rolling features are causal: the current window is shifted out before computing entity-level rolling means.
+- The profile should be kept as an experimental feature set, but thesis conclusions should report it separately from the baseline until it improves both `date` and the validated entity-generalization fold.
 
 Rolling features should be added only after the base window table is stable, because they introduce leakage risk if computed after splitting.
 

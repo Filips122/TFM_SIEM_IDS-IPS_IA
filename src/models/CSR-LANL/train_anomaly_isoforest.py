@@ -15,6 +15,10 @@ from reporting import save_anomaly_plots
 from train_utils import artifacts_root, now_run_id, save_dataset_profile_ref, save_json
 
 
+SPLIT_MODE_CHOICES = ["date", "random", "groupkfold", "redteam_stratified_groupkfold"]
+GROUP_FOLD_SPLIT_MODES = {"groupkfold", "redteam_stratified_groupkfold"}
+
+
 def run_one(datasets_base: str, split_mode: str, fold: int | None, epochs: int, out_dir, dataset: str) -> dict:
     train, val, test = load_splits(datasets_base=datasets_base, split_mode=split_mode, dataset=dataset, pipeline="anomaly", fold=fold)
     model = IsolationForest(n_estimators=epochs, contamination="auto", random_state=42, n_jobs=-1)
@@ -35,7 +39,7 @@ def run_one(datasets_base: str, split_mode: str, fold: int | None, epochs: int, 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--datasets_base", default="src/models/CSR-LANL/datasets")
-    parser.add_argument("--split_mode", default="date", choices=["date", "random", "groupkfold"])
+    parser.add_argument("--split_mode", default="date", choices=SPLIT_MODE_CHOICES)
     parser.add_argument("--dataset", default="CSR-LANL")
     parser.add_argument("--all_folds", action="store_true")
     parser.add_argument("--fold", type=int, default=None)
@@ -43,7 +47,7 @@ def main() -> None:
     parser.add_argument("--epochs", type=int, default=315)
     args = parser.parse_args()
     root = artifacts_root("anomaly_isoforest_CSR_LANL", args.split_mode, now_run_id(), run_config={"epochs": args.epochs, "datasets_base": args.datasets_base})
-    if args.split_mode != "groupkfold":
+    if args.split_mode not in GROUP_FOLD_SPLIT_MODES:
         save_dataset_profile_ref(root, args.datasets_base, args.split_mode, args.dataset)
         try:
             out = run_one(args.datasets_base, args.split_mode, None, args.epochs, root, args.dataset)
@@ -58,9 +62,9 @@ def main() -> None:
     for fold in folds:
         fold_dir = root / f"fold_{fold}"
         fold_dir.mkdir(parents=True, exist_ok=True)
-        save_dataset_profile_ref(fold_dir, args.datasets_base, "groupkfold", args.dataset, int(fold))
+        save_dataset_profile_ref(fold_dir, args.datasets_base, args.split_mode, args.dataset, int(fold))
         try:
-            out = run_one(args.datasets_base, "groupkfold", int(fold), args.epochs, fold_dir, args.dataset)
+            out = run_one(args.datasets_base, args.split_mode, int(fold), args.epochs, fold_dir, args.dataset)
         except (FileNotFoundError, EmptySplitError) as exc:
             summary[f"fold_{fold}"] = {"skipped": True, "reason": str(exc)}
             continue

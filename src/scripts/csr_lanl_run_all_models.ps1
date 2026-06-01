@@ -6,6 +6,8 @@ param(
     [int]$BinaryEpochs = 215,
     [int]$MulticlassEpochs = 215,
     [int]$AnomalyEstimators = 315,
+    [ValidateSet("none", "balanced")]
+    [string]$BinaryClassWeight = "none",
     [int]$NFolds = 5,
     [int[]]$GroupFolds = @(0),
     [double]$SampleFrac,
@@ -13,6 +15,12 @@ param(
     [switch]$SkipBinaryHgb,
     [switch]$SkipMulticlass,
     [switch]$SkipAnomaly,
+    [switch]$SkipOperationalEval,
+    [int[]]$OperationalBudgets = @(10, 25, 50, 100, 250, 500),
+    [int[]]$OperationalDailyBudgets = @(5, 10, 25, 50),
+    [switch]$SkipSplitValidation,
+    [int]$MinAttackWindowsEval = 30,
+    [int]$MinRedteamEntitiesEval = 5,
     [switch]$SkipCompare,
     [switch]$SkipDatasetCheck,
     [switch]$DryRun
@@ -21,7 +29,8 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-$allowedModes = @("date", "random", "groupkfold")
+$allowedModes = @("date", "random", "groupkfold", "redteam_stratified_groupkfold")
+$groupFoldModes = @("groupkfold", "redteam_stratified_groupkfold")
 $normalizedModes = @()
 foreach ($modeArg in $Modes) {
     foreach ($part in @($modeArg -split ",")) {
@@ -118,16 +127,16 @@ function Assert-PipelineReady([string]$mode, [string]$pipeline, [int]$fold = -1)
     }
 
     $baseDir = Get-DatasetRoot $mode
-    if ($mode -eq "groupkfold") {
+    if ($groupFoldModes -contains $mode) {
         if ($fold -lt 0) {
-            throw "groupkfold dataset check requires a fold number."
+            throw "$mode dataset check requires a fold number."
         }
         $baseDir = Join-Path $baseDir "fold_$fold"
     }
 
     $status = Test-PipelineReady $baseDir $pipeline
     if (-not $status.Ready) {
-        $foldText = if ($mode -eq "groupkfold") { " fold_$fold" } else { "" }
+        $foldText = if ($groupFoldModes -contains $mode) { " fold_$fold" } else { "" }
         throw "Dataset '$Dataset' is not ready for pipeline '$pipeline' in mode '$mode'$foldText. Missing parquet files in: $($status.Missing -join ', ')"
     }
 }
@@ -139,7 +148,7 @@ function New-TrainerArgs([string]$mode, [int]$epochs, [int]$fold = -1, [switch]$
         "--dataset", $Dataset,
         "--epochs", "$epochs"
     )
-    if ($mode -eq "groupkfold") {
+    if ($groupFoldModes -contains $mode) {
         if ($AllFolds) {
             $args += @("--all_folds", "--n_folds", "$NFolds")
         }
@@ -154,23 +163,30 @@ function New-TrainerArgs([string]$mode, [int]$epochs, [int]$fold = -1, [switch]$
 }
 
 function Invoke-SupervisedTrainer([string]$relPath, [string]$mode, [int]$epochs) {
-    if ($mode -ne "groupkfold") {
-        RunPy $relPath (New-TrainerArgs $mode $epochs)
+    $isBinaryTrainer = $relPath -like "*train_ml_binary_hgb.py"
+    if ($groupFoldModes -notcontains $mode) {
+        $trainerArgs = New-TrainerArgs $mode $epochs
+        if ($isBinaryTrainer) { $trainerArgs += @("--class_weight", $BinaryClassWeight) }
+        RunPy $relPath $trainerArgs
         return
     }
 
     if ($AllGroupFolds) {
-        RunPy $relPath (New-TrainerArgs $mode $epochs -AllFolds)
+        $trainerArgs = New-TrainerArgs $mode $epochs -AllFolds
+        if ($isBinaryTrainer) { $trainerArgs += @("--class_weight", $BinaryClassWeight) }
+        RunPy $relPath $trainerArgs
         return
     }
 
     foreach ($fold in $GroupFolds) {
-        RunPy $relPath (New-TrainerArgs $mode $epochs $fold)
+        $trainerArgs = New-TrainerArgs $mode $epochs $fold
+        if ($isBinaryTrainer) { $trainerArgs += @("--class_weight", $BinaryClassWeight) }
+        RunPy $relPath $trainerArgs
     }
 }
 
 function Invoke-AnomalyTrainer([string]$mode) {
-    if ($mode -ne "groupkfold") {
+    if ($groupFoldModes -notcontains $mode) {
         RunPy "src\models\CSR-LANL\train_anomaly_isoforest.py" @(
             "--datasets_base", "$DatasetsBase",
             "--split_mode", $mode,
@@ -204,6 +220,86 @@ function Invoke-AnomalyTrainer([string]$mode) {
     }
 }
 
+function Get-LatestArtifactDir([string]$modelName, [string]$mode, [int]$fold = -1) {
+    $modeDir = Join-Path $artifactsDir (Join-Path $modelName $mode)
+    if (!(Test-Path $modeDir)) {
+        return $null
+    }
+
+    $latestRun = Get-ChildItem -Path $modeDir -Directory | Sort-Object Name -Descending | Select-Object -First 1
+    if ($null -eq $latestRun) {
+        return $null
+    }
+
+    if ($groupFoldModes -contains $mode) {
+        if ($fold -lt 0) {
+            return $null
+        }
+        $foldDir = Join-Path $latestRun.FullName "fold_$fold"
+        if (Test-Path (Join-Path $foldDir "model.joblib")) {
+            return $foldDir
+        }
+        return $null
+    }
+
+    if (Test-Path (Join-Path $latestRun.FullName "model.joblib")) {
+        return $latestRun.FullName
+    }
+    return $null
+}
+
+function Invoke-OperationalEval([string]$mode, [string]$pipeline, [string]$modelKind, [string]$modelName, [int]$fold = -1) {
+    $artifactDir = Get-LatestArtifactDir $modelName $mode $fold
+    if ([string]::IsNullOrWhiteSpace($artifactDir)) {
+        $foldText = if ($groupFoldModes -contains $mode) { " fold_$fold" } else { "" }
+        Write-Warning "No artifact found for operational evaluation: $modelName/$mode$foldText"
+        return
+    }
+
+    $evalArgs = @(
+        "--artifact_dir", "$artifactDir",
+        "--datasets_base", "$DatasetsBase",
+        "--dataset", $Dataset,
+        "--split_mode", $mode,
+        "--pipeline", $pipeline,
+        "--model_kind", $modelKind,
+        "--budgets"
+    ) + @($OperationalBudgets | ForEach-Object { "$($_)" }) + @(
+        "--daily_budgets"
+    ) + @($OperationalDailyBudgets | ForEach-Object { "$($_)" })
+
+    if ($groupFoldModes -contains $mode) {
+        $evalArgs += @("--fold", "$fold")
+    }
+
+    RunPy "src\models\CSR-LANL\evaluate_operational.py" $evalArgs
+}
+
+function Invoke-OperationalEvaluations([string]$mode) {
+    if ($SkipOperationalEval) {
+        return
+    }
+
+    $foldsToEval = if ($groupFoldModes -contains $mode) {
+        if ($AllGroupFolds) { 0..($NFolds - 1) } else { $GroupFolds }
+    }
+    else {
+        @(-1)
+    }
+
+    foreach ($fold in $foldsToEval) {
+        if (-not $SkipBinaryHgb) {
+            Invoke-OperationalEval $mode "binary" "hgb" "offline_CSR_LANL_binary_hgb" $fold
+        }
+        if (-not $SkipMulticlass) {
+            Invoke-OperationalEval $mode "multiclass" "hgb" "offline_CSR_LANL_multiclass_hgb" $fold
+        }
+        if (-not $SkipAnomaly) {
+            Invoke-OperationalEval $mode "anomaly" "isoforest" "anomaly_isoforest_CSR_LANL" $fold
+        }
+    }
+}
+
 Write-Host "=== CSR-LANL model training ===" -ForegroundColor Green
 Write-Host "Repo root    : $repoRoot"
 Write-Host "Python       : $PythonExe"
@@ -211,10 +307,30 @@ Write-Host "Dataset      : $Dataset"
 Write-Host "DatasetsBase : $datasetsBaseFull"
 Write-Host "Modes        : $($Modes -join ', ')"
 Write-Host "Group folds  : $(if ($AllGroupFolds) { 'all' } else { $GroupFolds -join ', ' })"
+Write-Host "Binary weight: $BinaryClassWeight"
+Write-Host "Operational  : $(if ($SkipOperationalEval) { 'skip' } else { 'enabled' })"
+Write-Host "Split check  : $(if ($SkipSplitValidation) { 'skip' } else { 'enabled' })"
 Write-Host "Dry run      : $DryRun"
 
+if (-not $SkipSplitValidation) {
+    $splitValidationArgs = @(
+        "--datasets_base", "$DatasetsBase",
+        "--dataset", $Dataset,
+        "--split_modes"
+    ) + $Modes + @(
+        "--min_attack_windows_val", "$MinAttackWindowsEval",
+        "--min_attack_windows_test", "$MinAttackWindowsEval",
+        "--min_redteam_entities_test", "$MinRedteamEntitiesEval",
+        "--out_dir", "src/models/CSR-LANL/artifacts/split_validation/training_precheck"
+    )
+    if (-not $AllGroupFolds -and $GroupFolds.Count -gt 0) {
+        $splitValidationArgs += @("--folds") + @($GroupFolds | ForEach-Object { "$($_)" })
+    }
+    RunPy "src\models\CSR-LANL\validate_splits.py" $splitValidationArgs
+}
+
 foreach ($mode in $Modes) {
-    $foldsToCheck = if ($mode -eq "groupkfold") {
+    $foldsToCheck = if ($groupFoldModes -contains $mode) {
         if ($AllGroupFolds) { 0..($NFolds - 1) } else { $GroupFolds }
     }
     else {
@@ -240,6 +356,8 @@ foreach ($mode in $Modes) {
     if (-not $SkipAnomaly) {
         Invoke-AnomalyTrainer $mode
     }
+
+    Invoke-OperationalEvaluations $mode
 }
 
 if (-not $SkipCompare) {

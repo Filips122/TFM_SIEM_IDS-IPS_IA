@@ -1,5 +1,5 @@
 param(
-    [string[]]$Modes = @("date", "groupkfold"),
+    [string[]]$Modes = @("date", "redteam_stratified_groupkfold"),
     [string]$Dataset = "CSR-LANL",
     [string]$DatasetsBase = "src/models/CSR-LANL/datasets_redteam",
 
@@ -19,12 +19,19 @@ param(
     [int]$BinaryEpochs = 215,
     [int]$MulticlassEpochs = 215,
     [int]$AnomalyEstimators = 315,
+    [ValidateSet("none", "balanced")]
+    [string]$BinaryClassWeight = "none",
     [switch]$AllGroupFolds,
     [switch]$SkipPrepare,
     [switch]$SkipValidation,
     [switch]$SkipBinaryHgb,
     [switch]$SkipMulticlass,
     [switch]$SkipAnomaly,
+    [switch]$SkipOperationalEval,
+    [int[]]$OperationalBudgets = @(10, 25, 50, 100, 250, 500),
+    [int[]]$OperationalDailyBudgets = @(5, 10, 25, 50),
+    [int]$MinAttackWindowsEval = 30,
+    [int]$MinRedteamEntitiesEval = 5,
     [switch]$SkipCompare,
     [switch]$NoProgress,
     [switch]$DryRun
@@ -56,7 +63,7 @@ function Quote-PowerShellValue([string]$value) {
 }
 
 function Build-ChildCommand([string]$scriptPath, [string[]]$scriptArgs) {
-    $arrayParams = @("-Modes", "-GroupFolds")
+    $arrayParams = @("-Modes", "-GroupFolds", "-OperationalBudgets", "-OperationalDailyBudgets")
     $parts = @("&", (Quote-PowerShellValue $scriptPath))
 
     for ($i = 0; $i -lt $scriptArgs.Count; $i++) {
@@ -167,8 +174,24 @@ if (-not $SkipValidation) {
     RunPy "src\models\CSR-LANL\validate_datasets.py" (@(
         "--datasets_base", $DatasetsBase,
         "--dataset", $Dataset,
+        "--min_positive_eval", "$MinAttackWindowsEval",
         "--modes"
     ) + $Modes)
+
+    $splitValidationArgs = @(
+        "--datasets_base", $DatasetsBase,
+        "--dataset", $Dataset,
+        "--split_modes"
+    ) + $Modes + @(
+        "--min_attack_windows_val", "$MinAttackWindowsEval",
+        "--min_attack_windows_test", "$MinAttackWindowsEval",
+        "--min_redteam_entities_test", "$MinRedteamEntitiesEval",
+        "--out_dir", "src/models/CSR-LANL/artifacts/split_validation/redteam_runner_current"
+    )
+    if (-not $AllGroupFolds -and $GroupFolds.Count -gt 0) {
+        $splitValidationArgs += @("--folds") + @($GroupFolds | ForEach-Object { "$($_)" })
+    }
+    RunPy "src\models\CSR-LANL\validate_splits.py" $splitValidationArgs
 }
 
 $trainArgs = @(
@@ -178,16 +201,22 @@ $trainArgs = @(
     "-DatasetsBase", $DatasetsBase,
     "-PythonExe", $PythonExe,
     "-BinaryEpochs", "$BinaryEpochs",
+    "-BinaryClassWeight", "$BinaryClassWeight",
     "-MulticlassEpochs", "$MulticlassEpochs",
     "-AnomalyEstimators", "$AnomalyEstimators",
     "-NFolds", "$NFolds",
     "-GroupFolds"
 ) + @($GroupFolds | ForEach-Object { "$($_)" })
 
+$trainArgs += @("-OperationalBudgets") + @($OperationalBudgets | ForEach-Object { "$($_)" })
+$trainArgs += @("-OperationalDailyBudgets") + @($OperationalDailyBudgets | ForEach-Object { "$($_)" })
+
 if ($AllGroupFolds) { $trainArgs += "-AllGroupFolds" }
 if ($SkipBinaryHgb) { $trainArgs += "-SkipBinaryHgb" }
 if ($SkipMulticlass) { $trainArgs += "-SkipMulticlass" }
 if ($SkipAnomaly) { $trainArgs += "-SkipAnomaly" }
+if ($SkipOperationalEval) { $trainArgs += "-SkipOperationalEval" }
+if (-not $SkipValidation) { $trainArgs += "-SkipSplitValidation" }
 if ($SkipCompare) { $trainArgs += "-SkipCompare" }
 if ($DryRun) { $trainArgs += "-DryRun" }
 
