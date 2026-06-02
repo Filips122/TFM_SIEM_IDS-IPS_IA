@@ -35,6 +35,20 @@ src/models/TON_IoT/artifacts/
 src/models/TON_IoT/datasets/
 src/scripts/tree.txt
 src/models/day20_comparison/
+src/models/GLOBAL_TRANSFORMER/datasets/
+src/models/GLOBAL_TRANSFORMER/artifacts/
+src/models/PRODUCTION_PIPELINE/calibration_runs/
+src/models/PRODUCTION_PIPELINE/comparisons/
+src/models/PRODUCTION_PIPELINE/examples/
+src/models/PRODUCTION_PIPELINE/inference_runs/
+src/models/PRODUCTION_PIPELINE/model_store/
+src/models/PRODUCTION_PIPELINE/policies/
+src/models/PRODUCTION_PIPELINE/siem_ingestion/
+src/models/PRODUCTION_PIPELINE/threshold_runs/
+src/models/PRODUCTION_PIPELINE/production_baseline_summary.csv
+src/models/PRODUCTION_PIPELINE/model_registry.example.json
+src/models/PRODUCTION_PIPELINE/active_model_registry.json
+src/models/PRODUCTION_PIPELINE/policy_registry.active.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
