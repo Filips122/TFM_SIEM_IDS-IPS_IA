@@ -167,6 +167,36 @@ def write_stats(base_dir: Path, stats: Dict[str, Dict[str, Stats]]) -> None:
         out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+# ---------------------------------------------------------------------------
+# Correccion 2026-09-02: los ficheros crudos UNSW-NB15_1..4.csv NO llevan fila
+# de cabecera (los nombres viven aparte, en NUSW-NB15_features.csv). Leerlos
+# con header inferido convertia la primera fila de datos en nombres de columna,
+# dejando 141 "features" con nombres como '0.000117' y la particion groupkfold
+# con una sola clase. Este helper inyecta los nombres oficiales para esos
+# ficheros y deja intactos los que si traen cabecera (official_pair, etc.).
+# ---------------------------------------------------------------------------
+_RAW_HEADERLESS = re.compile(r"^UNSW-NB15_[1-4]\.csv$", re.IGNORECASE)
+_OFFICIAL_NAMES_CACHE: List[str] | None = None
+
+
+def _official_feature_names(csv_path: Path) -> List[str]:
+    global _OFFICIAL_NAMES_CACHE
+    if _OFFICIAL_NAMES_CACHE is None:
+        features_file = csv_path.parent / "NUSW-NB15_features.csv"
+        table = pd.read_csv(features_file, encoding="latin1")
+        _OFFICIAL_NAMES_CACHE = [str(v).strip() for v in table.iloc[:, 1].tolist()]
+        if len(_OFFICIAL_NAMES_CACHE) != 49:
+            raise SystemExit(f"NUSW-NB15_features.csv: se esperaban 49 nombres, hay {len(_OFFICIAL_NAMES_CACHE)}")
+    return _OFFICIAL_NAMES_CACHE
+
+
+def read_csv_smart(csv_path: Path, **kwargs):
+    if _RAW_HEADERLESS.match(csv_path.name):
+        kwargs["header"] = None
+        kwargs["names"] = _official_feature_names(csv_path)
+    return pd.read_csv(csv_path, **kwargs)
+
+
 def collect_categorical_vocab(csv_files: List[Path], chunksize: int) -> Dict[str, Dict[str, int]]:
     """
     Build deterministic category maps from all input files once.
@@ -177,7 +207,7 @@ def collect_categorical_vocab(csv_files: List[Path], chunksize: int) -> Dict[str
 
     for i, csv_path in enumerate(csv_files, start=1):
         print(f"[vocab] ({i}/{len(csv_files)}) {csv_path.name}")
-        reader = pd.read_csv(
+        reader = read_csv_smart(
             csv_path,
             chunksize=chunksize,
             low_memory=False,
@@ -211,7 +241,7 @@ def collect_feature_columns(csv_files: List[Path]) -> List[str]:
     cols = set()
     for p in csv_files:
         try:
-            df0 = pd.read_csv(
+            df0 = read_csv_smart(
                 p,
                 nrows=0,
                 low_memory=False,
@@ -349,7 +379,7 @@ def process_csv_random(
             ks = str(k)
             counts[pipeline][split][ks] = counts[pipeline][split].get(ks, 0) + int(v)
 
-    reader = pd.read_csv(
+    reader = read_csv_smart(
         csv_path,
         chunksize=chunksize,
         low_memory=False,
@@ -440,7 +470,7 @@ def process_csv_fixed_split(
             ks = str(k)
             counts[name][ks] = counts[name].get(ks, 0) + int(v)
 
-    reader = pd.read_csv(
+    reader = read_csv_smart(
         csv_path,
         chunksize=chunksize,
         low_memory=False,
@@ -505,7 +535,7 @@ def process_csv_anomaly_train_benign_only(
     writers: Dict[Path, Any] = {}
     schemas: Dict[Path, List[str]] = {}
 
-    reader = pd.read_csv(
+    reader = read_csv_smart(
         csv_path,
         chunksize=chunksize,
         low_memory=False,
