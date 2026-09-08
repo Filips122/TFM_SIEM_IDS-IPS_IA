@@ -1,0 +1,361 @@
+{
+  "seed": 42,
+  "fuente": "ARGOS-LAB 30 dias",
+  "version": "1.1",
+  "early_block": {
+    "budgets": [
+      1,
+      2,
+      3,
+      5,
+      10,
+      20
+    ],
+    "thresholds": {
+      "1": 0.9282797136150767,
+      "2": 0.9078828496202596,
+      "3": 0.933085715004894,
+      "5": 0.9694621268939208,
+      "10": 0.7996277806883055,
+      "20": 0.6402789399054707
+    },
+    "features": [
+      "n_alerts",
+      "n_users",
+      "n_agents",
+      "n_windows",
+      "span_seconds",
+      "mean_interarrival",
+      "min_interarrival",
+      "alerts_per_user",
+      "users_per_alert",
+      "root_ratio",
+      "system_user_ratio",
+      "port_present_ratio",
+      "alerts_first_minute",
+      "std_interarrival",
+      "cv_interarrival",
+      "sub24_seen",
+      "sub24_hostile",
+      "sub24_hostile_ratio",
+      "sub16_seen",
+      "sub16_hostile",
+      "sub16_hostile_ratio",
+      "fleet_new_ips_last_hour"
+    ],
+    "target_precision": 0.99,
+    "validado": "recall 0,990 / precision 0,995 interno; 0,994 externo (R7-R8)"
+  },
+  "window_block": {
+    "features": [
+      "alert_count",
+      "log_alert_count",
+      "span_seconds",
+      "alerts_per_second",
+      "mean_interarrival",
+      "std_interarrival",
+      "min_interarrival",
+      "burstiness_index",
+      "unique_src_ip",
+      "unique_src_user",
+      "unique_dst_user",
+      "unique_src_port",
+      "src_ip_entropy",
+      "src_ip_entropy_norm",
+      "top_src_ip_share",
+      "src_user_entropy",
+      "src_user_entropy_norm",
+      "top_src_user_share",
+      "src_port_entropy_norm",
+      "alerts_per_src_ip",
+      "users_per_src_ip",
+      "ports_per_src_ip",
+      "alerts_per_src_user",
+      "src_ip_present_ratio",
+      "src_port_present_ratio",
+      "dst_user_present_ratio",
+      "unique_country",
+      "unique_city",
+      "country_entropy_norm",
+      "top_country_share",
+      "geo_missing_ratio",
+      "geo_lat_mean",
+      "geo_lon_mean",
+      "geo_lat_std",
+      "geo_lon_std",
+      "geo_spread",
+      "new_src_ip_count",
+      "new_src_ip_ratio",
+      "repeat_src_ip_ratio",
+      "new_src_user_count",
+      "new_src_user_ratio",
+      "mean_src_ip_seen_before",
+      "max_src_ip_seen_before",
+      "root_user_ratio",
+      "system_user_ratio",
+      "agent_gap_seconds",
+      "agent_count_lag1",
+      "agent_count_lag2",
+      "agent_count_roll_mean",
+      "agent_count_roll_std",
+      "agent_count_z",
+      "agent_uniqip_roll_mean",
+      "agent_uniqip_z",
+      "agent_window_index"
+    ],
+    "classes": [
+      "ALLOW",
+      "BLOCK"
+    ],
+    "validado": "lift 43,5x/20,0x por host; transferencia 65-104% (R5)"
+  },
+  "activity": {
+    "features": [
+      "alert_count",
+      "log_alert_count",
+      "span_seconds",
+      "alerts_per_second",
+      "mean_interarrival",
+      "std_interarrival",
+      "min_interarrival",
+      "burstiness_index",
+      "unique_src_ip",
+      "unique_src_user",
+      "unique_dst_user",
+      "unique_src_port",
+      "src_ip_entropy",
+      "src_ip_entropy_norm",
+      "top_src_ip_share",
+      "src_user_entropy",
+      "src_user_entropy_norm",
+      "top_src_user_share",
+      "src_port_entropy_norm",
+      "alerts_per_src_ip",
+      "users_per_src_ip",
+      "ports_per_src_ip",
+      "alerts_per_src_user",
+      "src_ip_present_ratio",
+      "src_port_present_ratio",
+      "dst_user_present_ratio",
+      "unique_country",
+      "unique_city",
+      "country_entropy_norm",
+      "top_country_share",
+      "geo_missing_ratio",
+      "geo_lat_mean",
+      "geo_lon_mean",
+      "geo_lat_std",
+      "geo_lon_std",
+      "geo_spread",
+      "new_src_ip_count",
+      "new_src_ip_ratio",
+      "repeat_src_ip_ratio",
+      "new_src_user_count",
+      "new_src_user_ratio",
+      "mean_src_ip_seen_before",
+      "max_src_ip_seen_before",
+      "root_user_ratio",
+      "system_user_ratio",
+      "agent_gap_seconds",
+      "agent_count_lag1",
+      "agent_count_lag2",
+      "agent_count_roll_mean",
+      "agent_count_roll_std",
+      "agent_count_z",
+      "agent_uniqip_roll_mean",
+      "agent_uniqip_z",
+      "agent_window_index"
+    ],
+    "hostile_families": [
+      "CredentialBrute",
+      "IntegrityChange",
+      "PamAuth"
+    ],
+    "reject_quantile": 0.25,
+    "validado": "attack_score por agente: lift 46x en el host raro (seccion 2.7 del README del modulo)"
+  },
+  "attention_block": {
+    "weights_file": "attention_block.npz",
+    "budgets": [
+      2,
+      3,
+      5,
+      10,
+      20
+    ],
+    "thresholds": {
+      "2": 0.9195123314857483,
+      "3": 0.9231142997741699,
+      "5": 0.9196130037307739,
+      "10": 0.6889720559120178,
+      "20": 0.4413474500179291
+    },
+    "target_precision": 0.99,
+    "token_set": "base",
+    "token_names": [
+      "log_gap",
+      "user_new",
+      "is_root",
+      "is_system_user",
+      "has_port",
+      "agent_new",
+      "window_new"
+    ],
+    "ctx_features": [
+      "sub24_seen",
+      "sub24_hostile",
+      "sub24_hostile_ratio",
+      "sub16_seen",
+      "sub16_hostile",
+      "sub16_hostile_ratio",
+      "fleet_new_ips_last_hour"
+    ],
+    "hyper": {
+      "d": 32,
+      "heads": 4,
+      "layers": 2,
+      "ff": 64,
+      "dropout": 0.1
+    },
+    "train": {
+      "epochs": 80,
+      "patience": 10,
+      "lr": 0.002,
+      "batch": 256,
+      "weight_decay": 0.0001
+    },
+    "norm": {
+      "token_mean": [
+        2.5175259113311768,
+        0.2558671832084656,
+        0.3238399624824524,
+        0.4127242863178253,
+        0.47663435339927673,
+        0.09746339172124863,
+        0.40478450059890747
+      ],
+      "token_std": [
+        3.1289095878601074,
+        0.4363131821155548,
+        0.4679069221019745,
+        0.49223804473876953,
+        0.4994279146194458,
+        0.29659122228622437,
+        0.4909820258617401
+      ],
+      "ctx_mean": [
+        1.1428145170211792,
+        0.168455570936203,
+        0.045116126537323,
+        2.1267144680023193,
+        0.836911141872406,
+        0.2440033257007599,
+        32.1299934387207
+      ],
+      "ctx_std": [
+        5.290370464324951,
+        0.8370118141174316,
+        0.1981731802225113,
+        5.830262660980225,
+        2.1606285572052,
+        0.4018714725971222,
+        54.225059509277344
+      ]
+    },
+    "seed": 42,
+    "n_params_por_modelo": 18369,
+    "test_interno": {
+      "nota": "misma particion temporal que early_block; SIN validacion externa (presupuesto LAB-ALERTS gastado)",
+      "por_K": {
+        "2": {
+          "roc_auc": 0.9280117310873814,
+          "recall_p99": 0.3622950819672131,
+          "fp": 0
+        },
+        "3": {
+          "roc_auc": 0.9634381109941345,
+          "recall_p99": 0.44098360655737706,
+          "fp": 0
+        },
+        "5": {
+          "roc_auc": 0.9906752895172205,
+          "recall_p99": 0.8622950819672132,
+          "fp": 3
+        },
+        "10": {
+          "roc_auc": 0.9977891412242442,
+          "recall_p99": 0.9737704918032787,
+          "fp": 2
+        },
+        "20": {
+          "roc_auc": 0.9996390434651827,
+          "recall_p99": 0.9901639344262295,
+          "fp": 2
+        }
+      },
+      "secuencial_atencion": {
+        "recall": 0.9918032786885246,
+        "precision": 0.9918032786885246,
+        "ips_legitimas_cortadas": 5,
+        "aviso_mediano_de_bloqueo": 5.0,
+        "avisos_evitados_pct": 0.9018497622309987,
+        "reparto_bloqueos_por_K": {
+          "2": 221,
+          "3": 48,
+          "5": 257,
+          "10": 68,
+          "20": 11
+        }
+      },
+      "secuencial_hgb_empaquetado": {
+        "recall": 0.9901639344262295,
+        "precision": 0.9950576606260296,
+        "ips_legitimas_cortadas": 3,
+        "aviso_mediano_de_bloqueo": 5.0,
+        "avisos_evitados_pct": 0.8929434996373016,
+        "reparto_bloqueos_por_K": {
+          "1": 5,
+          "2": 241,
+          "3": 43,
+          "5": 230,
+          "10": 69,
+          "20": 16
+        }
+      },
+      "consenso_or": {
+        "recall": 0.9950819672131147,
+        "precision": 0.9902120717781403,
+        "ips_legitimas_cortadas": 6,
+        "aviso_mediano_de_bloqueo": 5.0,
+        "avisos_evitados_pct": 0.9394696542274522,
+        "reparto_bloqueos_por_K": {
+          "2": 245,
+          "3": 47,
+          "5": 251,
+          "10": 54,
+          "20": 10
+        }
+      },
+      "consenso_and": {
+        "recall": 0.9852459016393442,
+        "precision": 0.9966832504145937,
+        "ips_legitimas_cortadas": 2,
+        "aviso_mediano_de_bloqueo": 5.0,
+        "avisos_evitados_pct": 0.8549609091641815,
+        "reparto_bloqueos_por_K": {
+          "2": 221,
+          "3": 44,
+          "5": 237,
+          "10": 82,
+          "20": 17
+        }
+      }
+    },
+    "validado": "R13 · test interno: AUC medio por K 0.9759; secuencial recall 0.992 / precision 0.992. Consenso OR 0.995/0.990, AND 0.985/0.997.",
+    "verificacion": {
+      "max_diff_fichas": 0.0,
+      "max_diff_scores": 3.473700127543111e-07,
+      "evaluaciones": 3595
+    }
+  }
+}
