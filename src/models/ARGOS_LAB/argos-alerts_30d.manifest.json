@@ -1,0 +1,166 @@
+{
+  "dataset": "ARGOS-LAB-ALERTS",
+  "generated_at": "2026-08-27T14:11:08.978394Z",
+  "source_file": "argos-alerts_30d.jsonl",
+  "range": {
+    "from": "2026-07-28T14:02:01.061Z",
+    "to": "2026-08-27T14:08:31.666Z"
+  },
+  "window_size": "1min",
+  "group_key": "agent_id",
+  "record_count": 1462265,
+  "window_count": 88384,
+  "weak_label_policy": "lab_alerts_weak_label_v1 (rule.groups > rule.mitre.tactic > description regex > posture groups > operational groups > severity floor)",
+  "weak_label_distribution": {
+    "ATTACK": 1029526,
+    "BENIGN": 424743,
+    "UNKNOWN": 7996
+  },
+  "weak_label_reason_distribution": {
+    "attack_group:authentication_failed": 849049,
+    "posture_group:trivy": 410611,
+    "attack_group:invalid_login": 159463,
+    "attack_group:authentication_failures": 20536,
+    "operational_group:syslog": 9353,
+    "no_policy_match": 7996,
+    "posture_group:agent_flooding": 4495,
+    "mitre_tactic:impact": 253,
+    "posture_group:sca": 169,
+    "attack_group:rootcheck": 163,
+    "mitre_tactic:defense evasion": 62,
+    "operational_group:ossec": 45,
+    "posture_group:syscheck": 29,
+    "low_severity_no_attack_signal": 23,
+    "operational_group:docker": 13,
+    "operational_group:systemd": 5
+  },
+  "taxonomy_distribution": {
+    "CredentialAccess": 1028914,
+    "SystemAlert": 433164,
+    "AuthenticationFailure": 135,
+    "OtherAlert": 39,
+    "ServiceFailure": 13
+  },
+  "window_label_distribution": {
+    "ATTACK": 79851,
+    "BENIGN": 1738,
+    "UNKNOWN": 6795
+  },
+  "agent_distribution": {
+    "000": 815051,
+    "003": 411065,
+    "011": 224251,
+    "030": 11898
+  },
+  "top_rules": [
+    {
+      "rule_id": "5710",
+      "rule_description": "sshd: Attempt to login using a non-existent user",
+      "count": 611827
+    },
+    {
+      "rule_id": "100204",
+      "rule_description": "Trivy alert [MEDIUM]: Vulnerabilty 'CVE-2026-4873' detected in package 'curl' version '8.19.0-r0' on container image 'clockwork-store:latest'.",
+      "count": 246446
+    },
+    {
+      "rule_id": "5503",
+      "rule_description": "PAM: User login failed.",
+      "count": 229302
+    },
+    {
+      "rule_id": "5718",
+      "rule_description": "sshd: Attempt to login using a denied user.",
+      "count": 152768
+    },
+    {
+      "rule_id": "100203",
+      "rule_description": "Trivy alert [HIGH]: Vulnerabilty 'CVE-2026-33630' detected in package 'c-ares' version '1.34.6-r0' on container image 'clockwork-store:latest'.",
+      "count": 78447
+    },
+    {
+      "rule_id": "100205",
+      "rule_description": "Trivy alert [LOW]: Vulnerabilty 'CVE-2026-34180' detected in package 'libcrypto3' version '3.5.6-r0' on container image 'clockwork-store:latest'.",
+      "count": 76014
+    },
+    {
+      "rule_id": "5551",
+      "rule_description": "PAM: Multiple failed logins in a small period of time.",
+      "count": 12338
+    },
+    {
+      "rule_id": "5712",
+      "rule_description": "sshd: brute force trying to get access to the system. Non existent user.",
+      "count": 8198
+    },
+    {
+      "rule_id": "533",
+      "rule_description": "Listened ports status (netstat) changed (new port opened or closed).",
+      "count": 6958
+    },
+    {
+      "rule_id": "5719",
+      "rule_description": "sshd: Multiple access attempts using a denied user.",
+      "count": 6695
+    },
+    {
+      "rule_id": "2502",
+      "rule_description": "syslog: User missed the password more than one time",
+      "count": 6570
+    },
+    {
+      "rule_id": "100206",
+      "rule_description": "Trivy alert [UNKNOWN]: Vulnerabilty 'GO-2026-5932' detected in package 'golang.org/x/crypto' version 'v0.48.0' on container image 'traefik:v3.6'.",
+      "count": 6399
+    },
+    {
+      "rule_id": "5762",
+      "rule_description": "sshd: connection reset",
+      "count": 5808
+    },
+    {
+      "rule_id": "5740",
+      "rule_description": "sshd: connection reset by peer",
+      "count": 3381
+    },
+    {
+      "rule_id": "100202",
+      "rule_description": "Trivy alert [CRITICAL]: Vulnerabilty 'CVE-2026-31789' detected in package 'libcrypto3' version '3.5.5-r0' on container image 'traefik:v3.6'.",
+      "count": 3305
+    },
+    {
+      "rule_id": "203",
+      "rule_description": "Agent event queue is full. Events may be lost.",
+      "count": 2539
+    },
+    {
+      "rule_id": "5758",
+      "rule_description": "Maximum authentication attempts exceeded.",
+      "count": 1211
+    },
+    {
+      "rule_id": "202",
+      "rule_description": "Agent event queue is 90% full.",
+      "count": 940
+    },
+    {
+      "rule_id": "205",
+      "rule_description": "Agent event queue is back to normal load.",
+      "count": 940
+    },
+    {
+      "rule_id": "2904",
+      "rule_description": "Dpkg (Debian Package) half configured.",
+      "count": 601
+    }
+  ],
+  "trainability": {
+    "supervised_binary_viable": false,
+    "minority_class_ratio": 0.2921,
+    "window_minority_class_ratio": 0.0213,
+    "notes": [
+      "The active model classifies 1min x agent_id windows, and at that granularity the minority class is only 2.13% (79851 ATTACK vs 1738 BENIGN windows). Row-level balance can look healthy while the training unit stays single-class, because bursty scanners collapse thousands of rows into a couple of windows.",
+      "Label-proxy risk: 97.78% of BENIGN rows are posture findings (Trivy/SCA/syscheck). They are trivially separable from sshd/pam alerts by decoder and rule family, so a classifier can reach near-perfect scores by learning the alert source instead of the behaviour. Report metrics with and without posture_group rows."
+    ]
+  }
+}
