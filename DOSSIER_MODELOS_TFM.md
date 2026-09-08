@@ -28,11 +28,22 @@ experimentos y resultados de la memoria sin tener que abrir el repositorio.
 | **III · LAB-ALERTS** | 17 | El segundo entorno Wazuh: pipeline propio y validación externa de un solo disparo | Validación |
 | **IV · Datasets públicos** | 18–22 | CIC-IDS2017, UNSW-NB15, UGR'16, CSR-LANL y los no explotados (CTU-13, TON_IoT, Unit 42) | Estado del arte aplicado, contraste |
 | **V · Síntesis** | 23–31 | Patrones transversales, registro de resultados, limitaciones, reproducibilidad, frases prohibidas, deuda, bitácora de cierre | Discusión y conclusiones |
+| **VI · Documentos publicados, texto íntegro** | 32–34 | Memoria técnica, auditoría técnica y resumen en llano tal como quedaron publicados el 2026-09-09, convertidos a texto | Redacción final: tono, orden expositivo y frases ya afinadas |
 
 **Regla de lectura.** Ninguna cifra agregada de este documento debe citarse sin
 el desglose por grupo que la acompaña (por agente, por host, por fold, por K).
 Es la regla metodológica que gobierna el trabajo desde que un resultado
 agregado favorable —el autoencoder «18,3×»— se desmontó al desglosarlo (§9).
+
+**Para el agente que redacte el informe oficial.** Este fichero es autosuficiente:
+no hace falta abrir el repositorio ni las páginas publicadas. Orden de autoridad
+cuando dos pasajes difieran: (1) las secciones 4–22 con sus cifras **[medido]** y
+su ruta de artefacto; (2) la fe de erratas y la bitácora (§26, §31); (3) el texto
+de los documentos publicados (Parte VI), que es una *presentación* de lo anterior
+y ya está corregido a la misma fecha, pero resume. Antes de escribir cualquier
+afirmación, comprobarla contra §29 (lo que no se puede decir) y §27
+(limitaciones). Toda cifra agregada va con su desglose por grupo. Las cifras
+vienen con coma decimal y punto de miles, en español.
 
 **Relación con `DOSSIER_TFM.md`.** Las secciones 1–7 de aquel documento
 resumen la línea argumental con los mismos números que aquí se detallan. Cuando
@@ -1997,7 +2008,8 @@ memoria pueda citar el estado exacto de cada pieza.
 | **Auditoría técnica ARGOS-LAB** | https://claude.ai/code/artifact/8d15f4f1-9454-470d-b8fc-efefb72d885e | 12 sustituciones. Tarjeta del autoencoder marcada como retirada (antes seguía mostrando «18,3×» como resultado); tarjeta del Transformer; §5.8 con 37 cortes y párrafo GRU/Transformer; H6 ampliada a cuatro arquitecturas; hipótesis nuevas H8 (transferencia de la etiqueta de conducta, confirmada) y H9 (atacante sigiloso, «señal, no utilidad»); §07: «un resultado no supervisado sólido» sustituido por la validación externa, «sin validación externa» por «validación externa limitada» y dominio de validez; §08: «autoencoder como red de seguridad» sustituido por el rechazo de actividad desconocida y la segunda opinión en modo sombra; §09: «qué defender» sin el autoencoder como logro y con el bloqueo temprano y el fallo del autoencoder como método; «normalización por host» y «segundo despliegue» marcados como realizados; fe de erratas; pie con fecha |
 | **Resumen en llano** | https://claude.ai/code/artifact/d35c1ad3-899a-4489-9153-f339da326945 | Viñeta «La arquitectura de moda no ayuda» (Transformer como segunda opinión que explica); sección nueva 06 «Hasta dónde llega» (Los Alamos: 1 de 26 con 50 revisiones al día); tabla de usos con «cortar a un atacante ruidoso», «explicar qué avisos pesaron» y «detectar a un intruso silencioso: no»; balance con «comprobado en un segundo sistema», «una comprobación de 11 horas en otro» y «sólo atacantes ruidosos»; cierre y pie con fecha |
 
-Antes de esta actualización, los tres documentos estaban consolidados hasta R9;
+El texto íntegro de los tres, tal como quedaron publicados, está en la Parte VI
+(§32–34). Antes de esta actualización estaban consolidados hasta R9;
 la memoria técnica citaba «exactitud 0,264» para UNSW y la auditoría seguía
 presentando el autoencoder como logro en tres sitios pese a haberlo retirado en
 un cuarto.
@@ -2044,6 +2056,897 @@ consultan con `git log --oneline argos-lab-r1-r13`.
   características» con R12, citando cada cifra con su procedencia.
 - Captura externa nueva (> 24 h, host Windows activo y con origen de red) para
   validar el Transformer y repetir el cruce.
+
+---
+
+# PARTE VI · DOCUMENTOS PUBLICADOS, TEXTO ÍNTEGRO
+
+Los tres documentos que acompañan al TFM se publican como páginas privadas en
+claude.ai. Aquí va su contenido completo convertido de HTML a texto el
+2026-09-09, tras la actualización descrita en §31.2, para que quien redacte el
+informe no dependa de abrirlos. Se han descartado únicamente los elementos
+visuales sin contenido (estilos, barras de magnitud, navegación lateral); las
+tablas, recuadros, tarjetas y listas conservan su texto. Cuando una cifra de
+esta parte parezca discrepar de las secciones 4–30, mandan estas últimas, que
+llevan la ruta del artefacto.
+
+| Documento | Público | URL | Sección |
+|---|---|---|---|
+| Memoria técnica | Tribunal y lectores técnicos | https://claude.ai/code/artifact/d0c1f055-fcdb-4963-9201-19ab749be4a2 | §32 |
+| Auditoría técnica ARGOS-LAB | Revisión metodológica del módulo principal; hipótesis H1–H9 | https://claude.ai/code/artifact/8d15f4f1-9454-470d-b8fc-efefb72d885e | §33 |
+| Resumen en llano | Lectores no técnicos; guion de la presentación | https://claude.ai/code/artifact/d35c1ad3-899a-4489-9153-f339da326945 | §34 |
+
+## 32. Memoria técnica (texto íntegro, versión del 2026-09-09)
+
+*TFM · Memoria técnica*
+
+### 32 · Sistema de detección de intrusiones asistida por IA
+
+Marco reproducible de preprocesamiento, entrenamiento y auditoría de modelos de aprendizaje automático y profundo sobre telemetría de seguridad. Siete conjuntos de datos, cinco familias de modelos y un hallazgo transversal: el rendimiento publicado en este dominio depende más del protocolo de partición que del modelo.
+
+- **Datasets**: 7
+- **Familias de modelo**: 5
+- **Datos crudos**: 472 GB
+- **Experimentos**: 20 + 27
+- **Módulos**: 6
+
+### 32 · 01 · Objeto y alcance del sistema
+
+El sistema desarrollado no es un detector de intrusiones, sino un **banco de pruebas reproducible** para evaluar si técnicas de aprendizaje automático aplicadas a telemetría de seguridad producen detección real o meros artefactos metodológicos.
+
+Presta tres funciones:
+
+1. **Preprocesamiento uniforme.** Convierte formatos heterogéneos —alertas SIEM en JSON, flujos NetFlow, registros de autenticación— a una representación tabular común, particionada y versionada en Parquet.
+2. **Entrenamiento y evaluación comparables.** Cinco familias de modelos comparten cargador, métricas y generación de informes, de modo que las diferencias observadas son atribuibles al modelo y no al andamiaje.
+3. **Auditoría de validez.** Cuantifica cuánta parte del rendimiento proviene de fuga de información en lugar de capacidad predictiva. Es la función distintiva y la que sostiene las conclusiones.
+
+> **Utilidad práctica.** Aplicado al despliegue Wazuh en producción, el sistema permite: filtrar automáticamente alertas inocuas para reducir la carga del analista, clasificar alertas por familia de actividad para su enrutado, y priorizar la cola de revisión mediante un modelo no supervisado que no depende de etiquetas.
+
+### 32 · 02 · Marco conceptual
+
+Definición de cada término empleado en el resto de la memoria.
+
+##### Dominio
+
+- **SIEM**: *Security Information and Event Management*. Plataforma que centraliza registros de múltiples máquinas, les aplica reglas de correlación y emite **alertas**.
+- **Wazuh**: SIEM de código abierto empleado como fuente primaria. Un **manager** central recibe eventos de **agentes** instalados en cada máquina vigilada.
+- **IDS / IPS**: Sistema de **detección** de intrusiones (observa y alerta) frente a sistema de **prevención** (además bloquea).
+- **Regla y nivel**: Cada alerta la dispara una regla identificada por `rule_id`, con un **nivel** de 0 a 15 que expresa la gravedad asignada por el autor de la regla, no la hostilidad observada.
+- **Decoder**: Componente que extrae campos estructurados (IP de origen, usuario) del texto libre de un registro.
+- **MITRE ATT&CK**: Taxonomía estándar de tácticas y técnicas adversarias. Wazuh etiqueta algunas reglas con ella.
+- **Posture finding**: Hallazgo de **postura de seguridad**: vulnerabilidad conocida en software instalado. Describe un riesgo latente, no un ataque en curso.
+- **Honeypot**: Máquina señuelo expuesta deliberadamente para atraer atacantes. Todo tráfico que recibe es hostil por definición.
+
+##### Aprendizaje automático
+
+- **Etiqueta débil**: *Weak label*. Etiqueta generada automáticamente por heurística o regla, no por un analista. Es barata y abundante, pero su calidad acota el máximo alcanzable por cualquier modelo supervisado entrenado con ella.
+- **Fuga de información**: *Data leakage*. Situación en la que una variable de entrada contiene, directa o indirectamente, la respuesta. Produce métricas excelentes que no se reproducen fuera del conjunto de prueba.
+- **Circularidad**: Caso extremo de fuga: la etiqueta se derivó de las mismas variables que se ofrecen como entrada. El modelo reconstruye la regla de etiquetado.
+- **Confundido**: *Confounder*. Variable correlacionada con la etiqueta por un motivo ajeno al fenómeno estudiado — por ejemplo, la identidad del host.
+- **Ventana**: Unidad de análisis. Los eventos se agregan por intervalo temporal y máquina, de modo que la muestra describe **actividad** y no un evento aislado.
+- **Feature causal**: Variable calculada usando exclusivamente información anterior al instante que describe. Evita la fuga temporal.
+- **Desbalance**: Desproporción entre clases. Invalida la exactitud como métrica: con un 98 % de una clase, predecirla siempre da 98 % de acierto.
+- **Ponderación de clases**: Asignar a cada clase un peso inverso a su frecuencia en la función de pérdida, para que la minoritaria no sea ignorada.
+
+##### Métricas
+
+- **Exactitud**: Fracción de aciertos. **Engañosa bajo desbalance**; se reporta sólo por completitud.
+- **Precisión / recall**: De lo marcado como ataque, cuánto lo era (precisión); de los ataques reales, cuántos se detectaron (recall).
+- **F1 y macro-F1**: Media armónica de precisión y recall. La variante **macro** promedia por clase sin ponderar por frecuencia, de modo que las clases raras pesan igual.
+- **Balanced accuracy**: Media del recall de cada clase. Vale 0,5 en el azar binario.
+- **MCC**: Coeficiente de correlación de Matthews. Resume la matriz de confusión completa en un valor de −1 a +1. **Vale 0 en el azar** y es la métrica más robusta bajo desbalance severo; se adopta como principal.
+- **ROC-AUC**: Probabilidad de que el modelo puntúe más alto un positivo que un negativo tomados al azar. 0,5 es azar; por debajo, peor que azar.
+- **PR-AUC**: Área bajo precisión-recall. Su valor de referencia **no es 0,5 sino la prevalencia** de la clase positiva, por lo que siempre se reporta con su línea base.
+- **Precisión@k**: Aciertos dentro del *k* % mejor puntuado. Es lo que un analista experimenta al revisar una cola priorizada.
+- **Importancia por permutación**: Se baraja una columna y se mide la caída de la métrica. Cuantifica cuánto depende el modelo de esa variable concreta.
+
+##### Modelos
+
+- **Gradient boosting**: Conjunto de árboles de decisión entrenados secuencialmente, cada uno corrigiendo el error del anterior. Referencia habitual en datos tabulares.
+- **MLP**: *Perceptrón multicapa*. Red neuronal densa. **BatchNorm** normaliza las activaciones intermedias y estabiliza el entrenamiento cuando las variables tienen escalas muy distintas.
+- **Isolation Forest**: Detector de anomalías no supervisado: aísla puntos mediante cortes aleatorios; lo raro se aísla con menos cortes. Sus divisiones son paralelas a los ejes, por lo que aproxima mal las correlaciones entre variables.
+- **Autoencoder**: Red que comprime la entrada a un espacio latente reducido y la reconstruye. Entrenada sobre actividad rutinaria, el **error de reconstrucción** es la puntuación de anomalía. No usa etiquetas.
+- **GRU**: *Gated Recurrent Unit*. Red recurrente que procesa secuencias manteniendo un estado interno. Aquí clasifica la última de N ventanas consecutivas de un mismo agente.
+
+### 32 · 03 · Arquitectura del sistema
+
+Seis módulos independientes, uno por conjunto de datos, que comparten un **contrato común**: mismos nombres de script, misma estructura de salida, mismos formatos de metadatos. Un módulo nuevo se incorpora implementando ese contrato.
+
+- 01 **Ingesta** — streaming
+- 02 **Agregación** — ventanas
+- 03 **Features** — 98 columnas
+- 04 **Partición** — 3 protocolos
+- 05 **Entrenamiento** — 5 familias
+- 06 **Auditoría** — fuga
+- 07 **Comparación** — tabla única
+
+*Tabla. Componentes del módulo de referencia (`src/models/ARGOS_LAB/`, 16 scripts).*
+
+| Fichero | Responsabilidad |
+|---|---|
+| feature_spec.py | Fuente única de verdad: grupos de variables, regímenes, política de clases |
+| prepare_dataset.py | JSONL → ventanas → Parquet, en un solo recorrido |
+| prepare_sequence_dataset.py | Ventanas → secuencias por agente para el modelo recurrente |
+| data_loader.py | Carga con filtrado obligatorio por régimen de variables |
+| leakage_audit.py | Sondas de una variable, por grupo y por régimen |
+| train_ml_binary_hgb.py | Gradient boosting, binario y multiclase |
+| train_ml_binary_mlp.py | Red densa (PyTorch) |
+| train_anomaly_isoforest.py | Isolation Forest, tres políticas de ajuste |
+| train_anomaly_autoencoder.py | Autoencoder profundo |
+| train_seq_gru.py | Clasificador recurrente sobre secuencias |
+| metrics.py · reporting.py | Métricas, curvas, matrices, importancia por permutación |
+| compare_models.py | Recopila todas las ejecuciones en una tabla comparativa |
+
+Los artefactos se depositan en `artifacts/<modelo>/<partición>/<dataset>__<régimen>/<ejecución>/`, con métricas en JSON, matriz de confusión, curvas PR y ROC, importancia de variables y el modelo serializado. La ruta incluye el régimen porque **el mismo modelo bajo dos regímenes es un experimento distinto** y no debe sobrescribirse.
+
+### 32 · 04 · Conjuntos de datos
+
+Siete conjuntos, seleccionados para cubrir tres naturalezas distintas de telemetría —alertas SIEM, flujos de red y registros de autenticación— y alcanzados a distinta profundidad según su aportación al argumento.
+
+| Conjunto | Naturaleza | Volumen | Profundidad alcanzada |
+|---|---|---|---|
+| ARGOS-LAB (Wazuh en producción, 31 días) | Alertas SIEM | 1,5 GB · 1.462.265 | Pipeline completo + auditoría |
+| CIC-IDS2017 (Referencia académica) | Flujos de red | 2,0 GB · 2,83 M flujos | Modelos entrenados |
+| UNSW-NB15 (Referencia académica) | Flujos de red | 634 MB | Particiones regeneradas (R11); fuga por `id` corregida |
+| UGR-16 (Tráfico real de ISP) | NetFlow | 457 GB | Validado y preparado, sin entrenar |
+| CSR-LANL (Incluye verdad de *red team*) | Autenticación | 11 GB | Evaluado contra el equipo rojo real (R12) |
+| LAB-ALERTS (Segundo servidor Wazuh, 10,8 horas, 9 hosts) | Alertas SIEM | 48 MB · 59.855 | Validación externa de un solo disparo (R6, R8) |
+| CTU-13 (Opcional, no explotado) | Botnet | 1,9 GB | Descartado |
+
+#### 4.1 · ARGOS-LAB, el conjunto principal
+
+Exportación de 31 días del despliegue Wazuh propio. Cuatro agentes, cada uno con un **rol funcional distinto** —un factor determinante en los resultados—:
+
+| Agente | Rol | Alertas | Telemetría dominante |
+|---|---|---|---|
+| 000 | Manager Wazuh | 815.051 | Fuerza bruta SSH entrante |
+| 003 | Host del escáner | 411.065 | Vulnerabilidades Trivy (cron) |
+| 011 | Servidor web | 224.251 | Fuerza bruta SSH entrante |
+| 030 | Honeypot T-Pot | 11.898 | Sólo ruido operativo · 0 IPs de origen |
+
+Agregado en **ventanas de 1 minuto × agente** se obtienen 88.384 muestras, con etiqueta ATTACK 79.851 · BENIGN 1.738 · UNKNOWN 6.795. El recuento reproduce exactamente el del manifiesto original, lo que valida la implementación del ventaneo.
+
+> **Hallazgo sobre el honeypot.** El agente 030 es un honeypot T-Pot, donde todo el tráfico es hostil por definición. Sin embargo, Wazuh sólo recogió **el sistema operativo del señuelo**: 6.955 cambios de puertos a la escucha y 4.209 avisos de saturación de la cola del agente, con **cero IPs de origen**. Las capturas de los honeypots residen en el Elasticsearch propio de T-Pot, no conservado. En consecuencia el agente 030 no aporta ninguna información de seguridad explotable, y su inclusión en las particiones por host distorsiona los resultados.
+
+### 32 · 05 · Preprocesamiento
+
+Recorrido único en *streaming* plegando alertas en acumuladores por ventana: la memoria escala con el número de ventanas (~88.000), no de alertas (1,46 millones).
+
+#### 5.1 · Selección de variables
+
+Decidida a partir del perfilado exhaustivo del corpus, no por intuición.
+
+*Tabla. Variables descartadas. Ninguna aporta señal.*
+
+| Columna | Motivo |
+|---|---|
+| alert_id | Identificador único por fila |
+| is_simulated | Constante 0 en las 1.462.265 filas: varianza nula |
+| dst_port | Vacía en el 100 % de las filas |
+| agent_name · agent_ip | Redundantes 1:1 con `agent_id` |
+| full_log | Texto libre; ~70 % del tamaño del fichero, redundante con `rule_id` |
+| weak_label_reason | Contiene la derivación de la etiqueta: su uso sería tautológico |
+
+Las variables de **alta cardinalidad** — `src_port` (38.203 valores), `src_user` (13.211), `src_ip` (4.792)— no se codifican como variables ficticias, lo que produciría matrices dispersas inmanejables. Se resumen mediante recuentos distintos, entropía de Shannon, cuota del valor dominante y tasas de novedad.
+
+#### 5.2 · Variables derivadas
+
+Las de mayor valor no son columnas crudas sino **combinaciones** que expresan conducta de atacante:
+
+| Variable | Definición | Fenómeno que captura |
+|---|---|---|
+| alerts_per_src_ip | alertas / IPs distintas | Intensidad por origen |
+| users_per_src_ip | usuarios / IPs distintas | *Credential spraying* vs. ataque dirigido |
+| src_ip_entropy_norm | H(IPs) / log k | Origen único vs. botnet distribuida |
+| burstiness_index | σ(Δt) / μ(Δt) | Ráfaga automatizada vs. tráfico regular |
+| agent_count_z | (n − μ₁₅) / σ₁₅ del agente | Desviación sobre la línea base propia del host |
+| new_src_ip_ratio | IPs nuevas / IPs de la ventana | Novedad (causal) |
+| root_user_ratio | fusión src_user + dst_user | Objetivo de credencial privilegiada |
+
+#### 5.3 · Regímenes de información
+
+Aportación metodológica central. Las variables sospechosas **no se eliminan: se aíslan**, de modo que todo experimento declara con qué información se le permitió entrenar y la fuga se convierte en magnitud medible.
+
+| Régimen | Variables | Contenido | Función |
+|---|---|---|---|
+| `behavioral` | 54 | Volumen, diversidad, entropía, geografía, novedad, línea base temporal | Estimación honesta |
+| `nosignature` | 61 | Anterior + identidad de agente y calendario | Mide el confundido host/cron |
+| `full` | 98 | Todo, incluida la firma de la regla | Techo de recuperabilidad |
+
+### 32 · 06 · Modelos empleados
+
+Dos familias de aprendizaje automático clásico y tres de aprendizaje profundo, implementadas en PyTorch con aceleración GPU. Todas comparten infraestructura de evaluación.
+
+- **HistGradientBoosting** (ML · supervisado). Referencia para las tareas binaria y multiclase. Ponderación de clases por frecuencia inversa y umbral de decisión ajustado sobre validación. Configuración: `max_iter 300 · lr 0,08 · profundidad 6 · L2 1,0 · parada temprana 15`.
+- **Isolation Forest** (ML · no supervisado). Anomalías sin etiquetas. Tres políticas de ajuste: `quiet` (ventanas rutinarias), `benign` (novedad clásica) y `all`. Configuración: `400 estimadores · max_samples 65.536 · contamination auto`.
+- **MLP denso** (DL · supervisado). BatchNorm necesario: las variables abarcan desde recuentos de 5.470 hasta entropías en [0,1]. Selección del mejor modelo por macro-F1, no por pérdida. Configuración: `256 × 3 capas · dropout 0,3 · AdamW 1e-3 · ReduceLROnPlateau`.
+- **Autoencoder tabular** (DL · no supervisado). Reconstruye tráfico rutinario; el error por ventana es la puntuación. Recorte a ±8σ para que las ventanas extremas no dominen el gradiente. Configuración: `latente 12 · oculto 96 · MSE · holdout 15 % sin etiquetas`.
+- **GRU secuencial** (DL · supervisado). Clasifica la última de 12 ventanas consecutivas del mismo agente. La forma temporal de una ráfaga es información ajena al etiquetador, por lo que no puede ser atajo. Configuración: `128 unidades · 1 capa · LayerNorm · sin cruzar agente ni hueco > 60 min`.
+- **Transformer de atención** (DL · supervisado). Encoder sobre la secuencia de los primeros K avisos de una IP, con el contexto de subred como ficha inicial. Un modelo por K; inferencia reimplementada en numpy en el paquete de despliegue. Configuración: `2 bloques pre-LN · 4 cabezas · d 32 · FFN 64 · ~18.400 parámetros · 3 semillas`.
+- **Sondas de fuga** (Auditoría). Clasificadores deliberadamente triviales —una sola variable— para medir cuánta etiqueta es recuperable sin detectar nada. Configuración: `14 sondas individuales · 3 por grupo · 3 por régimen`.
+
+### 32 · 07 · Protocolo experimental
+
+Los tres protocolos de partición responden a preguntas distintas. Presentar uno solo, como es práctica común en la literatura, produce conclusiones no sostenibles.
+
+| Protocolo | Construcción | Pregunta que responde | Rigor |
+|---|---|---|---|
+| random | Muestreo aleatorio estratificado | ¿Interpola dentro de la misma distribución? | Bajo |
+| date | 70/15/15 por orden cronológico | ¿Generaliza a instantes futuros? | Medio |
+| groupkfold | *Leave-one-agent-out* | ¿Generaliza a una máquina nunca vista? | Alto |
+
+##### Decisiones metodológicas
+
+- **Umbral ajustado en validación**, no `argmax`. Con un 2 % de clase minoritaria, `argmax` colapsa a la mayoritaria y oculta lo aprendido.
+- **PR-AUC de la clase minoritaria.** ATTACK es el 98 %: su PR-AUC está saturada por construcción y no informa.
+- **Evaluación de anomalías en ambas direcciones.** Un detector de anomalías señala lo raro; aquí lo raro es BENIGN, no ATTACK.
+- **UNKNOWN excluidas del supervisado** (6.795 ventanas de cambios de netstat y paquetes), conservadas para la evaluación no supervisada.
+- **Variables causales.** Novedad y línea base sólo consultan ventanas anteriores.
+
+### 32 · 08 · Resultados
+
+#### 8.1 · Auditoría de fuga (ARGOS-LAB)
+
+*Tabla. Partición temporal, 11.711 ventanas de prueba. Cada fila es un modelo entrenado sólo con las columnas indicadas.*
+
+| Sonda | ROC-AUC | Interpretación |
+|---|---|---|
+| mitre_tagged_ratio | 0,9990 | Una variable iguala al modelo de 98 |
+| grp_invalid_login_ratio | 0,9984 | Grupo de regla |
+| rule_level_max | 0,9920 | Nivel de regla |
+| decoder_code | 0,9411 | Identidad del decoder |
+| `grupo signature` | 1,0000 | Separación perfecta |
+| `grupo behavioral` | 0,9998 | Fuga estructural, no de regla |
+
+La importancia por permutación lo confirma: barajar `mitre_tagged_ratio` cuesta **0,486** de PR-AUC en el régimen `full`, y barajar `src_ip_present_ratio` cuesta **0,827** en `behavioral`. Las 97 columnas restantes suman menos que la primera.
+
+El segundo caso revela una fuga distinta y más sutil: los hallazgos de vulnerabilidad **no tienen origen de red**, de modo que la ausencia de IP delata la clase sin intervención de la regla. No es circularidad, sino que ambas clases son tipos de alerta estructuralmente distintos.
+
+#### 8.2 · Tarea binaria y multiclase
+
+*Tabla. ARGOS-LAB, partición temporal. La tarea binaria está saturada en todos los regímenes; la multiclase no.*
+
+| Tarea | Modelo | Régimen | Bal. acc. | Macro-F1 | MCC |
+|---|---|---|---|---|---|
+| Binaria | HGB | `full` | 0,9975 | 0,9975 | 0,9950 |
+| Binaria | HGB | `behavioral` | 0,9776 | 0,9776 | 0,9551 |
+| Binaria | MLP | `behavioral` | 0,9507 | 0,9664 | 0,9335 |
+| Binaria | GRU | `behavioral` | 0,8225 | 0,8771 | 0,7653 |
+| Multiclase (9 familias de actividad) | HGB | `full` | 0,9993 | 0,9911 | — |
+| Multiclase | HGB | `behavioral` | 0,8057 | 0,7738 | — |
+| Multiclase | GRU | `behavioral` | 0,6796 | 0,5950 | — |
+
+El multiclase es la **única tarea supervisada no saturada**: 0,7738 de macro-F1 con información exclusivamente conductual sobre nueve clases. El salto a 0,9911 al añadir la firma de la regla cuantifica limpiamente la fuga. Las variables dominantes son interpretables: `agent_gap_seconds` (0,244), `src_ip_present_ratio` (0,216), `alert_count` (0,152), `burstiness_index` (0,082).
+
+#### 8.3 · Generalización entre máquinas
+
+*Tabla. Leave-one-agent-out sobre ARGOS-LAB, régimen `behavioral`. El MCC vale 0 en el azar.*
+
+| Fold | Prueba | Rol | Bal. acc. | MCC | ROC-AUC | Lectura |
+|---|---|---|---|---|---|---|
+| 0 | 000 | Manager | 0,8732 | 0,8080 | 0,9998 | Funciona |
+| 1 | 003 | Escáner | 0,8763 | 0,7809 | 0,9234 | Funciona |
+| 2 | 011 | Servidor web | 0,5000 | 0,0000 | 0,9268 | Fallo total |
+| 3 | 030 | Honeypot | 0,4855 | −0,0314 | 0,3375 | No evaluable |
+| media | excluyendo el honeypot | | 0,7498 | 0,5296 | 0,9500 | — |
+
+> **Resultado principal.** Dentro del mismo periodo el modelo alcanza MCC 0,955. Al probarlo en el **servidor web real**, la máquina más parecida a un entorno de producción, el MCC cae a **0,0000**: rendimiento idéntico al azar. El modelo memoriza el perfil de actividad de cada máquina y no aprende conducta de ataque transferible. La consecuencia operativa es que **debe reentrenarse por host**.
+>
+> El fold 3 se excluye del promedio por lo expuesto en §4.1: el honeypot no aporta telemetría de seguridad, de modo que su fallo no mide generalización. Incluirlo *exageraría* el hallazgo negativo (MCC medio 0,389 en lugar de 0,530).
+
+#### 8.4 · Detección no supervisada — resultado retirado
+
+> **Corrección.** Una versión anterior de esta memoria presentaba el autoencoder (18,3× sobre el azar) como el resultado no supervisado defendible. **Queda retirado.** El desglose por agente muestra que cada host, por separado, está en el azar o por debajo: el valor agregado procedía íntegramente de que la clase rara se concentra en un agente (74,5 % en el 030). El modelo ordenaba «qué máquina es», no «qué está ocurriendo» — paradoja de Simpson.
+
+*Tabla. Autoencoder, política `all`: el mismo score, agregado y por agente.*
+
+| Ámbito | n | PR-AUC | Base | Lift |
+|---|---|---|---|---|
+| Agente 000 | 6.075 | 0,0017 | 0,0020 | 0,84× |
+| Agente 003 | 30 | 0,7318 | 0,7667 | 0,95× |
+| Agente 011 | 5.437 | 0,0018 | 0,0031 | 0,57× |
+| Agente 030 | 169 | 0,7810 | 0,8994 | 0,87× |
+| Agregado (engañoso) | 11.711 | 0,3182 | 0,0174 | 18,26× |
+
+La causa raíz se midió directamente: con las 54 variables conductuales se predice **qué agente es** con 99,75 % de exactitud, pese a que la identidad del agente no figura entre ellas. Cada máquina tiene una huella repartida de forma redundante entre variables correlacionadas, y no se elimina un confundido borrando una columna. De este fallo nace la regla instrumentada en `reporting.py`: **toda métrica agregada se acompaña de su desglose por agente**, con aviso automático cuando los grupos están en el azar.
+
+#### 8.5 · Etiqueta de bloqueo por conducta — el resultado que sostiene el sistema
+
+Sustituye a la etiqueta del motor de reglas: una dirección de origen merece bloqueo si su conducta observada lo justifica — prueba ≥ 5 cuentas distintas, alcanza ≥ 2 máquinas, o persiste con ≥ 50 intentos en ≥ 3 ventanas. Se computa de forma causal (sólo pasado) desde cinco campos de hechos: `src_ip`, `src_user`, `dst_user`, `agent_id`, `timestamp`. Ningún veredicto de regla interviene.
+
+*Tabla. Auditoría de circularidad, misma metodología de sondas de una variable.*
+
+| Etiqueta | Mejor sonda individual (ROC-AUC) | Lectura |
+|---|---|---|
+| Débil (motor de reglas) | 0,9990 | Circular: una columna la reconstruye |
+| Bloqueo por conducta | 0,6641 | No reconstruible desde una variable |
+
+*Tabla. Rendimiento del puntuador de bloqueo (régimen conductual, 54 variables; split temporal). A diferencia del autoencoder, funciona dentro de cada host.*
+
+| Ámbito | ROC-AUC | MCC | Lift clase rara |
+|---|---|---|---|
+| Agente 000 (nativo) | 0,9230 | 0,3405 | 43,48× |
+| Agente 011 (nativo) | 0,9317 | 0,5712 | 19,99× |
+| Transferido 000 → 011 | 0,9107 | 0,3739 | 19,51× |
+| Transferido 011 → 000 | 0,8640 | 0,3473 | 24,73× |
+
+Con la etiqueta débil, el traslado entre hosts colapsaba a MCC 0,000. Con la etiqueta de conducta, el modelo transferido **retiene el 65–104 % del rendimiento nativo**: el obstáculo a la generalización nunca fue el modelo, sino el criterio de etiquetado.
+
+> **Validación externa · protocolo de un solo disparo.** Con la canalización congelada, el puntuador entrenado en ARGOS-LAB se evaluó una única vez sobre LAB-ALERTS — otro entorno, 10,8 horas, nueve hosts de los que tres son genuinamente nuevos (el único Windows no tiene direcciones de origen y no es evaluable), misma política de etiquetado a ambos lados y régimen adimensional sin variables geográficas. Sobre los tres hosts nuevos evaluables: **MCC medio 0,3426** (`server1-principal` 0,4613 · `romero-AWS-WebBus` 0,3764 · `biblioteca` 0,1902), frente al 0,000 de la etiqueta débil. En `server1-principal`, el modelo transferido supera incluso al entrenado con el historial local de 11 horas (0,25): los 31 días de patrones de ARGOS valen más que un historial corto propio.
+
+#### 8.6 · Bloqueo temprano por IP: de detección a prevención
+
+La acción operativa —bloquear— se aplica a una dirección de origen, no a una ventana. El último experimento cambia la unidad: puntuar la **IP** con sus primeros K avisos y predecir si su historial completo acabará cumpliendo los criterios de bloqueo. Es la diferencia entre un IDS y un IPS: cada acierto temprano suprime todos los avisos que ese origen habría generado después.
+
+La política correcta no es de presupuesto fijo sino **secuencial**: reevaluar con cada aviso que llega y bloquear al primer cruce de umbral (umbral por presupuesto, fijado en validación a precisión ≥ 0,99). Con reputación causal de subred como contexto —si la /24 ya aportó orígenes hostiles, la IP nueva es sospechosa desde su primer aviso (AUC a K=1: de 0,52 a 0,83)—:
+
+*Tabla. Política secuencial frente a presupuesto fijo (test interno, 719 IPs) y su validación externa de un solo disparo.*
+
+| Protocolo | Recall | Precisión | Mediana de corte | Avisos evitados |
+|---|---|---|---|---|
+| K=5 fijo (v1) | 0,820 | 0,998 | 5º aviso | 53 % |
+| Secuencial (interno) | 0,990 | 0,995 | 5º aviso | 89 % (44.315) |
+| Secuencial (externo, LAB-ALERTS) | 0,994 | ≥ 0,898 | 5º aviso | 91 % |
+
+La precisión externa es un **suelo por censura**: la captura dura 10,8 horas y los 37 cortes contados como error (325 aciertos de 362 bloqueos) son en su mayoría orígenes activos a los que el fin de la captura dejó sin cruzar el umbral formal —una revisión del momento, no persistida, situaba 29 de ellos a 1–2 usuarios de cumplir los criterios o con más de 25 intentos—. Honestidad del mecanismo: es detección rápida más anticipación parcial (a K=5, de las IPs que aún no cumplían criterios se anticipa el 21,6 %; a K=10, el 74,4 %).
+
+Complemento validado: un **umbral adaptativo a la prevalencia** (calibración isotónica más corrección de *prior shift*, estimando la prevalencia del destino sólo con la distribución de scores, sin etiquetas) recupera recall a presupuesto fijo: K=3 de 0,448 a 0,638 y K=5 de 0,846 a 0,900, manteniendo precisión ≥ 0,99. Ambos presupuestos de un solo disparo sobre LAB-ALERTS quedan con esto **gastados**; nuevas afirmaciones externas requieren una captura nueva.
+
+Última comprobación (R13): un **Transformer de atención** sobre la misma secuencia de avisos, con tres semillas para separar mejora de ruido, **empata** con el gradient boosting (política secuencial: recall 0,991 / precisión 0,991 frente a 0,990 / 0,993; AUC medio por presupuesto 0,957 frente a 0,952). Ordena mejor solo en K=1, donde su umbral no traslada de validación a test. Se conserva en el paquete como **segunda opinión en modo sombra** por su explicabilidad —la atención señala qué avisos pesaron— y no por métrica; no tiene validación externa.
+
+#### 8.7 · Patrón transversal a los tres conjuntos
+
+El hallazgo con mayor valor de la memoria no procede de ARGOS-LAB sino de su **reproducción independiente** en dos referencias académicas ampliamente citadas.
+
+*Tabla. Mismo tipo de modelo, distinto protocolo de partición. Sólo se incluyen resultados de canalizaciones verificadas (véase §09). CIC-IDS2017 se entrenó en régimen de desarrollo (HGB de 5 iteraciones).*
+
+| Conjunto | Protocolo laxo | Resultado | Protocolo riguroso | Resultado |
+|---|---|---|---|---|
+| ARGOS-LAB | Temporal | MCC 0,955 | Host no visto | MCC 0,000 |
+| CIC-IDS2017 | Aleatorio | ROC-AUC 0,999 | Por día (0,618 · ROC 0,535) · Leave-one-group-out | Macro-F1 0,500 · ROC 0,344 |
+| UNSW-NB15 | Aleatorio | Macro-F1 0,984 | Partición oficial (sin `id`) | Exactitud 0,899 · Macro-F1 0,891 |
+
+En CIC-IDS2017 la partición por grupos produce macro-F1 exactamente 0,500 —un predictor degenerado que emite siempre la clase mayoritaria— con ROC-AUC 0,344, **por debajo del azar**. La partición por día separa además **familias de ataque**: el test contiene PortScan, DDoS y Bot, ausentes del entrenamiento. En UNSW-NB15 la partición oficial, que separa deliberadamente distribuciones de entrenamiento y prueba, baja la exactitud de 0,993 a **0,899** (macro-F1 de 0,984 a 0,891).
+
+> **Corrección.** Una versión anterior de esta memoria citaba para UNSW-NB15 una exactitud oficial de 0,264, por debajo de la línea base mayoritaria (0,68). **Esa cifra era fuga por la columna `id`**, incluida entre las 43 variables oficiales: en el conjunto de entrenamiento la etiqueta forma bloques a lo largo de `id` (4 cambios en 82.332 filas) y el modelo aprendió «el id dice la clase». Verificado reentrenando el mismo HistGradientBoosting: con `id` 0,264; con `id` permutado en test 0,441; sin `id` 0,899 (`experiment_official_id_leak.py`, 2026-09-09). El contraste laxo-riguroso se mantiene, pero es de otro orden.
+
+> **Conclusión transversal.** Tres conjuntos de datos independientes, de dos naturalezas distintas (alertas SIEM y flujos de red), exhiben el mismo comportamiento: **rendimiento casi perfecto bajo particiones que preservan la distribución y caída fuerte —hasta el nivel del azar en ARGOS-LAB y CIC-IDS2017— bajo particiones que la rompen**. El factor determinante del resultado publicado no es el modelo, sino el protocolo de evaluación.
+
+### 32 · 09 · Estado de validez de cada módulo
+
+Auditoría de integridad de las canalizaciones. **Sólo deben citarse en la memoria los resultados marcados como válidos.**
+
+| Módulo · partición | Columnas | Distribución de clases | Estado |
+|---|---|---|---|
+| ARGOS-LAB · todas | 98 | ATTACK 79.851 · BENIGN 1.738 | Válido |
+| CIC-IDS2017 · todas | 80 | ATTACK 557.646 · BENIGN 2.273.097 | Válido |
+| UNSW-NB15 · official | 43 (42 sin `id`) | ATTACK 164.673 · BENIGN 93.000 | Válido sin `id` |
+| UNSW-NB15 · random | 47 | ATTACK 321.283 · BENIGN 2.218.764 | Regenerado 2026-09-02 (R11) |
+| UNSW-NB15 · groupkfold | 47 | 4 particiones distintas (los folds 4–7 duplican a los 0–3) | Regenerado 2026-09-02 (R11) |
+| CSR-LANL · hourly | 26 | 7.747.198 celdas · 91 rojas (1,17·10⁻⁵) | Válido (R12) |
+| UGR-16 | 37 diseñadas | sin datasets generados | Sin entrenar |
+
+> **Defecto corregido el 2026-09-02 — y dos residuales.** Las particiones `random` y `groupkfold` de UNSW-NB15 se construyeron leyendo los CSV originales **sin fila de cabecera**. Los ficheros `UNSW-NB15_1..4.csv` no la incluyen —los nombres residen en un fichero aparte—, de modo que la primera fila de datos se interpretó como nombres de columna. El `feature_columns.json` resultante contiene valores numéricos (`'0.000117'`, `'-'`) en lugar de identificadores, y la partición `groupkfold` quedó con **una sola clase**.
+>
+> Las métricas de exactitud 1,0000 y macro-F1 1,0000 registradas para esas particiones son artefactos de ese defecto: **no son resultados y no deben figurar en la memoria**. Corregido con `read_csv_smart` (inyecta los 49 nombres oficiales) y particiones regeneradas con 47 variables y la distribución real (BENIGN 2.218.764 · ATTACK 321.283): binario aleatorio macro-F1 0,9841, *leave-one-file-out* 0,9658, multiclase 0,4505 con exactitud 0,9753.
+>
+> Dos defectos residuales, detectados el 2026-09-08: la partición oficial incluye `id` como variable y filtra la etiqueta (§8.7, corregido en las cifras citadas), y las columnas categóricas `proto`, `service` y `state` llegan a cero en todos los Parquet del módulo porque la codificación comprueba `dtype == object` y con pandas 3 las cadenas son `str`. Ninguna cifra de UNSW-NB15 usó esas columnas; regenerar y reejecutar queda como trabajo pendiente.
+
+UGR-16 no alcanzó la fase de entrenamiento: dispone de validación semántica del formato crudo (12 de 13 columnas NetFlow verificadas sobre 22 archivos) y de tres versiones del preparador, pero el coste de disco (211 GiB comprimidos) detuvo la generación y cuatro entrenadores conservan conflictos de fusión sin resolver. Se documenta como exploración. CSR-LANL sí se entrenó, contra la verdad de campo del equipo rojo (R12, §10). LAB-ALERTS se empleó como conjunto de validación externa (§8.5, §8.6); su pipeline propio está implementado sin artefactos conservados. En CIC-IDS2017 todos los modelos se ejecutaron con 5 iteraciones o épocas: sus cifras absolutas no representan al modelo, sólo el contraste entre particiones.
+
+### 32 · 10 · Conclusiones
+
+##### Sobre la calidad de las etiquetas
+
+Las etiquetas de un SIEM las genera un motor de reglas. Entrenar sobre ellas usando como entrada las mismas variables que la regla consultó produce **reconstrucción de la regla, no detección**. Se demostró que una única variable alcanza ROC-AUC 0,9990, igualando al modelo de 98 variables.
+
+Se comprobó además que **sustituir el criterio de etiquetado por el nivel de regla no resuelve el problema**: el nivel procede del mismo motor. Empíricamente sería peor —los hallazgos de vulnerabilidad son nivel 12-14 y la fuerza bruta real es nivel 5, de modo que la regla «nivel ≥ 10 ⇒ ataque» clasificaría erróneamente el 70,8 % de lo que captura.
+
+##### Sobre el protocolo de evaluación
+
+Confirmado en tres conjuntos independientes: el protocolo de partición determina el resultado más que la elección de modelo. Una partición aleatoria sobre datos con estructura temporal y de host produce cifras cercanas a la perfección que no se sostienen bajo ninguna partición rigurosa.
+
+##### Sobre la transferencia entre máquinas
+
+El modelo no generaliza a un host no visto. En el servidor web real el MCC cae a 0,0000. Se identificó una causa concreta: los cuatro agentes no son cuatro muestras de «un host», sino **cuatro roles funcionales distintos**. Un ensayo con variables exclusivamente adimensionales (ratios, entropías, puntuaciones z) mejora la transferencia sólo +0,017 de MCC: la normalización no compensa un cambio de rol.
+
+La resolución llegó por la vía de la etiqueta, no la del modelo: al sustituir el criterio del motor de reglas por la **etiqueta de bloqueo por conducta** (§8.5), el mismo tipo de modelo pasa de MCC 0,000 a 0,35–0,46 en máquinas nunca vistas, incluida la validación externa sobre otro entorno.
+
+##### Sobre la aportación del aprendizaje profundo
+
+En tarea tabular supervisada el aprendizaje profundo **no supera** al gradient boosting (0,9664 frente a 0,9776 de macro-F1), y su aparente ventaja no supervisada —el autoencoder con 18,3× frente a 1,5× del Isolation Forest— resultó ser un artefacto de composición: por agente, ambos están en el azar (§8.4). En este corpus, con variables tabulares agregadas, **el aprendizaje profundo no aportó ventaja medible en ninguna tarea** — tampoco en la secuencial: un GRU sobre la secuencia de avisos de cada IP empata con el gradient boosting en el bloqueo temprano (AUC medio 0,9702 frente a 0,9703), y un Transformer de atención sobre la misma secuencia, con tres semillas, vuelve a empatar (0,957 frente a 0,952 de AUC medio por presupuesto). Cuatro arquitecturas, ningún avance medible: la etiqueta cuenta hechos y no depende del orden, así que un modelo de secuencia no tiene nada que explotar que los agregados no capten. El avance vino de otro sitio: de cambiar el criterio de etiquetado.
+
+##### Sobre el dominio de validez
+
+La única evaluación contra verdad de campo real es CSR-LANL (R12): 1.051 millones de autenticaciones agregadas en 7,75 millones de celdas (máquina, hora), 91 de ellas con actividad del equipo rojo (prevalencia 1,17·10⁻⁵). Las mismas variables conductuales causales dan **señal genuina** —ROC-AUC 0,9587 en test, `ntlm_ratio` sola 0,99— pero **no utilidad operativa**: a una celda roja entre 225.000, la lista de caza de 50 celdas al día encuentra 1 de 26 (PR-AUC 0,00075, lift 168×). El límite queda medido en ambos extremos: la metodología detecta atacantes **ruidosos** —fuerza bruta, escaneo, *spraying* — con eficacia operativa, y produce señal real pero no operativa contra atacantes **sigilosos** con credenciales válidas.
+
+##### Sobre la utilidad operativa
+
+Con el 98 % de las ventanas etiquetadas como ataque —ruido de fuerza bruta procedente de Internet— el problema del analista no es localizar ataques sino **no saturarse**. El valor del sistema reside en el filtrado, no en la detección: identifica correctamente el 95,6 % de las ventanas inocuas frente al 85,9 % de la mejor regla manual equivalente, con la condición de operar sobre hosts ya conocidos.
+
+Y en la dirección de prevención, el bloqueo temprano secuencial (§8.6) corta el 99,0 % de los orígenes hostiles con precisión 99,5 % —tres falsos en el mes de prueba—, con la mediana en el quinto aviso y suprimiendo el 89 % del volumen de ataque posterior; validado con 99,4 % de recall sobre el entorno externo.
+
+### 32 · 11 · Limitaciones y trabajo futuro
+
+##### Limitaciones
+
+- **Etiquetas derivadas de reglas** en todos los conjuntos propios. Sin verdad de analista, todo resultado supervisado está acotado por esa calidad.
+- **Cuatro agentes en el conjunto principal**, de los cuales uno (honeypot) no aporta telemetría útil. La varianza entre folds es alta.
+- **Una instalación y 31 días.** La validación externa cubre un segundo entorno de 10,8 horas con tres hosts genuinamente nuevos, y su presupuesto de un solo disparo está gastado.
+- **Dominio de validez estrecho**: atacantes ruidosos. Medido contra un equipo rojo real que no alcanza utilidad operativa (§10).
+- **204 ventanas de la clase minoritaria** en el conjunto de prueba: los intervalos de confianza sobre esa clase son amplios.
+- **Los conjuntos públicos son contraste, no banco de pruebas completo**: CIC-IDS2017 en régimen de desarrollo, UNSW-NB15 con un defecto de codificación pendiente (§09), UGR-16 sin entrenar.
+
+##### Trabajo futuro, por prioridad
+
+1. **Corregir la lectura de cabeceras en UNSW-NB15 — realizado** (R11, §09). Queda excluir `id` del espacio de variables, arreglar la codificación de categóricas, regenerar y reejecutar todas las particiones; y repetir CIC-IDS2017 con los hiperparámetros por defecto en lugar de 5 iteraciones.
+2. **Validación cruzada contra LAB-ALERTS — realizada** (MCC medio 0,3426 sobre los tres hosts nuevos evaluables, §8.5; queda repetirla con una captura externa más larga que 10,8 horas y con el host Windows activo y con origen de red, ausente de esta captura). Entrenar en ARGOS-LAB y evaluar sobre sus seis hosts adicionales —incluidas máquinas Windows, ausentes del conjunto principal— elevaría el experimento de generalización de 3 a 9 máquinas. Requiere unificar la política de etiquetado y un régimen sin geolocalización, ausente en ese conjunto. Debe ejecutarse **una sola vez**, con la canalización previamente congelada.
+3. **Etiquetado conductual independiente del motor de reglas — realizado** como etiqueta de bloqueo (auditada: mejor sonda 0,6641 frente a 0,9990 de la débil, §8.5). Una IP que alcanza múltiples hosts probando muchos usuarios es hostil por conducta observada, sin intervención de ninguna regla. Los datos lo sostienen: el 48 % de las IPs alcanzan ≥ 2 agentes y prueban una mediana de 8 usuarios distintos, frente a 3 las aisladas.
+4. **Reenviar los registros de T-Pot a Wazuh.** Cowrie y Dionaea emiten JSON ingerible mediante decoder propio. Proporcionaría verdad de campo absoluta para futuras capturas: todo lo que alcanza un señuelo es hostil por definición.
+5. **Etiquetado manual de una muestra estratificada**, única vía para superar definitivamente el techo de las etiquetas débiles.
+
+*Memoria técnica del sistema. Código en `src/models/`, seis módulos. El módulo de referencia (ARGOS-LAB) es reproducible íntegramente mediante `bash run_all_experiments.sh`: 20 experimentos, 118 ficheros Parquet y 164 gráficas. Entrenamiento sobre PyTorch 2.9.1 con CUDA 12.8. Actualizada el 9 de septiembre de 2026 con R11–R13 y la fe de erratas de `RESULTADOS.md`; el detalle módulo a módulo está en `DOSSIER_MODELOS_TFM.md`.*
+
+---
+
+## 33. Auditoría técnica ARGOS-LAB (texto íntegro, versión del 2026-09-09)
+
+*TFM · SIEM / IDS-IPS con IA*
+
+### 33 · Auditoría ARGOS-LAB
+
+1,46 millones de alertas reales de Wazuh, 88.384 ventanas, cinco familias de modelos. La conclusión central no es una métrica alta: es que la tarea binaria supervisada de este corpus *no mide detección de intrusiones, sino reconstrucción de la regla que generó las etiquetas*. Todo lo demás se deriva de haber medido eso en lugar de ocultarlo.
+
+- **Alertas**: 1.462.265
+- **Ventanas**: 88.384
+- **Periodo**: 31 días
+- **Agentes**: 4
+- **Features**: 98
+- **Experimentos**: 20
+
+### 33 · 01 · Resumen ejecutivo
+
+El dataset trae etiquetas **débiles**: las generó un motor de reglas, no un analista. El perfilado del corpus completo demostró que esa política es recuperable casi por completo desde un puñado de campos crudos. Por eso el módulo no entrena «un modelo»: entrena el mismo modelo bajo **tres regímenes de información** y compara.
+
+- **Una sola columna: 0,9990** — ROC-AUC de `mitre_tagged_ratio` en solitario. Iguala al modelo de 98 features.
+- **Entre hosts (MCC medio): 0,389** — Frente a 0,955 dentro del mismo periodo. Dos de cuatro folds caen al azar o por debajo.
+- **Multiclase por conducta: 0,7738** — Macro-F1 sobre 9 clases sin ninguna señal de la regla. La única tarea no saturada.
+- **Bloqueo temprano secuencial: 99,0%** — De orígenes hostiles cortados (precisión 99,5 %), mediana al 5º aviso, 89 % del ataque evitado; externo: 99,4 %.
+
+> **Lo que no debe defenderse.** Cualquier macro-F1 de ~0,99 en la tarea binaria. Se alcanza con una columna, y se alcanza igual tras eliminar los hallazgos del escáner de vulnerabilidades. No es un resultado de detección.
+
+### 33 · 02 · Qué contienen los datos
+
+Exportación de 30 días de un despliegue Wazuh real (`argos-alerts_30d.jsonl`, ~1,5 GB). La unidad de análisis es la **ventana de 1 minuto × agente**, que reproduce exactamente el recuento del manifiesto original — una validación de que el *windowing* es correcto.
+
+*Tabla. Distribución de la etiqueta a nivel de ventana. La clase rara es BENIGN, no ATTACK — un detalle que invierte cómo hay que leer casi todas las métricas.*
+
+| Clase | Ventanas | Proporción | Composición dominante |
+|---|---|---|---|
+| ATTACK | 79.851 | 90,3 % | Fuerza bruta SSH de fondo de Internet |
+| BENIGN | 1.738 | 2,0 % | 74,5 % salud del agente · 11,8 % sshd · 8,8 % Trivy |
+| UNKNOWN | 6.795 | 7,7 % | netstat y dpkg — excluidas del supervisado |
+
+> **Matiz que cambia la interpretación.** A nivel de **alerta**, el 97,8 % de lo benigno es salida de Trivy. A nivel de **ventana** — que es la unidad de entrenamiento — sólo el 11,8 % lo es: el escáner colapsa 410.611 alertas en muy pocas ventanas. La clase BENIGN real está dominada por alertas de *cola de eventos llena* del agente 030.
+
+#### La fuga, cuantificada sobre el corpus completo
+
+*Tabla. Pureza de etiqueta por campo crudo. Cada fila es una regla determinista que reproduce la etiqueta sin aprendizaje alguno.*
+
+| Campo | Filas | Pureza | Clase |
+|---|---|---|---|
+| rule_groups = authentication_failed | 849.049 | 100,00 % | ATTACK |
+| rule_groups = invalid_login | 771.290 | 100,00 % | ATTACK |
+| rule_groups = trivy | 410.611 | 100,00 % | BENIGN |
+| decoder_name = trivy-decoder | 410.611 | 100,00 % | BENIGN |
+| agent_id = 003 | 410.737 | 99,96 % | BENIGN |
+| hora ∈ {06, 07, 18, 19} | 594.344 | ~70 % | BENIGN · cron de Trivy |
+
+### 33 · 03 · Preprocesamiento
+
+Un solo recorrido en *streaming* sobre el JSONL, plegando alertas en acumuladores por ventana: la memoria escala con el número de ventanas (~88 k), no de alertas (1,46 M).
+
+- 01 **Streaming** — 1,46 M alertas
+- 02 **Acumular** — 88.384 ventanas
+- 03 **Derivar** — 98 features
+- 04 **Etiquetar** — ratio ≥ 0,5
+- 05 **Particionar** — date · random · agente
+- 06 **Materializar** — 118 parquet
+
+#### Columnas descartadas y por qué
+
+| Columna | Motivo del descarte |
+|---|---|
+| alert_id | Identificador único por fila. Ruido puro. |
+| is_simulated | Constante `0` en las 1.462.265 filas. Varianza cero. |
+| dst_port | Vacía en el 100 % de las filas. |
+| agent_name · agent_ip | Redundantes 1:1 con `agent_id`. Conservadas como metadatos. |
+| full_log | Texto libre, ~70 % del tamaño del fichero, redundante con `rule_id`. |
+| weak_label_reason | *Es* la derivación de la etiqueta. Usarla sería tautológico. |
+
+#### Alta cardinalidad: agregadas, nunca one-hot
+
+| Columna | Distintos | Tratamiento |
+|---|---|---|
+| src_port | 38.203 | Puertos efímeros: sólo presencia y entropía. |
+| src_user | 13.211 | Diccionario de fuerza bruta: nº distintos, entropía, ratio de cuentas de sistema. |
+| rule_description | 9.228 | Inflada por CVEs incrustados; `rule_id` sólo tiene 48. Metadato. |
+| src_ip | 4.792 | Nº distintos, entropía, cuota del top, tasa de IPs nuevas. |
+| geo_city | 723 | Nº distintos. |
+
+#### Features derivadas por mezcla de columnas
+
+Las variables con más valor no son columnas crudas sino combinaciones que capturan conducta de atacante que ninguna columna aislada expresa. Las de novedad y línea base son **causales**: sólo consultan ventanas anteriores, nunca el futuro.
+
+| Feature | Fórmula | Qué detecta |
+|---|---|---|
+| alerts_per_src_ip | alert_count / unique_src_ip | Intensidad por origen |
+| users_per_src_ip | unique_src_user / unique_src_ip | Spraying vs. ataque dirigido |
+| src_ip_entropy_norm | Shannon(IPs) / log k | Un atacante vs. botnet |
+| burstiness_index | σ(Δt) / μ(Δt) | Ráfaga automatizada |
+| agent_count_z | (n − μ₁₅) / σ₁₅ por agente | Desvío sobre la base del propio host |
+| new_src_ip_ratio | IPs nuevas / IPs de la ventana | Novedad causal |
+| root_user_ratio | mezcla src_user + dst_user | Objetivo de credencial privilegiada |
+| geo_spread | √(σ²lat + σ²lon) | Dispersión geográfica |
+
+#### Los tres regímenes de información
+
+El aporte metodológico central. Las columnas tóxicas no se borran: se **aíslan**, de modo que cada experimento declara con qué información se le permitió entrenar.
+
+- ``behavioral`` — **54 features**: Volumen, diversidad, entropía, geografía, novedad, línea base temporal. La métrica honesta.
+- ``nosignature`` — **61 features**: Añade agente y calendario. Mide el confundido host/cron.
+- ``full`` — **98 features**: Incluye la firma de la regla. Techo de recuperabilidad, no un resultado.
+
+### 33 · 04 · Modelos utilizados
+
+Cinco familias: dos de *machine learning* clásico y tres de *deep learning*, entrenadas sobre PyTorch con GPU. Todas comparten cargador, métricas y reporting, así que las diferencias entre filas son del modelo, no del andamiaje.
+
+- **HistGradientBoosting** (ML · supervisado). Línea base de referencia para binario y multiclase. Árboles con *class weighting* por frecuencia inversa y umbral ajustado en validación. Configuración: `max_iter 300 · lr 0,08 · max_depth 6 · L2 1,0 · early stopping 15 · class_weight balanced`. Resultado: Binario `beh` macro-F1 **0,9776**.
+- **Isolation Forest** (ML · no supervisado). Detección de anomalías sin etiquetas. Tres políticas de ajuste: `quiet`, `benign` y `all`. Configuración: `n_estimators 400 · max_samples 65.536 · contamination auto`. Resultado: Mejor no degenerado: lift **1,5×**.
+- **MLP denso** (DL · supervisado). Red densa con BatchNorm — necesaria porque las features van de `alert_count` ≈ 5.470 a entropías en [0,1]. Selección por macro-F1, no por *loss*. Configuración: `256 × 3 capas · dropout 0,3 · AdamW lr 1e-3 · ReduceLROnPlateau · patience 10`. Resultado: Binario `beh` macro-F1 **0,9664**.
+- **Autoencoder tabular** (DL · no supervisado). Reconstruye tráfico rutinario; el error por ventana es la puntuación de anomalía. Ninguna etiqueta interviene en el ajuste. Configuración: `latente 12 · oculto 96 · clip ±8σ · MSE · holdout 15 % sin etiquetas`. Resultado: Agregado 18,3× · por agente 0,57×–0,95× · **retirado** (§5.6).
+- **GRU secuencial** (DL · supervisado). Clasifica la última de 12 ventanas consecutivas del mismo agente. La forma temporal de una ráfaga es información que el etiquetador nunca tuvo, así que no puede ser atajo. Configuración: `hidden 128 · 1 capa · LayerNorm de entrada · L = 12 · secuencias sin cruzar agente ni hueco > 60 min`. Resultado: Binario macro-F1 **0,8771** · multiclase 0,5950.
+- **Transformer de atención** (DL · supervisado). Encoder sobre la secuencia de los primeros K avisos de una IP, con el contexto de subred como ficha inicial. Probado con tres semillas frente al gradient boosting del bloqueo temprano; inferencia en numpy en el paquete de despliegue. Configuración: `2 bloques pre-LN · 4 cabezas · d 32 · FFN 64 · ~18.400 parámetros por K · K ∈ {2, 3, 5, 10, 20}`. Resultado: Empate: AUC medio **0,957** frente a 0,952 · secuencial 0,991 / 0,991.
+- **Sondas de fuga** (Auditoría). Clasificadores deliberadamente triviales — una sola columna cada uno — para medir cuánto de la etiqueta es recuperable sin detectar nada. Configuración: `14 sondas de una feature · 3 por grupo · 3 por régimen`. Resultado: Mejor sonda individual ROC-AUC **0,9990**.
+
+### 33 · 05 · Resultados
+
+#### 5.1 · Auditoría de fuga
+
+Split temporal, 11.711 ventanas de test. Cada barra es un modelo entrenado sólo con las columnas indicadas.
+
+*Tabla. ROC-AUC por sonda. Si una sola columna iguala al modelo completo, la tarea es reconstrucción de etiqueta.*
+
+| Sonda | ROC-AUC | Magnitud |
+|---|---|---|
+| mitre_tagged_ratio | 0,9990 | |
+| grp_invalid_login_ratio | 0,9984 | |
+| rule_level_max | 0,9920 | |
+| decoder_code | 0,9411 | |
+| alert_count | 0,6691 | |
+| event_hour | 0,4806 | |
+| `grupo signature (37)` | 1,0000 | |
+| `grupo behavioral (54)` | 0,9998 | |
+
+> **Segundo hallazgo, más sutil.** Incluso el régimen `behavioral` llega a 0,9998. La causa no es la regla: es que las ventanas benignas **son estructuralmente otro tipo de alerta**. El 85,3 % no tiene ninguna IP de origen, así que `src_ip_present_ratio = 0` delata la clase sin necesidad de la firma.
+
+#### 5.2 · La prueba definitiva: importancia por permutación
+
+Barajar **una sola columna** y medir la caída de PR-AUC sobre la clase minoritaria:
+
+| Régimen | Columna barajada | Caída | Magnitud |
+|---|---|---|---|
+| `full` | mitre_tagged_ratio | −0,486 | |
+| `behavioral` | src_ip_present_ratio | −0,827 | |
+
+Las 97 columnas restantes suman menos que la primera. Ambos regímenes son, de hecho, modelos de una sola variable.
+
+#### 5.3 · Binario supervisado — saturado en todos los regímenes
+
+*Tabla. Split temporal (date). PR-AUC se reporta sobre la clase *minoritaria*: contra ATTACK, que es el 98 %, estaría saturada por construcción.*
+
+| Modelo | Régimen | Bal. acc. | Macro-F1 | MCC | PR-AUC min. |
+|---|---|---|---|---|---|
+| HGB | `full` | 0,9975 | 0,9975 | 0,9950 | 1,0000 |
+| HGB | `nosignature` | 0,9751 | 0,9774 | 0,9549 | 0,9945 |
+| HGB | `behavioral` | 0,9776 | 0,9776 | 0,9551 | 0,9930 |
+| MLP (deep learning) | `behavioral` | 0,9507 | 0,9664 | 0,9335 | 0,9778 |
+| HGB sin posture | `behavioral` | 0,9779 | 0,9805 | 0,9609 | 0,9961 |
+| GRU (deep learning, L = 12) | `behavioral` | 0,8225 | 0,8771 | 0,7653 | 0,8962 |
+
+Eliminar los hallazgos del escáner **no rescata la tarea**. Y el discriminante tampoco es el volumen: las medianas de `alert_count` son 5 (BENIGN) frente a 7 (ATTACK). Lo que separa es la presencia o ausencia de origen de red.
+
+#### 5.4 · Multiclase por familia de actividad — el mejor resultado supervisado
+
+Nueve clases derivadas de la familia de actividad que produjo la ventana. Es la **única tarea no saturada** del conjunto.
+
+| Modelo | Régimen | Bal. acc. | Macro-F1 | Magnitud |
+|---|---|---|---|---|
+| HGB | `full` | 0,9993 | 0,9911 | |
+| HGB | `behavioral` | 0,8057 | 0,7738 | |
+| GRU (deep learning) | `behavioral` | 0,6796 | 0,5950 | |
+
+El salto de **0,7738 → 0,9911** al añadir la firma de la regla cuantifica limpiamente la fuga. Y las features que más pesan son interpretables y puramente conductuales: `agent_gap_seconds` (0,244), `src_ip_present_ratio` (0,216), `alert_count` (0,152), `burstiness_index` (0,082).
+
+*Tabla. Rendimiento por clase con régimen `behavioral`. Las clases raras siguen siendo difíciles — exactamente lo esperable.*
+
+| Clase | Precisión | Recall | F1 | Soporte |
+|---|---|---|---|---|
+| CredentialBrute | 0,9998 | 0,9994 | 0,9996 | 11.469 |
+| PortChange | 0,9877 | 0,9756 | 0,9816 | 985 |
+| AgentHealth | 0,9533 | 0,9470 | 0,9502 | 151 |
+| PostureVuln | 1,0000 | 0,8889 | 0,9412 | 18 |
+| SshOperational | 0,8529 | 0,9667 | 0,9062 | 30 |
+| PackageChange | 0,7500 | 0,6667 | 0,7059 | 9 |
+| PostureSCA | 0,4444 | 0,6667 | 0,5333 | 6 |
+| Other | 0,6000 | 0,4737 | 0,5294 | 19 |
+| IntegrityChange | 0,3030 | 0,6667 | 0,4167 | 15 |
+
+#### 5.5 · Generalización entre hosts — el resultado que más importa
+
+*Leave-one-agent-out*: entrenar con tres agentes, probar en el cuarto. Es la única prueba que responde «¿serviría este modelo en una máquina nueva?».
+
+*Tabla. MCC por fold. El coeficiente de Matthews vale 0 en el azar y puede ser negativo. Dos de cuatro hosts caen ahí.*
+
+| Fold | Test = agente | Bal. acc. | MCC | ROC-AUC | MCC (0 = azar) |
+|---|---|---|---|---|---|
+| fold_0 | 000 | 0,8732 | 0,8080 | 0,9998 | |
+| fold_1 | 003 | 0,8763 | 0,7809 | 0,9234 | |
+| fold_2 | 011 | 0,5000 | 0,0000 | 0,9268 | |
+| fold_3 | 030 | 0,4855 | −0,0314 | 0,3375 | |
+| media | — | 0,6838 | 0,3894 | 0,7969 | |
+
+> **Conclusión operativa.** Dentro del mismo periodo y hosts: ~0,98. En un host no visto: **azar o peor** — el fold 3 queda por debajo del azar con ROC-AUC 0,3375. El MLP cae aún más (MCC medio 0,1221). El modelo memoriza el perfil de actividad de cada máquina; no aprende conducta de ataque transferible. **Hay que reentrenar por host**, y las métricas de uno no predicen las de otro.
+
+#### 5.6 · Detección de anomalías no supervisada
+
+Ninguna etiqueta interviene en el ajuste. Como ATTACK es el 98 % de las ventanas, un detector de anomalías señala la clase **rara** (BENIGN); por eso se reportan siempre ambas direcciones.
+
+| Modelo | Política | ROC-AUC | PR-AUC rara | Lift | P@1 % |
+|---|---|---|---|---|---|
+| Isolation Forest | quiet | 0,5403 | 0,0232 | 1,33× | 0,060 |
+| Isolation Forest | all | 0,5465 | 0,0266 | 1,53× | 0,068 |
+| Isolation Forest | benign (degenerada) | 0,9831 | 0,8824 | 50,7× | 0,897 |
+| Autoencoder (deep learning) | quiet | 0,6984 | 0,1148 | 6,59× | 0,282 |
+| Autoencoder (deep learning) | all | 0,7164 | 0,3182 | 18,26× | 0,650 |
+| Autoencoder | benign (degenerada) | 0,9875 | 0,8261 | 47,4× | 0,880 |
+
+> **Corrección — resultado retirado.** Este documento presentaba el autoencoder (18,3×) como el resultado no supervisado defendible. **Queda retirado.** Desglosado por agente, cada host está en el azar o por debajo (000: 0,84× · 003: 0,95× · 011: 0,57× · 030: 0,87×): el valor agregado procedía de que la clase rara se concentra al 74,5 % en el agente 030. El modelo ordenaba «qué máquina es», no «qué está ocurriendo» — paradoja de Simpson. La política `benign` era además reconocimiento de origen («no-Trivy»), no detección.
+>
+> La causa raíz, medida: con las 54 variables conductuales se predice **qué agente es** con 99,75 % de exactitud aunque `agent_id` no esté entre ellas. La identidad del host vive repartida entre variables correlacionadas; quitar una columna no elimina el confundido. Desde entonces toda métrica agregada se reporta con su desglose por agente.
+
+El relevo lo toma la **etiqueta de bloqueo por conducta**: una IP merece bloqueo si prueba ≥ 5 cuentas, alcanza ≥ 2 máquinas o persiste (≥ 50 intentos en ≥ 3 ventanas), computado de forma causal desde hechos observados, sin motor de reglas. Auditada con las mismas sondas: la mejor variable individual llega a 0,6641 frente al 0,9990 de la etiqueta débil — la circularidad está rota. El puntuador resultante funciona *dentro* de cada host (lift 43,5× y 20,0×), transfiere entre hosts reteniendo el 65–104 % del rendimiento nativo, y en la validación externa de un solo disparo sobre LAB-ALERTS logra **MCC medio 0,3426 en hosts jamás vistos** — frente al 0,000 de la etiqueta débil.
+
+#### 5.7 · Detección de benignos: el caso de uso que sí funciona
+
+Sobre hosts conocidos, identificar lo benigno funciona bien — y **aporta valor sobre reglas manuales**, que era la duda razonable:
+
+*Tabla. Clase BENIGN, split temporal, 204 ventanas de test. PR-AUC 0,993 frente a una prevalencia base de 0,017 — unas 57× sobre el azar.*
+
+| Método | Precisión | Recall | F1 |
+|---|---|---|---|
+| HGB `full` | 0,9951 | 0,9951 | 0,9951 |
+| HGB `behavioral` | 0,9559 | 0,9559 | 0,9559 |
+| MLP `behavioral` | 0,9684 | 0,9020 | 0,9340 |
+| regla: src_ip_present_ratio == 0 | 0,8657 | 0,8529 | 0,8593 |
+| regla: agent_id == '003' | 0,7667 | 0,1127 | 0,1966 |
+| regla: posture_ratio ≥ 0,5 | 0,5854 | 0,1176 | 0,1959 |
+| regla: top_decoder == trivy-decoder | 1,0000 | 0,0882 | 0,1622 |
+
+**+0,10 de F1** sobre la mejor heurística de una línea. El modelo se gana el sueldo. Pero entre hosts vuelve a romperse: en el fold 2 el F1 de BENIGN es 0,0000 — no predijo ni una de las 464 ventanas benignas reales.
+
+#### 5.8 · Bloqueo temprano por IP — el sistema completo (IPS)
+
+Cambio de unidad: puntuar la **dirección de origen** con sus primeros avisos y bloquear al primer cruce de umbral (reevaluando con cada aviso; precisión objetivo 0,99 fijada en validación; reputación causal de subred como contexto — AUC con un solo aviso: 0,83).
+
+| Evaluación | Recall | Precisión | Avisos evitados |
+|---|---|---|---|
+| Interna (719 IPs, mes de test) | 0,990 | 0,995 | 89 % |
+| Externa, un disparo (561 IPs, LAB-ALERTS) | 0,994 | ≥ 0,898 (suelo por censura de 11 h) | 91 % |
+
+Los 37 cortes externos contados como error (325 aciertos de 362 bloqueos) son en su mayoría orígenes activos a los que el fin de la captura de 10,8 horas dejó sin cruzar el umbral formal —una revisión del momento, no persistida, situaba 29 de ellos a 1–2 usuarios de cumplir los criterios o con > 25 intentos—. Mejora adicional validada: umbral adaptativo a la prevalencia (sin etiquetas del destino), K=5 de 0,846 → 0,900 de recall a precisión ≥ 0,99. Ambos presupuestos de un solo disparo sobre LAB-ALERTS quedan gastados.
+
+¿Y un modelo de secuencia? Un GRU sobre la secuencia de avisos de cada IP empata con el gradient boosting (AUC medio 0,9702 frente a 0,9703), y un Transformer de atención, con tres semillas, vuelve a empatar (0,957 frente a 0,952; política secuencial 0,991 / 0,991 frente a 0,990 / 0,993). Ordena mejor sólo con un aviso (K=1), donde su umbral no traslada de validación a test. Se conserva en el paquete de despliegue como **segunda opinión en modo sombra**, por su explicabilidad —la atención dice qué avisos pesaron— y no por métrica. Sin validación externa: el presupuesto está gastado.
+
+### 33 · 06 · Hipótesis y veredictos
+
+Cada hipótesis se formuló antes de medirla y se resolvió con un experimento concreto.
+
+| Id | Hipótesis | Evidencia | Veredicto |
+|---|---|---|---|
+| H1 | Las etiquetas débiles permiten entrenar un detector binario supervisado con valor real. | Una sola columna alcanza ROC-AUC 0,9990; el grupo *signature* llega a 1,0000 exacto. El modelo recupera la regla, no la conducta. | Refutada |
+| H2 | Eliminar las features de firma elimina la fuga. | El régimen *behavioral* sigue en ROC-AUC 0,9998 — pero por otra vía: el 85,3 % de ventanas benignas no tiene IP de origen. La fuga es estructural, no sólo de la regla. | Refutada |
+| H3 | Excluir los hallazgos de *posture* expone la tarea difícil que el manifiesto sugería. | Macro-F1 pasa de 0,9776 a 0,9805 — sube en lugar de bajar. A nivel de ventana, sólo el 11,8 % de lo benigno era del escáner. | Refutada |
+| H4 | El modelo generaliza a hosts no vistos durante el entrenamiento. | MCC medio 0,3894 en *leave-one-agent-out*; folds 2 y 3 en 0,0000 y −0,0314. El fold 3 queda por debajo del azar. | Refutada |
+| H5 | La clasificación multiclase por conducta es una tarea con recorrido real. | Macro-F1 0,7738 sobre 9 clases con sólo features conductuales, y 0,9911 con firma. Ni saturada ni trivial. | Confirmada |
+| H6 | El deep learning supera al ML clásico en este problema. | En tabular supervisado no: HGB 0,9776 frente a MLP 0,9664. La aparente ventaja no supervisada (autoencoder 18,3×) resultó ser un artefacto de composición: por agente está en el azar (0,57×–0,95×). Y en la secuencia de avisos de una IP, GRU (0,9702 frente a 0,9703) y Transformer (0,957 frente a 0,952, tres semillas) empatan con el gradient boosting. Cuatro arquitecturas, ninguna ventaja medible. | Refutada |
+| H7 | El sistema sirve para triaje automático de alertas benignas. | F1 0,9559 sobre BENIGN frente a 0,8593 de la mejor regla manual. Válido sólo en hosts ya vistos: en un host nuevo cae a 0,0000. | Con condiciones |
+| H8 | La etiqueta de bloqueo por conducta permite un modelo que transfiere entre máquinas y entre instalaciones. | Transferido entre los dos hosts con origen de red retiene el 65–104 % del MCC nativo; sobre LAB-ALERTS (otra instalación, canalización congelada) MCC medio 0,3426 en tres hosts nuevos, y el bloqueo secuencial alcanza recall 0,994. Con la etiqueta débil: 0,000. | Confirmada |
+| H9 | La misma metodología de conducta observada detecta también a un atacante sigiloso con credenciales válidas. | Contra el equipo rojo real de CSR-LANL (1.051 M de autenticaciones, 91 celdas rojas de 7,75 M) da señal genuina —ROC-AUC 0,9587, `ntlm_ratio` sola 0,99— pero no utilidad operativa: a prevalencia 4,5·10⁻⁶ la lista de caza de 50 celdas al día encuentra 1 de 26. El dominio de validez son los atacantes ruidosos. | Señal, no utilidad |
+
+### 33 · 07 · Ventajas y desventajas
+
+##### Ventajas
+
+- **Datos reales, no sintéticos.** 1,46 M de alertas de un despliegue Wazuh en producción, con ataques de fondo de Internet genuinos — no una simulación de laboratorio.
+- **La fuga es medible, no invisible.** El diseño de tres regímenes convierte un defecto del dataset en una magnitud reportable.
+- **Validación del windowing.** El recuento reproduce exactamente el del manifiesto original (79.851 / 1.738 / 6.795).
+- **Features causales e interpretables.** Novedad y línea base sólo miran al pasado; las más importantes tienen lectura de seguridad directa.
+- **Validación externa de un solo disparo.** Canalización congelada y una única ejecución sobre otra instalación: MCC 0,3426 en hosts nuevos y recall 0,994 del bloqueo temprano, reportados tal cual.
+- **Reproducible de un comando.** `run_all_experiments.sh` regenera los 20 experimentos y la tabla comparativa.
+- **Metodología defensiva.** Umbral ajustado en validación, PR-AUC de clase minoritaria, ponderación de clases, split temporal por defecto.
+
+##### Desventajas
+
+- **Etiquetas débiles.** Generadas por reglas, sin *ground truth* de analista. Todo número supervisado tiene ese techo.
+- **La tarea binaria es inservible.** Saturada en todos los regímenes y también sin *posture*.
+- **No generaliza entre hosts.** MCC medio 0,389, con dos folds en el azar o por debajo.
+- **Desbalance extremo.** La clase rara es el 2,0 % de ventanas; el test sólo tiene 204 ventanas BENIGN, así que los intervalos de confianza son anchos.
+- **Concentración en una feature.** Barajar `src_ip_present_ratio` cuesta 0,827 de PR-AUC: competencia real, pero superficial.
+- **Sólo 4 agentes.** El *leave-one-agent-out* tiene 4 folds; la varianza entre hosts es alta.
+- **Validación externa limitada.** Un segundo entorno de 10,8 horas con tres hosts genuinamente nuevos y ningún Windows evaluable; la precisión externa 0,898 es un suelo por censura y el presupuesto de un solo disparo está gastado.
+- **Dominio de validez estrecho.** Atacantes ruidosos. Contra un equipo rojo sigiloso (CSR-LANL) hay señal pero no utilidad operativa.
+
+### 33 · 08 · Utilidad y funcionalidad práctica
+
+Con el 98 % de ventanas etiquetadas como ataque — ruido de fuerza bruta constante desde Internet — el cuello de botella del analista **no es encontrar ataques**. Es no ahogarse en ellos. Eso reordena qué es valioso aquí.
+
+| Caso de uso | Componente | Estado |
+|---|---|---|
+| Triaje: auto-cerrar benignos (reduce fatiga del analista) | HGB `behavioral` | Viable |
+| Clasificar familia de actividad (enrutado automático de alertas) | HGB multiclase | Viable |
+| Priorizar cola de revisión (score de ataque calibrado, por host) | Puntuador de actividad | Viable |
+| Decidir bloqueo de un origen (etiqueta de conducta; transfiere entre hosts) | Puntuador de bloqueo | Viable |
+| Prevención: cortar al atacante en sus primeros avisos (IPS; 89 % del ataque suprimido) | Bloqueo temprano secuencial | Viable |
+| Detección de intrusiones genérica (host nuevo, sin reentrenar) | cualquiera | No viable |
+| Sustituir las reglas de Wazuh (el modelo aprende de ellas) | cualquiera | No viable |
+
+#### Cómo se desplegaría
+
+1. **Un modelo por host**, no uno global — es la consecuencia directa del resultado *leave-one-agent-out*.
+2. **Reentrenamiento periódico** con ventana deslizante; las features de línea base ya son causales, así que el esquema es compatible con streaming.
+3. **El rechazo de actividad desconocida como red de seguridad**: el puntuador por host declara «no la reconozco» cuando la confianza cae bajo el umbral, y captura el 99,8 % de una familia nunca vista a cuantil 0,50. El detector de anomalías queda retirado.
+4. **Segunda opinión en modo sombra**: el Transformer anota, no decide; su acuerdo con el gradient boosting sobre tráfico real es la única validación que le queda.
+5. **Umbral por coste operativo**, no por F1: la precisión al 1 % superior es la métrica que el analista experimenta.
+
+### 33 · 09 · Límites y trabajo futuro
+
+##### Qué defender, en orden de solidez
+
+1. **La auditoría de fuga.** Una columna reproduce el modelo completo. Es una crítica metodológica reproducible al dataset, no una opinión.
+2. **El fallo de generalización entre hosts.** 0,98 dentro del periodo frente a MCC 0,389 entre hosts, con consecuencia operativa directa.
+3. **El multiclase conductual.** Macro-F1 0,7738 sin señal de la regla, sobre 9 clases.
+4. **El bloqueo temprano secuencial.** Recall 0,990 / precisión 0,995 en el mes de test, 0,994 sobre otra instalación; y el dominio de validez medido contra un equipo rojo real.
+5. **El fallo del autoencoder.** Un 18,3× agregado que se desmonta al desglosar por agente: paradoja de Simpson medida en datos propios, origen de la regla de desglose obligatorio.
+
+##### Trabajo futuro
+
+- **Etiquetado por analista** de una muestra estratificada — es la única vía para romper el techo de las etiquetas débiles.
+- **Más agentes y más tiempo**, para estrechar los intervalos del *leave-one-agent-out*.
+- **Ventanas de mayor granularidad** (5 o 15 min): a 1 minuto la ráfaga se fragmenta y el GRU se queda sin material para la clase rara.
+- **Normalización por host — probada y descartada**: el z-score por host resta entre 0,08 y 0,26 de MCC al puntuador de bloqueo; la transferencia llegó por la etiqueta, no por la normalización.
+- **Validación en un segundo despliegue — realizada** (LAB-ALERTS, un disparo). Queda una captura nueva de más de 24 horas, con el host Windows activo y con origen de red, para validar el Transformer y repetir el cruce.
+- **Fe de erratas.** Los cortes externos contados como error son 37, no 38; el análisis de los 29 censurados no está persistido. Registrado en `RESULTADOS.md` el 2026-09-08.
+
+*Módulo `src/models/ARGOS_LAB/` — 16 scripts, 118 parquet, 20 experimentos, 164 gráficas. Preprocesamiento en un solo recorrido de streaming; entrenamiento sobre PyTorch con GPU.*
+
+*Reproducible con `bash run_all_experiments.sh`. La metodología completa está en el `README.md` del módulo; el registro R1–R13 / X1–X3 con su fe de erratas, en `RESULTADOS.md`; el detalle de todos los conjuntos, en `DOSSIER_MODELOS_TFM.md`. Actualizada el 9 de septiembre de 2026.*
+
+---
+
+## 34. Resumen en lenguaje llano (texto íntegro, versión del 2026-09-09)
+
+*TFM · Resumen en lenguaje llano*
+
+### 34 · ARGOS-LAB en claro
+
+Analizamos 1,46 millones de avisos de seguridad reales con inteligencia artificial. El resultado importante no fue el acierto del modelo, sino descubrir por qué ese acierto era engañoso.
+
+### 34 · 01 · Qué queríamos hacer
+
+*El punto de partida*
+
+Un servidor de seguridad (Wazuh) vigila cuatro ordenadores y genera un aviso cada vez que ocurre algo sospechoso: alguien intentando entrar con contraseñas robadas, un fallo del sistema, una vulnerabilidad detectada. En 30 días acumuló **1,46 millones de avisos**.
+
+La idea era entrenar modelos de inteligencia artificial para que distinguieran solos entre lo que es un ataque y lo que es actividad normal. Para ello agrupamos los avisos en bloques de un minuto por ordenador, lo que da **88.384 situaciones** que analizar.
+
+### 34 · 02 · El problema que apareció
+
+*La respuesta estaba escrita en el margen*
+
+Los avisos ya venían marcados como «ataque» o «normal». Pero esas marcas no las había puesto un experto: las había puesto **un programa automático siguiendo reglas fijas**. Por ejemplo: «si el aviso viene del escáner de vulnerabilidades, márcalo como normal».
+
+Eso significa que nuestra IA no estaba aprendiendo a detectar ataques. Estaba aprendiendo a **copiar esas reglas**.
+
+> **Dicho de otro modo.** Es como examinar a un alumno con las respuestas escritas en el margen del examen. Saca un diez, y no ha aprendido nada. El diez es real; lo que mide, no.
+
+Lo comprobamos de la forma más directa posible: entrenamos un modelo usando **una sola columna de datos**, en vez de las 98 disponibles.
+
+> **99,9 %** — **De acierto con una sola columna.** Exactamente lo mismo que usando las 98. Si un dato basta para igualar al modelo completo, el modelo no está descubriendo nada: está repitiendo la regla.
+
+### 34 · 03 · La segunda sorpresa
+
+*Funciona… hasta que cambias de ordenador*
+
+Un buen detector debería servir en cualquier máquina. Así que hicimos la prueba honesta: entrenar el modelo con tres de los cuatro ordenadores y probarlo en el cuarto, uno que nunca había visto.
+
+En dos de los cuatro casos, el modelo **acertó lo mismo que lanzando una moneda**. En uno de ellos, incluso peor que la moneda.
+
+> **2 de 4** — **Ordenadores donde el modelo falla por completo.** No aprendió qué es un ataque. Aprendió cómo se comporta cada máquina concreta, que es otra cosa muy distinta.
+
+Esto tiene una consecuencia práctica clara: **habría que entrenar un modelo por cada ordenador**, y los buenos resultados de una máquina no dicen nada sobre otra.
+
+### 34 · 04 · Lo que sí funciona
+
+*Los resultados que se sostienen*
+
+- **Clasificar el tipo de actividad.** En vez de preguntar «¿es un ataque?», preguntamos «¿qué clase de actividad es?», con nueve categorías posibles (intento de contraseñas, cambio de puertos, fallo del agente, etc.). Aquí el modelo acierta un **77 %** sin ninguna pista de las reglas. Es un resultado real y no trivial.
+- **Filtrar automáticamente lo que no es peligroso.** El modelo identifica correctamente el **96 %** de los avisos inofensivos, frente al 86 % que consigue la mejor regla manual. Ahí sí aporta valor por encima de una regla escrita a mano.
+- **Cortar al atacante casi al empezar.** Vigilando sólo los primeros avisos de cada dirección y decidiendo en cuanto hay evidencia suficiente —de mediana, al quinto—, el sistema corta al **99 %** de los orígenes hostiles con 3 errores en todo un mes, evitando 9 de cada 10 avisos que habrían llegado después. Probado también contra el segundo entorno: 99,4 %. Esto ya no es detectar: es prevenir.
+- **Decidir qué direcciones bloquear.** Creamos una etiqueta nueva que no depende de las reglas: una dirección merece bloqueo si *se comporta* como un atacante — prueba muchas cuentas, golpea varias máquinas, insiste durante mucho tiempo. Un modelo entrenado con ese criterio funciona en cada máquina por separado y, sobre todo, **sigue funcionando en máquinas que nunca vio**, incluso de otro entorno. Con las etiquetas antiguas, eso fallaba por completo.
+- **Una corrección honesta.** Antes contábamos aquí que un modelo «sin etiquetas» encontraba lo raro 18 veces mejor que el azar. Al mirar máquina por máquina resultó ser un espejismo: acertaba *qué máquina era*, no qué estaba pasando. Lo retiramos, y ese análisis por máquina es ahora obligatorio en todos los resultados.
+- **La arquitectura de moda no ayuda.** Probamos también un modelo de atención, del tipo que hay detrás de los grandes modelos de lenguaje, para que leyera la secuencia completa de avisos de cada dirección. Repetido tres veces con semillas distintas, **empata** con el modelo sencillo de árboles. La explicación es simple: la pregunta «¿cuántas cuentas ha probado?» no depende del orden en que las probó. Lo conservamos, pero como *segunda opinión* que no decide: su valor es que señala qué avisos pesaron en cada bloqueo, algo que el modelo principal no puede explicar.
+
+### 34 · 05 · Para qué sirve de verdad
+
+*El problema real del analista*
+
+Un dato cambia por completo la utilidad del sistema: **el 98 % de los avisos son ataques**. No porque el servidor esté comprometido, sino porque internet bombardea constantemente cualquier máquina expuesta con intentos automáticos de contraseñas.
+
+Es decir, el problema de la persona que revisa los avisos *no es encontrar ataques*. Es **no ahogarse en ellos**. Y eso cambia dónde está el valor.
+
+*Tabla. Para qué se puede usar el sistema, y para qué no.*
+
+| Uso | ¿Sirve? |
+|---|---|
+| Cerrar solo los avisos inofensivos | Sí |
+| Clasificar avisos por tipo y enrutarlos | Sí |
+| Cortar a un atacante ruidoso en sus primeros avisos | Sí |
+| Explicar qué avisos pesaron en un bloqueo | Sí, con la segunda opinión |
+| Priorizar qué revisar primero | En parte |
+| Detectar ataques en un ordenador nuevo | No |
+| Detectar a un intruso silencioso con credenciales robadas | No |
+| Sustituir a las reglas de Wazuh | No |
+
+El sistema no sustituye al detector de ataques. Lo que hace es **reducir el ruido** para que una persona pueda centrarse en lo que importa.
+
+### 34 · 06 · Hasta dónde llega
+
+*La prueba con un atacante de verdad*
+
+Todo lo anterior trata de atacantes **ruidosos**: programas que prueban cientos de contraseñas desde internet. Quisimos saber si el mismo método serviría contra un atacante **silencioso**, alguien que ya tiene una contraseña válida y se mueve con calma por dentro de la red. Para eso usamos datos públicos de un laboratorio estadounidense (Los Alamos) donde un equipo de expertos atacó de verdad la red y dejó anotado exactamente qué hizo: mil millones de inicios de sesión, y 91 horas de máquina marcadas como compromiso.
+
+> **1 de 26** — **Horas de ataque que encontraría un analista revisando 50 al día.** El método detecta algo real —ordena bastante bien lo sospechoso—, pero cuando lo malo es una hora entre 225.000, «bastante bien» no basta para que una persona lo encuentre.
+
+Es un resultado negativo, y es útil: marca con datos reales **hasta dónde llega el método**. Funciona contra el ruido de internet; no contra alguien que ya está dentro y sabe esperar.
+
+### 34 · 07 · Ventajas y desventajas
+
+*Lo bueno y lo malo, sin adornos*
+
+- **(+) Datos reales, no inventados.** Millón y medio de avisos de un sistema en funcionamiento, con ataques auténticos de internet. No es una simulación de laboratorio.
+- **(+) El fallo está medido, no escondido.** En vez de presentar un 99 % y callar, el trabajo demuestra de dónde sale ese 99 % y cuánto queda cuando se quita el truco.
+- **(+) Comprobado en un segundo sistema.** Los modelos de bloqueo se probaron una única vez, sin retoques, contra otro servidor con máquinas que nunca habían visto. Salió bien, y el resultado se cuenta tal cual.
+- **(+) Todo es reproducible.** Un único comando regenera los 20 experimentos y la tabla de resultados.
+- **(−) Las etiquetas no son fiables.** Las puso un programa, no un experto. Ningún resultado supervisado puede superar ese techo.
+- **(−) No se traslada a otras máquinas.** Es la limitación más seria, y no tiene arreglo con los datos disponibles.
+- **(−) Muy pocos casos de la clase rara.** Sólo 204 situaciones «normales» para comprobar. Con tan pocas, los porcentajes tienen bastante margen de error.
+- **(−) Un solo sistema, 30 días — y una comprobación de 11 horas en otro.** Esa comprobación fue un único intento y no puede repetirse con los mismos datos sin convertirlos en datos de entrenamiento. Para afirmar más, haría falta una captura nueva.
+- **(−) Sólo atacantes ruidosos.** Contra un intruso silencioso con credenciales válidas el método da señal, pero no la suficiente para que sirva de algo (sección 06).
+
+### 34 · 08 · Qué defender en la presentación
+
+La aportación de este trabajo **no es haber conseguido un 99 % de acierto**. Cualquiera lo consigue con estos datos, y no significa nada.
+
+La aportación es haber **demostrado por qué ese 99 % es falso**, haber medido cuánto queda cuando se elimina el atajo (un 77 % en la tarea que sí tiene sentido), y haber probado que el modelo **no funciona en una máquina nueva** — un fallo que la mayoría de trabajos similares no llega a detectar porque nunca hacen esa prueba.
+
+Y hay un final constructivo: al cambiar el criterio de etiquetado — de «lo que dicen las reglas» a «cómo se comporta el origen» — el modelo pasó de fallar por completo en máquinas nuevas a conservar en ellas dos tercios de su rendimiento, comprobado contra un segundo entorno que nunca había visto. El problema no era el modelo: era la pregunta.
+
+Probamos además la arquitectura de moda y un caso con atacantes de verdad: la primera no mejora nada, y el segundo marca con datos el límite del método. Saber dónde termina algo es parte de saber qué es.
+
+Es un resultado menos vistoso y mucho más sólido.
+
+*Resumen no técnico del módulo ARGOS-LAB. Los detalles completos — metodología, métricas, configuración de los modelos y resultados por experimento — están en el informe técnico y en la documentación del código. Actualizado el 9 de septiembre de 2026.*
 
 ---
 
